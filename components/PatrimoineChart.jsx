@@ -6,8 +6,17 @@ import { euros } from "@/lib/format";
 export default function PatrimoineChart({ comptes, transactions }) {
   const points = useMemo(() => {
     const socle = comptes.reduce((a, c) => a + (c.soldeInitial || 0), 0);
+    // Démarre au premier mois d'activité (au plus 12 mois d'historique)
+    const premiereDate = transactions.map((t) => t.date).sort()[0];
+    const actuel = new Date();
+    let profondeur = 0;
+    if (premiereDate) {
+      const [pa, pm] = premiereDate.split("-").map(Number);
+      profondeur = (actuel.getFullYear() - pa) * 12 + (actuel.getMonth() + 1 - pm);
+    }
+    profondeur = Math.max(1, Math.min(11, profondeur)); // toujours au moins 2 points
     const out = [];
-    for (let i = 11; i >= 0; i--) {
+    for (let i = profondeur; i >= 0; i--) {
       const d = new Date();
       d.setMonth(d.getMonth() - i + 1, 0); // dernier jour du mois visé
       const limite = i === 0 ? "9999-12-31" : d.toISOString().slice(0, 10);

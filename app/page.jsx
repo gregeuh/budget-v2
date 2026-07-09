@@ -15,7 +15,7 @@ import CountUp from "@/components/CountUp";
 import MoisSelecteur from "@/components/MoisSelecteur";
 
 export default function Accueil() {
-  const { comptes, transactions, soldes, profil, credits, projets } = useBudget();
+  const { comptes, transactions, soldes, profil, credits, projets, setReglagesOuverts } = useBudget();
   const [mois, setMois] = useState(cleMois(aujourdhui()));
   const s = statsMois(transactions, mois);
   const totalCredits = credits.reduce((a, c) => a + (c.restant || 0), 0);
@@ -59,7 +59,7 @@ export default function Accueil() {
             {avantages > 0 && ` · hors titres-resto (${euros(avantages)})`}
           </p>
         </div>
-        <Link href="/reglages" aria-label="Réglages" className="flex h-10 w-10 items-center justify-center rounded-full bg-carte text-lg shadow-carte">⚙️</Link>
+        <button onClick={() => setReglagesOuverts(true)} aria-label="Réglages" className="flex h-10 w-10 items-center justify-center rounded-full bg-carte text-lg shadow-carte active:scale-95 transition-transform">⚙️</button>
       </header>
 
       <MoisSelecteur mois={mois} onChanger={setMois} />

@@ -44,6 +44,7 @@ export function DataProvider({ children }) {
   const [erreurInit, setErreurInit] = useState("");
   const [toast, setToast] = useState(null);
   const [categoriesPerso, setCategoriesPerso] = useState({});
+  const [reglagesOuverts, setReglagesOuverts] = useState(false);
   const notifier = useCallback((message, icone = "✓", action = null) => {
     setToast({ id: Date.now(), message, icone, action });
   }, []);
@@ -181,7 +182,7 @@ export function DataProvider({ children }) {
     if (modeLocal) setComptes((l) => [...l, { id: genId(), ...nouveau }]);
     else {
       const { addDoc, collection, base } = await fs();
-      await addDoc(collection(db, `${base}/comptes`), nouveau);
+      addDoc(collection(db, `${base}/comptes`), nouveau).catch((e) => console.error("Écriture:", e));
     }
     notifier(`Compte « ${nouveau.nom} » créé`);
   }, [modeLocal, comptes.length, fs, notifier]);
@@ -190,7 +191,7 @@ export function DataProvider({ children }) {
     if (modeLocal) setComptes((l) => l.map((c) => (c.id === id ? { ...c, ...maj } : c)));
     else {
       const { updateDoc, doc, base } = await fs();
-      await updateDoc(doc(db, `${base}/comptes`, id), maj);
+      updateDoc(doc(db, `${base}/comptes`, id), maj).catch((e) => console.error("Écriture:", e));
     }
     notifier("Compte enregistré");
   }, [modeLocal, fs, notifier]);
@@ -205,8 +206,8 @@ export function DataProvider({ children }) {
     const { deleteDoc, doc, getDocs, query, where, collection, base } = await fs();
     const q = query(collection(db, `${base}/transactions`), where("compteId", "==", id));
     const snap = await getDocs(q);
-    await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
-    await deleteDoc(doc(db, `${base}/comptes`, id));
+    snap.docs.forEach((d) => deleteDoc(d.ref).catch((e) => console.error("Écriture:", e)));
+    deleteDoc(doc(db, `${base}/comptes`, id)).catch((e) => console.error("Écriture:", e));
     notifier("Compte supprimé", "🗑️");
   }, [modeLocal, fs]);
 
@@ -215,7 +216,7 @@ export function DataProvider({ children }) {
     if (modeLocal) setTransactions((l) => [...l, { id: genId(), ...nouvelle }]);
     else {
       const { addDoc, collection, base } = await fs();
-      await addDoc(collection(db, `${base}/transactions`), nouvelle);
+      addDoc(collection(db, `${base}/transactions`), nouvelle).catch((e) => console.error("Écriture:", e));
     }
     if (!opts.silencieux) notifier(nouvelle.montant >= 0 ? "Revenu ajouté" : "Dépense ajoutée");
   }, [modeLocal, fs, notifier]);
@@ -224,7 +225,7 @@ export function DataProvider({ children }) {
     if (modeLocal) setTransactions((l) => l.map((t) => (t.id === id ? { ...t, ...maj } : t)));
     else {
       const { updateDoc, doc, base } = await fs();
-      await updateDoc(doc(db, `${base}/transactions`, id), maj);
+      updateDoc(doc(db, `${base}/transactions`, id), maj).catch((e) => console.error("Écriture:", e));
     }
     notifier("Opération modifiée");
   }, [modeLocal, fs, notifier]);
@@ -234,7 +235,7 @@ export function DataProvider({ children }) {
     if (modeLocal) setTransactions((l) => l.filter((t) => t.id !== id));
     else {
       const { deleteDoc, doc, base } = await fs();
-      await deleteDoc(doc(db, `${base}/transactions`, id));
+      deleteDoc(doc(db, `${base}/transactions`, id)).catch((e) => console.error("Écriture:", e));
     }
     notifier("Opération supprimée", "🗑️", sauvegarde ? {
       label: "Annuler",
@@ -251,7 +252,7 @@ export function DataProvider({ children }) {
     setBudgets(b); setProfil(p);
     if (modeLocal) return;
     const { setDoc, doc, base } = await fs();
-    await setDoc(doc(db, base, "app"), { budgets: b, profil: p }, { merge: true });
+    setDoc(doc(db, base, "app"), { budgets: b, profil: p }, { merge: true }).catch((e) => console.error("Écriture:", e));
     notifier("Enregistré");
   }, [modeLocal, budgets, profil, fs, notifier]);
 
@@ -275,20 +276,20 @@ export function DataProvider({ children }) {
     const donnees = { actif: true, ...r, prochaine };
     if (modeLocal) return setRecurrentes((l) => [...l, { id: genId(), ...donnees }]);
     const { addDoc, collection, base } = await fs();
-    await addDoc(collection(db, `${base}/recurrentes`), donnees);
+    addDoc(collection(db, `${base}/recurrentes`), donnees).catch((e) => console.error("Écriture:", e));
     notifier("Récurrence créée", "🔁");
   }, [modeLocal, fs, posterOccurrencesDues, notifier]);
 
   const modifierRecurrente = useCallback(async (id, maj) => {
     if (modeLocal) return setRecurrentes((l) => l.map((r) => (r.id === id ? { ...r, ...maj } : r)));
     const { updateDoc, doc, base } = await fs();
-    await updateDoc(doc(db, `${base}/recurrentes`, id), maj);
+    updateDoc(doc(db, `${base}/recurrentes`, id), maj).catch((e) => console.error("Écriture:", e));
   }, [modeLocal, fs]);
 
   const supprimerRecurrente = useCallback(async (id) => {
     if (modeLocal) return setRecurrentes((l) => l.filter((r) => r.id !== id));
     const { deleteDoc, doc, base } = await fs();
-    await deleteDoc(doc(db, `${base}/recurrentes`, id));
+    deleteDoc(doc(db, `${base}/recurrentes`, id)).catch((e) => console.error("Écriture:", e));
     notifier("Récurrence supprimée", "🗑️");
   }, [modeLocal, fs, notifier]);
 
@@ -313,21 +314,21 @@ export function DataProvider({ children }) {
     const donnees = { montantActuel: 0, icone: "🎯", ...p };
     if (modeLocal) return setProjets((l) => [...l, { id: genId(), ...donnees }]);
     const { addDoc, collection, base } = await fs();
-    await addDoc(collection(db, `${base}/projets`), donnees);
+    addDoc(collection(db, `${base}/projets`), donnees).catch((e) => console.error("Écriture:", e));
     notifier("Projet créé", "🎯");
   }, [modeLocal, fs, notifier]);
 
   const modifierProjet = useCallback(async (id, maj) => {
     if (modeLocal) return setProjets((l) => l.map((p) => (p.id === id ? { ...p, ...maj } : p)));
     const { updateDoc, doc, base } = await fs();
-    await updateDoc(doc(db, `${base}/projets`, id), maj);
+    updateDoc(doc(db, `${base}/projets`, id), maj).catch((e) => console.error("Écriture:", e));
     notifier("Projet mis à jour");
   }, [modeLocal, fs, notifier]);
 
   const supprimerProjet = useCallback(async (id) => {
     if (modeLocal) return setProjets((l) => l.filter((p) => p.id !== id));
     const { deleteDoc, doc, base } = await fs();
-    await deleteDoc(doc(db, `${base}/projets`, id));
+    deleteDoc(doc(db, `${base}/projets`, id)).catch((e) => console.error("Écriture:", e));
     notifier("Projet supprimé", "🗑️");
   }, [modeLocal, fs, notifier]);
 
@@ -335,21 +336,21 @@ export function DataProvider({ children }) {
   const ajouterCredit = useCallback(async (c) => {
     if (modeLocal) return setCredits((l) => [...l, { id: genId(), ...c }]);
     const { addDoc, collection, base } = await fs();
-    await addDoc(collection(db, `${base}/credits`), c);
+    addDoc(collection(db, `${base}/credits`), c).catch((e) => console.error("Écriture:", e));
     notifier("Crédit ajouté", "🏦");
   }, [modeLocal, fs, notifier]);
 
   const modifierCredit = useCallback(async (id, maj) => {
     if (modeLocal) return setCredits((l) => l.map((c) => (c.id === id ? { ...c, ...maj } : c)));
     const { updateDoc, doc, base } = await fs();
-    await updateDoc(doc(db, `${base}/credits`, id), maj);
+    updateDoc(doc(db, `${base}/credits`, id), maj).catch((e) => console.error("Écriture:", e));
     notifier("Crédit enregistré");
   }, [modeLocal, fs, notifier]);
 
   const supprimerCredit = useCallback(async (id) => {
     if (modeLocal) return setCredits((l) => l.filter((c) => c.id !== id));
     const { deleteDoc, doc, base } = await fs();
-    await deleteDoc(doc(db, `${base}/credits`, id));
+    deleteDoc(doc(db, `${base}/credits`, id)).catch((e) => console.error("Écriture:", e));
     notifier("Crédit supprimé", "🗑️");
   }, [modeLocal, fs, notifier]);
 
@@ -486,6 +487,7 @@ export function DataProvider({ children }) {
   const valeur = {
     pret, user, modeLocal, erreurInit, toast, notifier,
     categories, categoriesPerso, sauverCategoriesPerso,
+    reglagesOuverts, setReglagesOuverts,
     comptes, transactions, budgets, profil, soldes, recurrentes, projets, credits,
     ajouterCompte, modifierCompte, supprimerCompte,
     ajouterTransaction, modifierTransaction, supprimerTransaction, ajouterTransactionsLot,

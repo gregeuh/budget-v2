@@ -6,8 +6,15 @@ import { euros } from "@/lib/format";
 
 export default function SpendChart({ transactions }) {
   const donnees = useMemo(() => {
+    const premiereDate = transactions.map((t) => t.date).sort()[0];
+    const actuel = new Date();
+    let profondeur = 5;
+    if (premiereDate) {
+      const [pa, pm] = premiereDate.split("-").map(Number);
+      profondeur = Math.min(5, Math.max(1, (actuel.getFullYear() - pa) * 12 + (actuel.getMonth() + 1 - pm)));
+    }
     const out = [];
-    for (let i = 5; i >= 0; i--) {
+    for (let i = profondeur; i >= 0; i--) {
       const d = new Date();
       d.setDate(1);
       d.setMonth(d.getMonth() - i);
@@ -30,7 +37,7 @@ export default function SpendChart({ transactions }) {
   return (
     <div className="rounded-ios bg-carte p-4 shadow-carte">
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="font-semibold">6 derniers mois</h3>
+        <h3 className="font-semibold">Revenus & dépenses</h3>
         <div className="flex gap-3 text-xs text-sourdine">
           <span><span className="mr-1 inline-block h-2 w-2 rounded-full bg-menthe" />Revenus</span>
           <span><span className="mr-1 inline-block h-2 w-2 rounded-full bg-corail" />Dépenses</span>
@@ -51,7 +58,7 @@ export default function SpendChart({ transactions }) {
         })}
       </svg>
       <p className="tnum mt-1 text-right text-xs text-sourdine">
-        Ce mois-ci : {euros(donnees[5].revenus)} entrés · {euros(donnees[5].depenses)} sortis
+        Ce mois-ci : {euros(donnees[donnees.length - 1].revenus)} entrés · {euros(donnees[donnees.length - 1].depenses)} sortis
       </p>
     </div>
   );

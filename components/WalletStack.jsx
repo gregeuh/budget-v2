@@ -17,59 +17,55 @@ export default function WalletStack() {
     );
   }
 
-  const HAUTEUR = 108;
-  const CHEVAUCHEMENT = 46;
-  const hauteurTotale = deplie
-    ? comptes.length * (HAUTEUR + 10)
-    : HAUTEUR + (comptes.length - 1) * CHEVAUCHEMENT;
-
+  // Pile en flux normal : chaque carte remonte sur la précédente via une marge
+  // négative. La hauteur du bloc est donc toujours exacte, sur tous les navigateurs.
   return (
-    <button
-      onClick={() => setDeplie(!deplie)}
-      aria-expanded={deplie}
-      className="relative block w-full text-left transition-all"
-      style={{ height: hauteurTotale }}
-    >
-      {comptes.map((c, i) => {
-        const t = TYPES_COMPTE[c.type] || TYPES_COMPTE.autre;
-        const coul = COULEURS[t.couleur];
-        const y = deplie ? i * (HAUTEUR + 10) : i * CHEVAUCHEMENT;
-        const echelle = deplie ? 1 : 1 - (comptes.length - 1 - i) * 0.02;
-        return (
-          <div
-            key={c.id}
-            className="absolute inset-x-0 rounded-ios p-4 shadow-carte transition-transform duration-300"
-            style={{
-              height: HAUTEUR,
-              transform: `translateY(${y}px) scale(${echelle})`,
-              transformOrigin: "top center",
-              background: `linear-gradient(135deg, ${coul.fond}, #FFFFFF)`,
-              border: `1px solid ${coul.vif}22`,
-              zIndex: i,
-            }}
-          >
-            <div className="reflet" />
-            <div className="relative flex items-start justify-between">
-              <div className="flex items-center gap-2.5">
-                <span
-                  className="flex h-9 w-9 items-center justify-center rounded-xl text-lg"
-                  style={{ background: coul.vif + "26" }}
-                >
-                  {t.icone}
-                </span>
-                <div>
-                  <div className="font-semibold leading-tight">{c.nom}</div>
-                  <div className="text-xs" style={{ color: coul.texte }}>{t.label}</div>
+    <div>
+      <div
+        role="button"
+        tabIndex={0}
+        aria-expanded={deplie}
+        onClick={() => setDeplie(!deplie)}
+        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setDeplie(!deplie)}
+        className="cursor-pointer select-none"
+      >
+        {comptes.map((c, i) => {
+          const t = TYPES_COMPTE[c.type] || TYPES_COMPTE.autre;
+          const coul = COULEURS[t.couleur];
+          return (
+            <div
+              key={c.id}
+              className="relative overflow-hidden rounded-ios p-4 shadow-carte transition-[margin] duration-300"
+              style={{
+                marginTop: i === 0 ? 0 : deplie ? 10 : -62,
+                background: `linear-gradient(135deg, ${coul.fond}, transparent 70%)`,
+                backgroundColor: "var(--c-carte)",
+                border: `1px solid ${coul.vif}22`,
+                zIndex: i,
+              }}
+            >
+              <div className="reflet" />
+              <div className="relative flex items-start justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl text-lg" style={{ background: coul.vif + "26" }}>
+                    {t.icone}
+                  </span>
+                  <div>
+                    <div className="font-semibold leading-tight">{c.nom}</div>
+                    <div className="text-xs" style={{ color: coul.texte }}>{t.label}</div>
+                  </div>
                 </div>
+                <div className="chiffres text-lg font-bold">{euros(soldes[c.id] || 0)}</div>
               </div>
-              <div className="chiffres text-lg font-bold">{euros(soldes[c.id] || 0)}</div>
+              {/* Réserve la zone visible de la carte du dessous quand la pile est repliée */}
+              <div className={deplie ? "h-6" : "h-6"} />
             </div>
-          </div>
-        );
-      })}
-      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-medium text-sourdine">
-        {deplie ? "Replier" : `${comptes.length} comptes — toucher pour déplier`}
+          );
+        })}
       </div>
-    </button>
+      <p className="mt-2 text-center text-xs font-medium text-sourdine">
+        {deplie ? "Toucher pour replier" : `${comptes.length} comptes · toucher pour déplier`}
+      </p>
+    </div>
   );
 }

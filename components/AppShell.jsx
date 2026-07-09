@@ -7,9 +7,10 @@ import AddSheet from "./AddSheet";
 import Login from "./Login";
 import Onboarding from "./Onboarding";
 import Toast from "./Toast";
+import DrawerReglages from "./DrawerReglages";
 
 export default function AppShell({ children }) {
-  const { pret, user, modeLocal, profil, comptes, erreurInit } = useBudget();
+  const { pret, user, modeLocal, profil, comptes, erreurInit, reglagesOuverts } = useBudget();
   const [ajoutOuvert, setAjoutOuvert] = useState(false);
 
   if (!pret) {
@@ -41,6 +42,7 @@ export default function AppShell({ children }) {
       <main className="px-4 pb-36 pt-4">{children}</main>
       <TabBar onAjouter={() => setAjoutOuvert(true)} />
       {ajoutOuvert && <AddSheet onFermer={() => setAjoutOuvert(false)} />}
+      {reglagesOuverts && <DrawerReglages />}
     </div>
   );
 }
