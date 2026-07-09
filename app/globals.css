@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+
+  /* Thème clair */
+  --c-fond: #f6f6fa;
+  --c-carte: #ffffff;
+  --c-encre: #17203a;
+  --c-sourdine: #7a8199;
+  --c-bordure: rgba(23, 32, 58, 0.1);
+  --c-voile: rgba(23, 32, 58, 0.05);
+  --c-contraste: #ffffff;
+  --ombre-carte: 0 2px 16px rgba(23, 32, 58, 0.06);
+
+  --menthe-pale: #dff6ee;
+  --menthe-texte: #1f8a6a;
+  --corail-pale: #ffe9e7;
+  --corail-texte: #d14a3e;
+  --lavande-pale: #edeafe;
+  --lavande-texte: #6a5bd8;
+  --ciel-pale: #e3f0ff;
+  --ciel-texte: #2470c8;
+  --peche-pale: #ffefe2;
+  --peche-texte: #d0742f;
+  --beurre-pale: #fcf3dc;
+  --beurre-texte: #b98a1b;
+}
+
+html.sombre {
+  --c-fond: #10131f;
+  --c-carte: #1a1f30;
+  --c-encre: #eef0f7;
+  --c-sourdine: #8b93ac;
+  --c-bordure: rgba(238, 240, 247, 0.12);
+  --c-voile: rgba(238, 240, 247, 0.07);
+  --c-contraste: #10131f;
+  --ombre-carte: 0 2px 16px rgba(0, 0, 0, 0.35);
+
+  --menthe-pale: #14352a;
+  --menthe-texte: #5fd6b0;
+  --corail-pale: #3c211f;
+  --corail-texte: #ff9187;
+  --lavande-pale: #272348;
+  --lavande-texte: #b1a5ff;
+  --ciel-pale: #1a2b45;
+  --ciel-texte: #7cbcff;
+  --peche-pale: #3a2818;
+  --peche-texte: #ffb885;
+  --beurre-pale: #38301a;
+  --beurre-texte: #f0c869;
+
+  color-scheme: dark;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  @apply bg-fond text-encre font-sf antialiased;
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Chiffres tabulaires pour les montants */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Typo arrondie (SF Rounded) pour les grands montants */
+.chiffres {
+  font-family: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* En sombre, un liseré subtil redonne du relief aux cartes */
+html.sombre .shadow-carte {
+  outline: 1px solid rgba(238, 240, 247, 0.07);
+  outline-offset: -1px;
+}
+
+/* Reflet diagonal des cartes Wallet */
+.reflet {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.35) 46%, transparent 58%);
+  pointer-events: none;
+}
+html.sombre .reflet {
+  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.07) 46%, transparent 58%);
+}
+
+/* Feuille montante (bottom sheet) */
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.sheet-in { animation: sheet-up 0.28s cubic-bezier(0.32, 0.72, 0, 1); }
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.fade-in { animation: fade-in 0.2s ease; }
+
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.pop-in { animation: pop-in 0.3s cubic-bezier(0.32, 0.72, 0, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-in, .fade-in, .pop-in { animation: none; }
+}
+
+/* Masquer la scrollbar horizontale des puces de filtres */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+input, select, textarea {
+  font-size: 16px; /* évite le zoom auto d'iOS au focus */
+}

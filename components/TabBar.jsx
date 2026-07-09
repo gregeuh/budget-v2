@@ -1,0 +1,49 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const ONGLETS = [
+  { href: "/", label: "Accueil", icone: "🏡" },
+  { href: "/comptes", label: "Comptes", icone: "💳" },
+  { href: "AJOUT" },
+  { href: "/budgets", label: "Budgets", icone: "🎯" },
+  { href: "/conseils", label: "Conseils", icone: "✨" },
+];
+
+export default function TabBar({ onAjouter }) {
+  const chemin = usePathname();
+  return (
+    <nav
+      className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-4"
+      style={{ paddingBottom: "calc(var(--safe-bottom) + 10px)" }}
+    >
+      <div className="grid grid-cols-5 items-center rounded-[28px] border border-bordure bg-carte/80 px-2 py-2 shadow-flottant backdrop-blur-xl">
+        {ONGLETS.map((o) =>
+          o.href === "AJOUT" ? (
+            <button
+              key="ajout"
+              onClick={onAjouter}
+              aria-label="Ajouter une opération"
+              className="mx-auto -mt-7 flex h-14 w-14 items-center justify-center rounded-full text-2xl font-light text-white shadow-flottant active:scale-95 transition-transform"
+              style={{ background: "linear-gradient(145deg, #35C79A, #1E9B77)" }}
+            >
+              +
+            </button>
+          ) : (
+            <Link
+              key={o.href}
+              href={o.href}
+              className={`relative flex flex-col items-center gap-0.5 rounded-2xl py-1.5 text-[11px] font-medium transition-colors ${
+                chemin === o.href ? "bg-voile text-encre" : "text-sourdine"
+              }`}
+            >
+              <span className={`text-xl transition-transform ${chemin === o.href ? "scale-110" : "grayscale opacity-60"}`}>{o.icone}</span>
+              {o.label}
+            </Link>
+          )
+        )}
+      </div>
+    </nav>
+  );
+}
