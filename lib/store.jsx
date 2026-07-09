@@ -238,7 +238,10 @@ export function DataProvider({ children }) {
     }
     notifier("Opération supprimée", "🗑️", sauvegarde ? {
       label: "Annuler",
-      executer: () => ajouterTransaction({ ...sauvegarde, id: undefined }, { silencieux: true }),
+      executer: () => {
+        const { id: _ignore, ...reste } = sauvegarde;
+        ajouterTransaction(reste, { silencieux: true });
+      },
     } : null);
   }, [modeLocal, fs, notifier, transactions, ajouterTransaction]);
 

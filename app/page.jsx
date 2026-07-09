@@ -50,7 +50,7 @@ export default function Accueil() {
         <div>
           <p className="text-sm text-sourdine">
             {new Date().getHours() < 6 || new Date().getHours() >= 18 ? "Bonsoir" : "Bonjour"}
-            {profil.prenom ? ` ${profil.prenom}` : ""} {new Date().getHours() < 6 || new Date().getHours() >= 18 ? "🌙" : "☀️"} · {moisLabel(aujourdhui())}
+            {profil.prenom ? ` ${profil.prenom}` : ""} {new Date().getHours() < 6 || new Date().getHours() >= 18 ? "🌙" : "☀️"}
           </p>
           <h1 className="chiffres text-[44px] font-bold leading-tight"><CountUp valeur={patrimoine} /></h1>
           <p className="text-sm text-sourdine">

@@ -17,7 +17,7 @@ export default function Profil() {
     profil, sauverApp, modeLocal, user,
     comptes, transactions, budgets,
     recurrentes, modifierRecurrente, supprimerRecurrente, projets, credits,
-    reinitialiserDemo, importerDonnees,
+    reinitialiserDemo, importerDonnees, notifier, categoriesPerso,
   } = useBudget();
 
   const [prenom, setPrenom] = useState(profil.prenom || "");
@@ -41,7 +41,7 @@ export default function Profil() {
   const changerTheme = (theme) => enregistrer({ theme });
 
   const exporter = () => {
-    const blob = new Blob([JSON.stringify({ comptes, transactions, budgets, recurrentes, projets, credits, profil }, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify({ comptes, transactions, budgets, recurrentes, projets, credits, profil, categoriesPerso }, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
