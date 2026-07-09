@@ -136,6 +136,9 @@ export default function Comptes() {
 
   const total = comptes.reduce((a, c) => a + (soldes[c.id] || 0), 0);
   const totalCredits = credits.reduce((a, c) => a + (c.restant || 0), 0);
+  const avantages = comptes
+    .filter((c) => (TYPES_COMPTE[c.type] || TYPES_COMPTE.autre).groupe === "avantages")
+    .reduce((a, c) => a + (soldes[c.id] || 0), 0);
 
   return (
     <div className="space-y-5">
@@ -143,7 +146,7 @@ export default function Comptes() {
         <div>
           <h1 className="text-2xl font-bold">Comptes</h1>
           <p className="tnum text-sm text-sourdine">
-            Total : {euros(total)}{totalCredits > 0 && ` · Net : ${euros(total - totalCredits)}`}
+            Total : {euros(total)}{(totalCredits > 0 || avantages > 0) && ` · Net : ${euros(total - totalCredits - avantages)}`}
           </p>
         </div>
         <button onClick={() => setFiche("nouveau")} className="rounded-pill bg-encre px-4 py-2 text-sm font-semibold text-contraste">

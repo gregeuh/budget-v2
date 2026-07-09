@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { CATEGORIES, FREQUENCES, aujourdhui } from "@/lib/format";
 import Sheet from "./Sheet";
@@ -12,7 +12,7 @@ const MODES = [
 ];
 
 export default function AddSheet({ onFermer }) {
-  const { comptes, ajouterTransaction, ajouterRecurrente, virement } = useBudget();
+  const { comptes, transactions, ajouterTransaction, ajouterRecurrente, virement } = useBudget();
   const [mode, setMode] = useState("depense");
   const [montant, setMontant] = useState("");
   const [libelle, setLibelle] = useState("");
@@ -22,6 +22,32 @@ export default function AddSheet({ onFermer }) {
   const [date, setDate] = useState(aujourdhui());
   const [frequence, setFrequence] = useState("unefois");
   const [horsSolde, setHorsSolde] = useState(false);
+
+  // Libellés fréquents (2+ occurrences) pour préremplir en un tap
+  const suggestions = useMemo(() => {
+    if (mode === "virement") return [];
+    const map = new Map();
+    for (const t of transactions) {
+      const lib = (t.libelle || "").trim();
+      if (!lib) continue;
+      const cat = CATEGORIES[t.categorie] || CATEGORIES.autre;
+      if (cat.type === "virement") continue;
+      if (mode === "revenu" ? t.montant <= 0 : t.montant >= 0) continue;
+      const cle = lib.toLowerCase();
+      const e = map.get(cle) || { libelle: lib, n: 0, date: "", categorie: t.categorie, compteId: t.compteId, montant: t.montant };
+      e.n++;
+      if (t.date > e.date) { e.date = t.date; e.categorie = t.categorie; e.compteId = t.compteId; e.montant = t.montant; }
+      map.set(cle, e);
+    }
+    return [...map.values()].filter((e) => e.n >= 2).sort((a, b) => b.n - a.n).slice(0, 6);
+  }, [transactions, mode]);
+
+  const appliquerSuggestion = (sug) => {
+    setLibelle(sug.libelle);
+    setCategorie(sug.categorie);
+    if (comptes.some((c) => c.id === sug.compteId)) setCompteId(sug.compteId);
+    if (!montant) setMontant(String(Math.abs(sug.montant)).replace(".", ","));
+  };
 
   const cats = Object.entries(CATEGORIES).filter(([, c]) =>
     mode === "revenu" ? c.type === "revenu" : c.type !== "revenu" && c.type !== "virement"
@@ -82,6 +108,19 @@ export default function AddSheet({ onFermer }) {
       <div className="space-y-3">
         {mode !== "virement" && (
           <>
+            {suggestions.length > 0 && !libelle && (
+              <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
+                {suggestions.map((sug) => (
+                  <button
+                    key={sug.libelle}
+                    onClick={() => appliquerSuggestion(sug)}
+                    className="shrink-0 rounded-pill bg-voile px-3 py-1.5 text-sm font-medium"
+                  >
+                    {(CATEGORIES[sug.categorie] || CATEGORIES.autre).icone} {sug.libelle}
+                  </button>
+                ))}
+              </div>
+            )}
             <input
               placeholder="Libellé (ex : Carrefour, Loyer…)"
               value={libelle}

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useBudget } from "@/lib/store";
-import { euros, moisLabel, aujourdhui } from "@/lib/format";
+import { euros, moisLabel, aujourdhui, TYPES_COMPTE } from "@/lib/format";
 import { statsMois } from "@/lib/conseils";
 import { cleMois } from "@/lib/format";
 import WalletStack from "@/components/WalletStack";
@@ -17,7 +17,10 @@ export default function Accueil() {
   const mois = cleMois(aujourdhui());
   const s = statsMois(transactions, mois);
   const totalCredits = credits.reduce((a, c) => a + (c.restant || 0), 0);
-  const patrimoine = comptes.reduce((a, c) => a + (soldes[c.id] || 0), 0) - totalCredits;
+  const groupeDe = (c) => (TYPES_COMPTE[c.type] || TYPES_COMPTE.autre).groupe;
+  const comptesPatrimoine = comptes.filter((c) => groupeDe(c) !== "avantages");
+  const avantages = comptes.filter((c) => groupeDe(c) === "avantages").reduce((a, c) => a + (soldes[c.id] || 0), 0);
+  const patrimoine = comptesPatrimoine.reduce((a, c) => a + (soldes[c.id] || 0), 0) - totalCredits;
   const projetPhare = [...projets].sort((a, b) => (b.montantActuel / (b.objectif || 1)) - (a.montantActuel / (a.objectif || 1)))[0];
   const recentes = [...transactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
 
@@ -43,9 +46,16 @@ export default function Accueil() {
     <div className="space-y-5">
       <header className="flex items-start justify-between">
         <div>
-          <p className="text-sm text-sourdine">{moisLabel(aujourdhui())}{profil.prenom ? ` · Salut ${profil.prenom} 👋` : ""}</p>
+          <p className="text-sm text-sourdine">
+            {new Date().getHours() < 6 || new Date().getHours() >= 18 ? "Bonsoir" : "Bonjour"}
+            {profil.prenom ? ` ${profil.prenom}` : ""} {new Date().getHours() < 6 || new Date().getHours() >= 18 ? "🌙" : "☀️"} · {moisLabel(aujourdhui())}
+          </p>
           <h1 className="chiffres text-[44px] font-bold leading-tight"><CountUp valeur={patrimoine} /></h1>
-          <p className="text-sm text-sourdine">Patrimoine net{totalCredits > 0 ? ` (crédits déduits : ${euros(totalCredits)})` : ""}</p>
+          <p className="text-sm text-sourdine">
+            Patrimoine net
+            {totalCredits > 0 && ` · crédits déduits (${euros(totalCredits)})`}
+            {avantages > 0 && ` · hors titres-resto (${euros(avantages)})`}
+          </p>
         </div>
         <Link href="/reglages" aria-label="Réglages" className="flex h-10 w-10 items-center justify-center rounded-full bg-carte text-lg shadow-carte">⚙️</Link>
       </header>
@@ -93,7 +103,7 @@ export default function Accueil() {
       </section>
 
       <div className="pt-4">
-        <PatrimoineChart comptes={comptes} transactions={transactions} />
+        <PatrimoineChart comptes={comptesPatrimoine} transactions={transactions} />
       </div>
 
       <SpendChart transactions={transactions} />

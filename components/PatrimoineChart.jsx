@@ -53,7 +53,7 @@ export default function PatrimoineChart({ comptes, transactions }) {
           {variation >= 0 ? "+" : ""}{euros(variation)} sur 12 mois
         </span>
       </div>
-      <p className="mb-2 text-xs text-sourdine">Soldes cumulés de tes comptes, fin de mois.</p>
+      <p className="mb-2 text-xs text-sourdine">Soldes cumulés de tes comptes en fin de mois (hors titres-resto).</p>
       <svg viewBox={`0 0 ${L} ${H + 16}`} className="w-full" role="img" aria-label="Évolution du patrimoine sur douze mois">
         <defs>
           <linearGradient id="grad-patrimoine" x1="0" y1="0" x2="0" y2="1">
