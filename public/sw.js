@@ -1,5 +1,5 @@
 // Service worker minimal : cache des ressources statiques, réseau d'abord pour le reste.
-const CACHE = "budget-v2-1";
+const CACHE = "budget-v2-2";
 const STATIQUES = ["/manifest.json", "/icons/icon-192.png", "/icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {
@@ -17,6 +17,11 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET" || url.pathname.startsWith("/api/")) return;
+  // Les pages HTML passent toujours par le réseau (cache uniquement en secours hors-ligne)
+  if (e.request.mode === "navigate") {
+    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+    return;
+  }
   e.respondWith(
     fetch(e.request)
       .then((rep) => {

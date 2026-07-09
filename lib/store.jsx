@@ -113,36 +113,42 @@ export function DataProvider({ children }) {
         stopsSnapshots.forEach((s) => s());
         stopsSnapshots = [];
         setUser(u);
+        setPret(true); // afficher l'app immédiatement, les données arrivent ensuite
         if (!u) {
           setComptes([]); setTransactions([]); setBudgets({}); setProfil({ prenom: "", revenuMensuel: 0, jourSalaire: 0, theme: "auto" }); setRecurrentes([]); setProjets([]); setCredits([]);
           setPret(true);
           return;
         }
+        try {
         const { collection, onSnapshot, doc } = await import("firebase/firestore");
         const base = `users/${u.uid}`;
+        const surErreur = (e) => console.error("Firestore:", e?.code || e?.message || e);
         stopsSnapshots.push(
           onSnapshot(collection(db, `${base}/comptes`), (s) =>
             setComptes(s.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.ordre ?? 0) - (b.ordre ?? 0)))
-          ),
+          , surErreur),
           onSnapshot(collection(db, `${base}/transactions`), (s) =>
             setTransactions(s.docs.map((d) => ({ id: d.id, ...d.data() })))
-          ),
+          , surErreur),
           onSnapshot(collection(db, `${base}/recurrentes`), (s) =>
             setRecurrentes(s.docs.map((d) => ({ id: d.id, ...d.data() })))
-          ),
+          , surErreur),
           onSnapshot(collection(db, `${base}/projets`), (s) =>
             setProjets(s.docs.map((d) => ({ id: d.id, ...d.data() })))
-          ),
+          , surErreur),
           onSnapshot(collection(db, `${base}/credits`), (s) =>
             setCredits(s.docs.map((d) => ({ id: d.id, ...d.data() })))
-          ),
+          , surErreur),
           onSnapshot(doc(db, base, "app"), (s) => {
             const d = s.data() || {};
             setBudgets(d.budgets || {});
             setProfil({ theme: "auto", jourSalaire: 0, ...(d.profil || {}) });
-          })
+          }, surErreur)
         );
-        setPret(true);
+        } catch (e) {
+          console.error("Initialisation Firestore:", e);
+          setErreurInit(`Chargement des données impossible (${e?.code || e?.message || "erreur inconnue"}).`);
+        }
       }, (e) => {
         demarre = true;
         clearTimeout(garde);
