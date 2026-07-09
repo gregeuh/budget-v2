@@ -25,7 +25,7 @@ export default function Login() {
       if (mode === "connexion") await signInWithEmailAndPassword(auth, email, mdp);
       else await createUserWithEmailAndPassword(auth, email, mdp);
     } catch (e) {
-      setErreur(MESSAGES[e.code] || "Connexion impossible. Réessaie dans un instant.");
+      setErreur(MESSAGES[e.code] || `Connexion impossible (${e.code || "erreur inconnue"}).`);
     }
     setChargement(false);
   };
@@ -37,7 +37,7 @@ export default function Login() {
       await signInWithPopup(auth, new GoogleAuthProvider());
     } catch (e) {
       if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") {
-        setErreur("Connexion Google impossible. Vérifie que le fournisseur Google est activé dans Firebase.");
+        setErreur(`Connexion Google impossible (${e.code || "erreur inconnue"}).`);
       }
     }
   };
