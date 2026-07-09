@@ -57,7 +57,7 @@ export function DataProvider({ children }) {
     if (!modeLocal) return;
     try {
       const brut = localStorage.getItem(CLE_LOCALE);
-      const d = brut ? JSON.parse(brut) : donneesDemo();
+      const d = brut ? JSON.parse(brut) : {};
       setComptes(d.comptes || []);
       setTransactions(d.transactions || []);
       setBudgets(d.budgets || {});
@@ -66,11 +66,11 @@ export function DataProvider({ children }) {
       setProjets(d.projets || []);
       setCredits(d.credits || []);
     } catch {
-      const d = donneesDemo();
-      setComptes(d.comptes);
-      setTransactions(d.transactions);
-      setBudgets(d.budgets);
-      setProfil(d.profil);
+      const d = {};
+      setComptes([]);
+      setTransactions([]);
+      setBudgets({});
+      setProfil({ prenom: "", revenuMensuel: 0 });
       setRecurrentes(d.recurrentes || []);
       setProjets(d.projets || []);
       setCredits(d.credits || []);
@@ -298,8 +298,8 @@ export function DataProvider({ children }) {
 
   const reinitialiserDemo = useCallback(() => {
     if (!modeLocal) return;
-    const d = donneesDemo();
-    setComptes(d.comptes); setTransactions(d.transactions); setBudgets(d.budgets); setProfil(d.profil);
+    setComptes([]); setTransactions([]); setBudgets({}); setProfil({ prenom: "", revenuMensuel: 0 });
+    setRecurrentes([]); setProjets([]); setCredits([]);
   }, [modeLocal]);
 
 
@@ -319,6 +319,57 @@ export function DataProvider({ children }) {
     return () => media.removeEventListener("change", appliquer);
   }, [profil.theme]);
 
+  const importerDonnees = useCallback(async (d) => {
+    if (!d || typeof d !== "object") return false;
+    const donnees = {
+      comptes: Array.isArray(d.comptes) ? d.comptes : [],
+      transactions: Array.isArray(d.transactions) ? d.transactions : [],
+      recurrentes: Array.isArray(d.recurrentes) ? d.recurrentes : [],
+      projets: Array.isArray(d.projets) ? d.projets : [],
+      credits: Array.isArray(d.credits) ? d.credits : [],
+      budgets: d.budgets && typeof d.budgets === "object" ? d.budgets : {},
+      profil: d.profil && typeof d.profil === "object" ? d.profil : { prenom: "", revenuMensuel: 0 },
+    };
+    if (modeLocal) {
+      setComptes(donnees.comptes);
+      setTransactions(donnees.transactions);
+      setRecurrentes(donnees.recurrentes);
+      setProjets(donnees.projets);
+      setCredits(donnees.credits);
+      setBudgets(donnees.budgets);
+      setProfil(donnees.profil);
+      return true;
+    }
+    // Mode Firebase : on écrit chaque document avec son ID d'origine
+    // pour préserver les liens transactions ↔ comptes. Les listeners
+    // Firestore mettront l'état à jour automatiquement.
+    const { writeBatch, doc, setDoc, base } = await fs();
+    const collections = [
+      ["comptes", donnees.comptes],
+      ["transactions", donnees.transactions],
+      ["recurrentes", donnees.recurrentes],
+      ["projets", donnees.projets],
+      ["credits", donnees.credits],
+    ];
+    const ecritures = [];
+    for (const [nomCol, liste] of collections) {
+      for (const element of liste) {
+        const { id, ...reste } = element;
+        if (!id) continue;
+        ecritures.push([`${base}/${nomCol}/${id}`, reste]);
+      }
+    }
+    for (let i = 0; i < ecritures.length; i += 450) {
+      const batch = writeBatch(db);
+      for (const [chemin, valeurs] of ecritures.slice(i, i + 450)) {
+        batch.set(doc(db, chemin), valeurs);
+      }
+      await batch.commit();
+    }
+    await setDoc(doc(db, base, "app"), { budgets: donnees.budgets, profil: { ...donnees.profil, onboarde: true } }, { merge: true });
+    return true;
+  }, [modeLocal, fs]);
+
   // ------- Soldes calculés -------
   const soldes = useMemo(() => {
     const map = {};
@@ -335,7 +386,7 @@ export function DataProvider({ children }) {
     ajouterRecurrente, modifierRecurrente, supprimerRecurrente,
     ajouterProjet, modifierProjet, supprimerProjet,
     ajouterCredit, modifierCredit, supprimerCredit,
-    sauverApp, virement, reinitialiserDemo,
+    sauverApp, virement, reinitialiserDemo, importerDonnees,
   };
 
   return <Ctx.Provider value={valeur}>{children}</Ctx.Provider>;

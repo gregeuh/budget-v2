@@ -16,7 +16,7 @@ export default function Profil() {
     profil, sauverApp, modeLocal, user,
     comptes, transactions, budgets,
     recurrentes, modifierRecurrente, supprimerRecurrente, projets, credits,
-    reinitialiserDemo,
+    reinitialiserDemo, importerDonnees,
   } = useBudget();
 
   const [prenom, setPrenom] = useState(profil.prenom || "");
@@ -161,7 +161,7 @@ export default function Profil() {
         </button>
         {modeLocal && (
           <button onClick={reinitialiserDemo} className="w-full rounded-ios bg-voile py-3 text-sm font-semibold text-corail">
-            Réinitialiser les données de démo
+            Tout effacer
           </button>
         )}
       </section>

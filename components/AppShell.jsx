@@ -20,15 +20,10 @@ export default function AppShell({ children }) {
   }
 
   if (!modeLocal && !user) return <Login />;
-  if (!modeLocal && user && !profil.onboarde && comptes.length === 0) return <Onboarding />;
+  if (!profil.onboarde && comptes.length === 0) return <Onboarding />;
 
   return (
     <div className="mx-auto min-h-dvh max-w-md" style={{ paddingTop: "var(--safe-top)" }}>
-      {modeLocal && (
-        <div className="mx-4 mt-3 rounded-pill bg-beurre-pale px-4 py-1.5 text-center text-xs font-medium text-[#B98A1B]">
-          Mode démo — données stockées sur cet appareil
-        </div>
-      )}
       <main className="px-4 pb-36 pt-4">{children}</main>
       <TabBar onAjouter={() => setAjoutOuvert(true)} />
       {ajoutOuvert && <AddSheet onFermer={() => setAjoutOuvert(false)} />}
