@@ -87,7 +87,8 @@ export function DataProvider({ children }) {
   // ------- Mode Firebase -------
   useEffect(() => {
     if (modeLocal) return;
-    let stops = [];
+    let stopsSnapshots = [];
+    let stopAuth = null;
     let demarre = false;
     const garde = setTimeout(() => {
       if (!demarre) {
@@ -102,11 +103,11 @@ export function DataProvider({ children }) {
         setPret(true);
         return;
       }
-      const stopAuth = onAuthStateChanged(auth, async (u) => {
+      stopAuth = onAuthStateChanged(auth, async (u) => {
         demarre = true;
         clearTimeout(garde);
-        stops.forEach((s) => s());
-        stops = [];
+        stopsSnapshots.forEach((s) => s());
+        stopsSnapshots = [];
         setUser(u);
         if (!u) {
           setComptes([]); setTransactions([]); setBudgets({}); setProfil({ prenom: "", revenuMensuel: 0, jourSalaire: 0, theme: "auto" }); setRecurrentes([]); setProjets([]); setCredits([]);
@@ -115,7 +116,7 @@ export function DataProvider({ children }) {
         }
         const { collection, onSnapshot, doc } = await import("firebase/firestore");
         const base = `users/${u.uid}`;
-        stops.push(
+        stopsSnapshots.push(
           onSnapshot(collection(db, `${base}/comptes`), (s) =>
             setComptes(s.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.ordre ?? 0) - (b.ordre ?? 0)))
           ),
@@ -144,13 +145,16 @@ export function DataProvider({ children }) {
         setErreurInit(`Erreur d'authentification (${e?.code || e?.message || "inconnue"}).`);
         setPret(true);
       });
-      stops.push(stopAuth);
     }).catch((e) => {
       clearTimeout(garde);
       setErreurInit(`Initialisation Firebase impossible (${e?.code || e?.message || "erreur inconnue"}).`);
       setPret(true);
     });
-    return () => { clearTimeout(garde); stops.forEach((s) => s()); };
+    return () => {
+      clearTimeout(garde);
+      stopsSnapshots.forEach((s) => s());
+      if (stopAuth) stopAuth();
+    };
   }, [modeLocal]);
 
   // ------- CRUD unifié -------
