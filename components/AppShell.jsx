@@ -8,7 +8,7 @@ import Login from "./Login";
 import Onboarding from "./Onboarding";
 
 export default function AppShell({ children }) {
-  const { pret, user, modeLocal, profil, comptes } = useBudget();
+  const { pret, user, modeLocal, profil, comptes, erreurInit } = useBudget();
   const [ajoutOuvert, setAjoutOuvert] = useState(false);
 
   if (!pret) {
@@ -19,6 +19,18 @@ export default function AppShell({ children }) {
     );
   }
 
+  if (!modeLocal && erreurInit && !user) {
+    return (
+      <div className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center px-6 text-center">
+        <div className="text-4xl">🔌</div>
+        <h1 className="mt-3 text-xl font-bold">Problème de configuration</h1>
+        <p className="mt-2 text-sm text-sourdine">{erreurInit}</p>
+        <button onClick={() => location.reload()} className="mt-5 rounded-ios bg-encre px-6 py-3 font-semibold text-contraste">
+          Réessayer
+        </button>
+      </div>
+    );
+  }
   if (!modeLocal && !user) return <Login />;
   if (!profil.onboarde && comptes.length === 0) return <Onboarding />;
 

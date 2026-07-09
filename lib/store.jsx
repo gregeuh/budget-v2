@@ -41,6 +41,7 @@ const donneesDemo = () => {
 
 export function DataProvider({ children }) {
   const [pret, setPret] = useState(false);
+  const [erreurInit, setErreurInit] = useState("");
   const [user, setUser] = useState(null);
   const [comptes, setComptes] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -87,8 +88,23 @@ export function DataProvider({ children }) {
   useEffect(() => {
     if (modeLocal) return;
     let stops = [];
+    let demarre = false;
+    const garde = setTimeout(() => {
+      if (!demarre) {
+        setErreurInit("Firebase ne répond pas (délai dépassé). Vérifie les variables NEXT_PUBLIC_FIREBASE_* sur Vercel — en particulier API_KEY et AUTH_DOMAIN — puis redéploie.");
+        setPret(true);
+      }
+    }, 8000);
     import("firebase/auth").then(({ onAuthStateChanged }) => {
+      if (!auth) {
+        clearTimeout(garde);
+        setErreurInit("Configuration Firebase incomplète : une ou plusieurs variables NEXT_PUBLIC_FIREBASE_* manquent sur Vercel.");
+        setPret(true);
+        return;
+      }
       const stopAuth = onAuthStateChanged(auth, async (u) => {
+        demarre = true;
+        clearTimeout(garde);
         stops.forEach((s) => s());
         stops = [];
         setUser(u);
@@ -122,10 +138,19 @@ export function DataProvider({ children }) {
           })
         );
         setPret(true);
+      }, (e) => {
+        demarre = true;
+        clearTimeout(garde);
+        setErreurInit(`Erreur d'authentification (${e?.code || e?.message || "inconnue"}).`);
+        setPret(true);
       });
       stops.push(stopAuth);
+    }).catch((e) => {
+      clearTimeout(garde);
+      setErreurInit(`Initialisation Firebase impossible (${e?.code || e?.message || "erreur inconnue"}).`);
+      setPret(true);
     });
-    return () => stops.forEach((s) => s());
+    return () => { clearTimeout(garde); stops.forEach((s) => s()); };
   }, [modeLocal]);
 
   // ------- CRUD unifié -------
@@ -379,7 +404,7 @@ export function DataProvider({ children }) {
   }, [comptes, transactions]);
 
   const valeur = {
-    pret, user, modeLocal,
+    pret, user, modeLocal, erreurInit,
     comptes, transactions, budgets, profil, soldes, recurrentes, projets, credits,
     ajouterCompte, modifierCompte, supprimerCompte,
     ajouterTransaction, supprimerTransaction, ajouterTransactionsLot,
