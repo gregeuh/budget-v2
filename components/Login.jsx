@@ -15,15 +15,21 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [mdp, setMdp] = useState("");
   const [erreur, setErreur] = useState("");
+  const [succes, setSucces] = useState("");
   const [chargement, setChargement] = useState(false);
 
   const valider = async () => {
     setErreur("");
+    setSucces("");
+    const emailPropre = email.trim();
+    if (!emailPropre.includes("@")) return setErreur("Saisis ton adresse email complète.");
+    if (mdp.length < 6) return setErreur("Le mot de passe doit faire au moins 6 caractères.");
     setChargement(true);
     try {
       const { signInWithEmailAndPassword, createUserWithEmailAndPassword } = await import("firebase/auth");
-      if (mode === "connexion") await signInWithEmailAndPassword(auth, email, mdp);
-      else await createUserWithEmailAndPassword(auth, email, mdp);
+      if (mode === "connexion") await signInWithEmailAndPassword(auth, emailPropre, mdp);
+      else await createUserWithEmailAndPassword(auth, emailPropre, mdp);
+      setSucces("Connecté ✓ Ouverture de l'app…");
     } catch (e) {
       setErreur(MESSAGES[e.code] || `Connexion impossible (${e.code || "erreur inconnue"}).`);
     }
@@ -69,9 +75,10 @@ export default function Login() {
           className="w-full rounded-ios border border-bordure bg-carte px-4 py-3.5 outline-none focus:border-menthe"
         />
         {erreur && <p className="text-sm text-corail">{erreur}</p>}
+        {succes && <p className="text-sm font-medium text-menthe">{succes}</p>}
         <button
           onClick={valider}
-          disabled={chargement || !email || mdp.length < 6}
+          disabled={chargement}
           className="w-full rounded-ios bg-encre py-3.5 font-semibold text-contraste disabled:opacity-40 active:scale-[0.99] transition-transform"
         >
           {chargement ? "…" : mode === "connexion" ? "Se connecter" : "Créer mon compte"}
@@ -98,11 +105,15 @@ export default function Login() {
       </div>
 
       <button
-        onClick={() => { setMode(mode === "connexion" ? "creation" : "connexion"); setErreur(""); }}
+        onClick={() => { setMode(mode === "connexion" ? "creation" : "connexion"); setErreur(""); setSucces(""); }}
         className="mt-5 text-sm font-medium text-sourdine"
       >
         {mode === "connexion" ? "Pas encore de compte ? Créer un compte" : "Déjà un compte ? Se connecter"}
       </button>
+
+      <p className="mt-6 text-center text-xs text-sourdine/70">
+        Projet Firebase : {process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "non configuré"}
+      </p>
     </div>
   );
 }
