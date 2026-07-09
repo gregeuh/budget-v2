@@ -6,6 +6,7 @@ import TabBar from "./TabBar";
 import AddSheet from "./AddSheet";
 import Login from "./Login";
 import Onboarding from "./Onboarding";
+import Toast from "./Toast";
 
 export default function AppShell({ children }) {
   const { pret, user, modeLocal, profil, comptes, erreurInit } = useBudget();
@@ -36,6 +37,7 @@ export default function AppShell({ children }) {
 
   return (
     <div className="mx-auto min-h-dvh max-w-md" style={{ paddingTop: "var(--safe-top)" }}>
+      <Toast />
       <main className="px-4 pb-36 pt-4">{children}</main>
       <TabBar onAjouter={() => setAjoutOuvert(true)} />
       {ajoutOuvert && <AddSheet onFermer={() => setAjoutOuvert(false)} />}

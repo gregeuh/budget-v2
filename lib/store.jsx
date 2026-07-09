@@ -42,6 +42,10 @@ const donneesDemo = () => {
 export function DataProvider({ children }) {
   const [pret, setPret] = useState(false);
   const [erreurInit, setErreurInit] = useState("");
+  const [toast, setToast] = useState(null);
+  const notifier = useCallback((message, icone = "✓") => {
+    setToast({ id: Date.now(), message, icone });
+  }, []);
   const [user, setUser] = useState(null);
   const [comptes, setComptes] = useState([]);
   const [transactions, setTransactions] = useState([]);
@@ -165,21 +169,28 @@ export function DataProvider({ children }) {
 
   const ajouterCompte = useCallback(async (c) => {
     const nouveau = { soldeInitial: 0, ordre: comptes.length, ...c };
-    if (modeLocal) return setComptes((l) => [...l, { id: genId(), ...nouveau }]);
-    const { addDoc, collection, base } = await fs();
-    await addDoc(collection(db, `${base}/comptes`), nouveau);
-  }, [modeLocal, comptes.length, fs]);
+    if (modeLocal) setComptes((l) => [...l, { id: genId(), ...nouveau }]);
+    else {
+      const { addDoc, collection, base } = await fs();
+      await addDoc(collection(db, `${base}/comptes`), nouveau);
+    }
+    notifier(`Compte « ${nouveau.nom} » créé`);
+  }, [modeLocal, comptes.length, fs, notifier]);
 
   const modifierCompte = useCallback(async (id, maj) => {
-    if (modeLocal) return setComptes((l) => l.map((c) => (c.id === id ? { ...c, ...maj } : c)));
-    const { updateDoc, doc, base } = await fs();
-    await updateDoc(doc(db, `${base}/comptes`, id), maj);
-  }, [modeLocal, fs]);
+    if (modeLocal) setComptes((l) => l.map((c) => (c.id === id ? { ...c, ...maj } : c)));
+    else {
+      const { updateDoc, doc, base } = await fs();
+      await updateDoc(doc(db, `${base}/comptes`, id), maj);
+    }
+    notifier("Compte enregistré");
+  }, [modeLocal, fs, notifier]);
 
   const supprimerCompte = useCallback(async (id) => {
     if (modeLocal) {
       setComptes((l) => l.filter((c) => c.id !== id));
       setTransactions((l) => l.filter((t) => t.compteId !== id));
+      notifier("Compte supprimé", "🗑️");
       return;
     }
     const { deleteDoc, doc, getDocs, query, where, collection, base } = await fs();
@@ -187,20 +198,27 @@ export function DataProvider({ children }) {
     const snap = await getDocs(q);
     await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
     await deleteDoc(doc(db, `${base}/comptes`, id));
+    notifier("Compte supprimé", "🗑️");
   }, [modeLocal, fs]);
 
-  const ajouterTransaction = useCallback(async (t) => {
+  const ajouterTransaction = useCallback(async (t, opts = {}) => {
     const nouvelle = { date: aujourdhui(), ...t };
-    if (modeLocal) return setTransactions((l) => [...l, { id: genId(), ...nouvelle }]);
-    const { addDoc, collection, base } = await fs();
-    await addDoc(collection(db, `${base}/transactions`), nouvelle);
-  }, [modeLocal, fs]);
+    if (modeLocal) setTransactions((l) => [...l, { id: genId(), ...nouvelle }]);
+    else {
+      const { addDoc, collection, base } = await fs();
+      await addDoc(collection(db, `${base}/transactions`), nouvelle);
+    }
+    if (!opts.silencieux) notifier(nouvelle.montant >= 0 ? "Revenu ajouté" : "Dépense ajoutée");
+  }, [modeLocal, fs, notifier]);
 
   const supprimerTransaction = useCallback(async (id) => {
-    if (modeLocal) return setTransactions((l) => l.filter((t) => t.id !== id));
-    const { deleteDoc, doc, base } = await fs();
-    await deleteDoc(doc(db, `${base}/transactions`, id));
-  }, [modeLocal, fs]);
+    if (modeLocal) setTransactions((l) => l.filter((t) => t.id !== id));
+    else {
+      const { deleteDoc, doc, base } = await fs();
+      await deleteDoc(doc(db, `${base}/transactions`, id));
+    }
+    notifier("Opération supprimée", "🗑️");
+  }, [modeLocal, fs, notifier]);
 
   const sauverApp = useCallback(async (majBudgets, majProfil) => {
     const b = majBudgets ?? budgets;
@@ -209,7 +227,8 @@ export function DataProvider({ children }) {
     if (modeLocal) return;
     const { setDoc, doc, base } = await fs();
     await setDoc(doc(db, base, "app"), { budgets: b, profil: p }, { merge: true });
-  }, [modeLocal, budgets, profil, fs]);
+    notifier("Enregistré");
+  }, [modeLocal, budgets, profil, fs, notifier]);
 
 
   // ------- Récurrentes -------
@@ -219,7 +238,7 @@ export function DataProvider({ children }) {
     let n = 0;
     const auj = aujourdhui();
     while (date <= auj && n < 60) {
-      await ajouterTransaction({ compteId: r.compteId, montant: r.montant, categorie: r.categorie, libelle: r.libelle, date, recurrenteId: r.id || "nouvelle" });
+      await ajouterTransaction({ compteId: r.compteId, montant: r.montant, categorie: r.categorie, libelle: r.libelle, date, recurrenteId: r.id || "nouvelle" }, { silencieux: true });
       date = prochaineOccurrence(date, r.frequence);
       n++;
     }
@@ -232,7 +251,8 @@ export function DataProvider({ children }) {
     if (modeLocal) return setRecurrentes((l) => [...l, { id: genId(), ...donnees }]);
     const { addDoc, collection, base } = await fs();
     await addDoc(collection(db, `${base}/recurrentes`), donnees);
-  }, [modeLocal, fs, posterOccurrencesDues]);
+    notifier("Récurrence créée", "🔁");
+  }, [modeLocal, fs, posterOccurrencesDues, notifier]);
 
   const modifierRecurrente = useCallback(async (id, maj) => {
     if (modeLocal) return setRecurrentes((l) => l.map((r) => (r.id === id ? { ...r, ...maj } : r)));
@@ -244,7 +264,8 @@ export function DataProvider({ children }) {
     if (modeLocal) return setRecurrentes((l) => l.filter((r) => r.id !== id));
     const { deleteDoc, doc, base } = await fs();
     await deleteDoc(doc(db, `${base}/recurrentes`, id));
-  }, [modeLocal, fs]);
+    notifier("Récurrence supprimée", "🗑️");
+  }, [modeLocal, fs, notifier]);
 
   // À l'ouverture de l'app : applique les récurrences arrivées à échéance
   const recurrentesTraitees = useRef(false);
@@ -268,43 +289,50 @@ export function DataProvider({ children }) {
     if (modeLocal) return setProjets((l) => [...l, { id: genId(), ...donnees }]);
     const { addDoc, collection, base } = await fs();
     await addDoc(collection(db, `${base}/projets`), donnees);
-  }, [modeLocal, fs]);
+    notifier("Projet créé", "🎯");
+  }, [modeLocal, fs, notifier]);
 
   const modifierProjet = useCallback(async (id, maj) => {
     if (modeLocal) return setProjets((l) => l.map((p) => (p.id === id ? { ...p, ...maj } : p)));
     const { updateDoc, doc, base } = await fs();
     await updateDoc(doc(db, `${base}/projets`, id), maj);
-  }, [modeLocal, fs]);
+    notifier("Projet mis à jour");
+  }, [modeLocal, fs, notifier]);
 
   const supprimerProjet = useCallback(async (id) => {
     if (modeLocal) return setProjets((l) => l.filter((p) => p.id !== id));
     const { deleteDoc, doc, base } = await fs();
     await deleteDoc(doc(db, `${base}/projets`, id));
-  }, [modeLocal, fs]);
+    notifier("Projet supprimé", "🗑️");
+  }, [modeLocal, fs, notifier]);
 
   // ------- Crédits -------
   const ajouterCredit = useCallback(async (c) => {
     if (modeLocal) return setCredits((l) => [...l, { id: genId(), ...c }]);
     const { addDoc, collection, base } = await fs();
     await addDoc(collection(db, `${base}/credits`), c);
-  }, [modeLocal, fs]);
+    notifier("Crédit ajouté", "🏦");
+  }, [modeLocal, fs, notifier]);
 
   const modifierCredit = useCallback(async (id, maj) => {
     if (modeLocal) return setCredits((l) => l.map((c) => (c.id === id ? { ...c, ...maj } : c)));
     const { updateDoc, doc, base } = await fs();
     await updateDoc(doc(db, `${base}/credits`, id), maj);
-  }, [modeLocal, fs]);
+    notifier("Crédit enregistré");
+  }, [modeLocal, fs, notifier]);
 
   const supprimerCredit = useCallback(async (id) => {
     if (modeLocal) return setCredits((l) => l.filter((c) => c.id !== id));
     const { deleteDoc, doc, base } = await fs();
     await deleteDoc(doc(db, `${base}/credits`, id));
-  }, [modeLocal, fs]);
+    notifier("Crédit supprimé", "🗑️");
+  }, [modeLocal, fs, notifier]);
 
   // ------- Import par lot (CSV) -------
   const ajouterTransactionsLot = useCallback(async (liste) => {
     if (modeLocal) {
       setTransactions((l) => [...l, ...liste.map((t) => ({ id: genId(), ...t }))]);
+      notifier(`${liste.length} opération${liste.length > 1 ? "s" : ""} importée${liste.length > 1 ? "s" : ""}`, "⬇︎");
       return;
     }
     const { writeBatch, doc, collection, base } = await fs();
@@ -316,13 +344,15 @@ export function DataProvider({ children }) {
       }
       await batch.commit();
     }
-  }, [modeLocal, fs]);
+    notifier(`${liste.length} opération${liste.length > 1 ? "s" : ""} importée${liste.length > 1 ? "s" : ""}`, "⬇︎");
+  }, [modeLocal, fs, notifier]);
 
   const virement = useCallback(async (deId, versId, montant, date) => {
     const de = comptes.find((c) => c.id === deId);
     const vers = comptes.find((c) => c.id === versId);
-    await ajouterTransaction({ compteId: deId, montant: -Math.abs(montant), categorie: "virement", libelle: `Vers ${vers?.nom || "compte"}`, date });
-    await ajouterTransaction({ compteId: versId, montant: Math.abs(montant), categorie: "virement", libelle: `Depuis ${de?.nom || "compte"}`, date });
+    await ajouterTransaction({ compteId: deId, montant: -Math.abs(montant), categorie: "virement", libelle: `Vers ${vers?.nom || "compte"}`, date }, { silencieux: true });
+    await ajouterTransaction({ compteId: versId, montant: Math.abs(montant), categorie: "virement", libelle: `Depuis ${de?.nom || "compte"}`, date }, { silencieux: true });
+    notifier("Virement effectué", "🔁");
   }, [comptes, ajouterTransaction]);
 
   const reinitialiserDemo = useCallback(() => {
@@ -408,7 +438,7 @@ export function DataProvider({ children }) {
   }, [comptes, transactions]);
 
   const valeur = {
-    pret, user, modeLocal, erreurInit,
+    pret, user, modeLocal, erreurInit, toast, notifier,
     comptes, transactions, budgets, profil, soldes, recurrentes, projets, credits,
     ajouterCompte, modifierCompte, supprimerCompte,
     ajouterTransaction, supprimerTransaction, ajouterTransactionsLot,

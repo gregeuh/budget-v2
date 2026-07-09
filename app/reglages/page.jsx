@@ -46,6 +46,7 @@ export default function Profil() {
     a.download = `budget-export-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    notifier("Export téléchargé", "⬇︎");
   };
 
   const deconnexion = async () => {
