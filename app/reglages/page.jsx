@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useBudget } from "@/lib/store";
 import { auth } from "@/lib/firebase";
-import { CATEGORIES, FREQUENCES, euros, dateCourte } from "@/lib/format";
+import CategoriesSheet from "@/components/CategoriesSheet";
+import { toutesCategories as CATEGORIES, FREQUENCES, euros, dateCourte } from "@/lib/format";
 
 const THEMES = [
   { id: "auto", label: "Auto", icone: "🌗" },
@@ -23,6 +24,7 @@ export default function Profil() {
   const [revenu, setRevenu] = useState(profil.revenuMensuel ? String(profil.revenuMensuel) : "");
   const [jourSalaire, setJourSalaire] = useState(profil.jourSalaire || 0);
   const [sauve, setSauve] = useState(false);
+  const [catsOuvertes, setCatsOuvertes] = useState(false);
 
   const enregistrer = async (extras = {}) => {
     await sauverApp(undefined, {
@@ -169,6 +171,14 @@ export default function Profil() {
 
       {/* Compte */}
       <section className="rounded-ios bg-carte p-4 shadow-carte">
+        <h2 className="font-semibold">Catégories</h2>
+        <p className="mt-1 text-sm text-sourdine">Crée tes propres catégories (avec emoji et type 50/30/20) pour classer tes opérations à ta façon.</p>
+        <button onClick={() => setCatsOuvertes(true)} className="mt-3 w-full rounded-ios bg-fond py-3 text-sm font-semibold">
+          🏷️ Gérer mes catégories{Object.keys(categoriesPerso || {}).length > 0 ? ` (${Object.keys(categoriesPerso).length})` : ""}
+        </button>
+      </section>
+
+      <section className="rounded-ios bg-carte p-4 shadow-carte">
         <h2 className="font-semibold">Compte</h2>
         {modeLocal ? (
           <p className="mt-1 text-sm text-sourdine">
@@ -187,6 +197,7 @@ export default function Profil() {
       <p className="px-2 text-center text-xs text-sourdine">
         Astuce iPhone : dans Safari, touche Partager → « Sur l'écran d'accueil » pour installer l'app en plein écran.
       </p>
+      {catsOuvertes && <CategoriesSheet onFermer={() => setCatsOuvertes(false)} />}
     </div>
   );
 }

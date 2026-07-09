@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useBudget } from "@/lib/store";
 import { euros, moisLabel, aujourdhui, TYPES_COMPTE } from "@/lib/format";
 import { statsMois } from "@/lib/conseils";
@@ -11,10 +12,11 @@ import DonutCat from "@/components/DonutCat";
 import TxRow from "@/components/TxRow";
 import PatrimoineChart from "@/components/PatrimoineChart";
 import CountUp from "@/components/CountUp";
+import MoisSelecteur from "@/components/MoisSelecteur";
 
 export default function Accueil() {
   const { comptes, transactions, soldes, profil, credits, projets } = useBudget();
-  const mois = cleMois(aujourdhui());
+  const [mois, setMois] = useState(cleMois(aujourdhui()));
   const s = statsMois(transactions, mois);
   const totalCredits = credits.reduce((a, c) => a + (c.restant || 0), 0);
   const groupeDe = (c) => (TYPES_COMPTE[c.type] || TYPES_COMPTE.autre).groupe;
@@ -59,6 +61,8 @@ export default function Accueil() {
         </div>
         <Link href="/reglages" aria-label="Réglages" className="flex h-10 w-10 items-center justify-center rounded-full bg-carte text-lg shadow-carte">⚙️</Link>
       </header>
+
+      <MoisSelecteur mois={mois} onChanger={setMois} />
 
       <div className="pop-in grid grid-cols-2 gap-3">
         <div className="rounded-ios bg-menthe-pale p-3.5">

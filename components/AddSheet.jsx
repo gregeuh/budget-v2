@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
-import { CATEGORIES, FREQUENCES, aujourdhui } from "@/lib/format";
+import { FREQUENCES, aujourdhui } from "@/lib/format";
 import Sheet from "./Sheet";
 
 const MODES = [
@@ -12,7 +12,7 @@ const MODES = [
 ];
 
 export default function AddSheet({ onFermer }) {
-  const { comptes, transactions, ajouterTransaction, ajouterRecurrente, virement } = useBudget();
+  const { comptes, transactions, categories, ajouterTransaction, ajouterRecurrente, virement } = useBudget();
   const [mode, setMode] = useState("depense");
   const [montant, setMontant] = useState("");
   const [libelle, setLibelle] = useState("");
@@ -30,7 +30,7 @@ export default function AddSheet({ onFermer }) {
     for (const t of transactions) {
       const lib = (t.libelle || "").trim();
       if (!lib) continue;
-      const cat = CATEGORIES[t.categorie] || CATEGORIES.autre;
+      const cat = categories[t.categorie] || categories.autre;
       if (cat.type === "virement") continue;
       if (mode === "revenu" ? t.montant <= 0 : t.montant >= 0) continue;
       const cle = lib.toLowerCase();
@@ -49,7 +49,7 @@ export default function AddSheet({ onFermer }) {
     if (!montant) setMontant(String(Math.abs(sug.montant)).replace(".", ","));
   };
 
-  const cats = Object.entries(CATEGORIES).filter(([, c]) =>
+  const cats = Object.entries(categories).filter(([, c]) =>
     mode === "revenu" ? c.type === "revenu" : c.type !== "revenu" && c.type !== "virement"
   );
 
@@ -64,7 +64,7 @@ export default function AddSheet({ onFermer }) {
         compteId,
         montant: mode === "depense" ? -val : val,
         categorie,
-        libelle: libelle.trim() || (CATEGORIES[categorie]?.label ?? "Opération"),
+        libelle: libelle.trim() || (categories[categorie]?.label ?? "Opération"),
         ...(horsSolde ? { horsSolde: true } : {}),
       };
       if (frequence === "unefois") {
@@ -116,7 +116,7 @@ export default function AddSheet({ onFermer }) {
                     onClick={() => appliquerSuggestion(sug)}
                     className="shrink-0 rounded-pill bg-voile px-3 py-1.5 text-sm font-medium"
                   >
-                    {(CATEGORIES[sug.categorie] || CATEGORIES.autre).icone} {sug.libelle}
+                    {(categories[sug.categorie] || categories.autre).icone} {sug.libelle}
                   </button>
                 ))}
               </div>

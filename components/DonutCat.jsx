@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { statsMois } from "@/lib/conseils";
-import { CATEGORIES, euros } from "@/lib/format";
+import { toutesCategories as CATEGORIES, euros } from "@/lib/format";
 
 const PALETTE = ["#2BB68C", "#8B7CF6", "#3E9BFF", "#FF9D5C", "#F5B93E", "#FF6B5E", "#7A8199"];
 

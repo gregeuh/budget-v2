@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { useBudget } from "@/lib/store";
-import { CATEGORIES, euros, dateCourte } from "@/lib/format";
+import { euros, dateCourte } from "@/lib/format";
 import Sheet from "./Sheet";
 
 // ---- Catégorisation automatique par mots-clés (banques françaises) ----
@@ -106,7 +106,7 @@ function analyserCSV(texte) {
 }
 
 export default function ImportCSV({ onFermer }) {
-  const { comptes, transactions, ajouterTransactionsLot } = useBudget();
+  const { comptes, transactions, categories, ajouterTransactionsLot } = useBudget();
   const [compteId, setCompteId] = useState(comptes[0]?.id || "");
   const [resultat, setResultat] = useState(null); // { operations } | { erreur }
   const [selection, setSelection] = useState({});
@@ -159,7 +159,7 @@ export default function ImportCSV({ onFermer }) {
   };
 
   const nbSelection = Object.values(selection).filter(Boolean).length;
-  const cats = Object.entries(CATEGORIES).filter(([, c]) => c.type !== "virement");
+  const cats = Object.entries(categories).filter(([, c]) => c.type !== "virement");
 
   return (
     <Sheet titre="Importer un relevé CSV" onFermer={onFermer}>

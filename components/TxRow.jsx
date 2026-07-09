@@ -1,36 +1,44 @@
 "use client";
 
+import { useState } from "react";
 import { useBudget } from "@/lib/store";
-import { CATEGORIES, euros, dateCourte } from "@/lib/format";
+import { euros, dateCourte } from "@/lib/format";
+import EditTxSheet from "./EditTxSheet";
 
 export default function TxRow({ tx, avecCompte = false }) {
-  const { comptes, supprimerTransaction } = useBudget();
-  const cat = CATEGORIES[tx.categorie] || CATEGORIES.autre;
+  const { comptes, categories, supprimerTransaction } = useBudget();
+  const [edition, setEdition] = useState(false);
+  const cat = categories[tx.categorie] || categories.autre;
   const compte = comptes.find((c) => c.id === tx.compteId);
   const positif = tx.montant > 0;
 
   return (
-    <li className="flex items-center gap-3 rounded-2xl bg-carte px-3 py-2.5 shadow-carte">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-fond text-lg">{cat.icone}</span>
-      <div className="min-w-0 flex-1">
-        <div className="truncate text-sm font-semibold">
-          {tx.libelle || cat.label}
-          {tx.horsSolde && <span className="ml-1.5 rounded-pill bg-voile px-1.5 py-0.5 text-[10px] font-medium text-sourdine align-middle">👻 hors solde</span>}
-        </div>
-        <div className="text-xs text-sourdine">
-          {dateCourte(tx.date)}{avecCompte && compte ? ` · ${compte.nom}` : ""}
-        </div>
-      </div>
-      <span className={`tnum text-sm font-bold ${(CATEGORIES[tx.categorie] || CATEGORIES.autre).type === "virement" ? "text-sourdine" : positif ? "text-menthe" : "text-encre"}`}>
-        {positif ? "+" : ""}{euros(tx.montant, { precis: true })}
-      </span>
-      <button
-        onClick={() => supprimerTransaction(tx.id)}
-        aria-label="Supprimer"
-        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sourdine opacity-60 active:bg-corail-pale active:text-corail"
-      >
-        ✕
-      </button>
-    </li>
+    <>
+      <li className="flex items-center gap-3 rounded-2xl bg-carte px-3 py-2.5 shadow-carte">
+        <button onClick={() => setEdition(true)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-fond text-lg">{cat.icone}</span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-sm font-semibold">
+              {tx.libelle || cat.label}
+              {tx.horsSolde && <span className="ml-1.5 rounded-pill bg-voile px-1.5 py-0.5 align-middle text-[10px] font-medium text-sourdine">👻 hors solde</span>}
+            </span>
+            <span className="block text-xs text-sourdine">
+              {dateCourte(tx.date)}{avecCompte && compte ? ` · ${compte.nom}` : ""}
+            </span>
+          </span>
+          <span className={`tnum shrink-0 text-sm font-bold ${cat.type === "virement" ? "text-sourdine" : positif ? "text-menthe" : "text-encre"}`}>
+            {positif ? "+" : ""}{euros(tx.montant, { precis: true })}
+          </span>
+        </button>
+        <button
+          onClick={() => supprimerTransaction(tx.id)}
+          aria-label="Supprimer"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sourdine/50 active:bg-corail-pale active:text-corail"
+        >
+          ✕
+        </button>
+      </li>
+      {edition && <EditTxSheet tx={tx} onFermer={() => setEdition(false)} />}
+    </>
   );
 }

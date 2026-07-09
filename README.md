@@ -7,6 +7,10 @@ Application de gestion de budget multi-comptes (PWA optimisée iPhone), construi
 - **Multi-comptes** : compte courant, Revolut, Swile (titres-resto), Livret A, LDDS, PEA, espèces… avec suivi des plafonds réglementaires (Livret A 22 950 €, LDDS 12 000 €) et virements entre comptes.
 - **Opérations « hors solde »** : une dépense ou un revenu peut être marqué 👻 hors solde — compté dans les statistiques et budgets, mais sans impact sur le solde du compte (espèces, dépense déjà couverte par un réajustement…).
 - **Réajustement de solde** : depuis la fiche d'un compte, saisis le solde réel de ta banque — l'écart est enregistré comme une opération « Ajustement » neutre, exclue des statistiques de dépenses.
+- **Édition d'opération** : tape n'importe quelle ligne pour modifier montant, libellé, catégorie, compte, date ou hors solde. Suppression avec bouton « Annuler » dans la confirmation.
+- **Navigation par mois** : sélecteur ‹ Mois › sur l'accueil et les budgets pour consulter et comparer les mois passés.
+- **Catégories personnalisées** : depuis Réglages → Catégories, crée tes propres catégories (nom, emoji, type 50/30/20) ; elles apparaissent partout (saisie, budgets, import CSV, recherche).
+- **Hors-ligne** : cache Firestore persistant — l'app s'ouvre et fonctionne sans réseau, la synchro reprend automatiquement.
 - **Opérations** : dépenses, revenus et virements, catégorisés selon la logique 50/30/20 (besoins / envies / épargne).
 - **Budgets** : plafonds mensuels par catégorie avec jauges, et analyse 50/30/20 en temps réel.
 - **Profil** : prénom, revenu mensuel, jour d'arrivée du salaire (compte à rebours et « reste à vivre » par jour sur l'accueil), choix du thème.

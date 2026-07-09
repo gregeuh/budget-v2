@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { firebaseActif, auth, db } from "./firebase";
-import { aujourdhui, prochaineOccurrence } from "./format";
+import { aujourdhui, prochaineOccurrence, CATEGORIES, definirCategoriesPerso } from "./format";
 
 const Ctx = createContext(null);
 export const useBudget = () => useContext(Ctx);
@@ -43,8 +43,9 @@ export function DataProvider({ children }) {
   const [pret, setPret] = useState(false);
   const [erreurInit, setErreurInit] = useState("");
   const [toast, setToast] = useState(null);
-  const notifier = useCallback((message, icone = "✓") => {
-    setToast({ id: Date.now(), message, icone });
+  const [categoriesPerso, setCategoriesPerso] = useState({});
+  const notifier = useCallback((message, icone = "✓", action = null) => {
+    setToast({ id: Date.now(), message, icone, action });
   }, []);
   const [user, setUser] = useState(null);
   const [comptes, setComptes] = useState([]);
@@ -70,6 +71,7 @@ export function DataProvider({ children }) {
       setRecurrentes(d.recurrentes || []);
       setProjets(d.projets || []);
       setCredits(d.credits || []);
+      setCategoriesPerso(d.categoriesPerso || {});
     } catch {
       const d = {};
       setComptes([]);
@@ -85,8 +87,8 @@ export function DataProvider({ children }) {
 
   useEffect(() => {
     if (!modeLocal || !pret) return;
-    localStorage.setItem(CLE_LOCALE, JSON.stringify({ comptes, transactions, budgets, profil, recurrentes, projets, credits }));
-  }, [modeLocal, pret, comptes, transactions, budgets, profil, recurrentes, projets, credits]);
+    localStorage.setItem(CLE_LOCALE, JSON.stringify({ comptes, transactions, budgets, profil, recurrentes, projets, credits, categoriesPerso }));
+  }, [modeLocal, pret, comptes, transactions, budgets, profil, recurrentes, projets, credits, categoriesPerso]);
 
   // ------- Mode Firebase -------
   useEffect(() => {
@@ -143,6 +145,7 @@ export function DataProvider({ children }) {
             const d = s.data() || {};
             setBudgets(d.budgets || {});
             setProfil({ theme: "auto", jourSalaire: 0, ...(d.profil || {}) });
+            setCategoriesPerso(d.categoriesPerso || {});
           }, surErreur)
         );
         } catch (e) {
@@ -217,14 +220,27 @@ export function DataProvider({ children }) {
     if (!opts.silencieux) notifier(nouvelle.montant >= 0 ? "Revenu ajouté" : "Dépense ajoutée");
   }, [modeLocal, fs, notifier]);
 
+  const modifierTransaction = useCallback(async (id, maj) => {
+    if (modeLocal) setTransactions((l) => l.map((t) => (t.id === id ? { ...t, ...maj } : t)));
+    else {
+      const { updateDoc, doc, base } = await fs();
+      await updateDoc(doc(db, `${base}/transactions`, id), maj);
+    }
+    notifier("Opération modifiée");
+  }, [modeLocal, fs, notifier]);
+
   const supprimerTransaction = useCallback(async (id) => {
+    const sauvegarde = transactions.find((t) => t.id === id);
     if (modeLocal) setTransactions((l) => l.filter((t) => t.id !== id));
     else {
       const { deleteDoc, doc, base } = await fs();
       await deleteDoc(doc(db, `${base}/transactions`, id));
     }
-    notifier("Opération supprimée", "🗑️");
-  }, [modeLocal, fs, notifier]);
+    notifier("Opération supprimée", "🗑️", sauvegarde ? {
+      label: "Annuler",
+      executer: () => ajouterTransaction({ ...sauvegarde, id: undefined }, { silencieux: true }),
+    } : null);
+  }, [modeLocal, fs, notifier, transactions, ajouterTransaction]);
 
   const sauverApp = useCallback(async (majBudgets, majProfil) => {
     const b = majBudgets ?? budgets;
@@ -394,6 +410,7 @@ export function DataProvider({ children }) {
       credits: Array.isArray(d.credits) ? d.credits : [],
       budgets: d.budgets && typeof d.budgets === "object" ? d.budgets : {},
       profil: d.profil && typeof d.profil === "object" ? d.profil : { prenom: "", revenuMensuel: 0 },
+      categoriesPerso: d.categoriesPerso && typeof d.categoriesPerso === "object" ? d.categoriesPerso : {},
     };
     if (modeLocal) {
       setComptes(donnees.comptes);
@@ -403,6 +420,7 @@ export function DataProvider({ children }) {
       setCredits(donnees.credits);
       setBudgets(donnees.budgets);
       setProfil(donnees.profil);
+      setCategoriesPerso(donnees.categoriesPerso);
       return true;
     }
     // Mode Firebase : on écrit chaque document avec son ID d'origine
@@ -431,9 +449,28 @@ export function DataProvider({ children }) {
       }
       await batch.commit();
     }
-    await setDoc(doc(db, base, "app"), { budgets: donnees.budgets, profil: { ...donnees.profil, onboarde: true } }, { merge: true });
+    await setDoc(doc(db, base, "app"), { budgets: donnees.budgets, profil: { ...donnees.profil, onboarde: true }, categoriesPerso: donnees.categoriesPerso }, { merge: true });
     return true;
   }, [modeLocal, fs]);
+
+  // Registre fusionné (réactif pour l'UI + module pour les fonctions pures)
+  useEffect(() => { definirCategoriesPerso(categoriesPerso); }, [categoriesPerso]);
+  const categories = useMemo(() => {
+    const fusion = { ...CATEGORIES };
+    for (const [cle, c] of Object.entries(categoriesPerso)) {
+      if (!CATEGORIES[cle] && c?.label) fusion[cle] = { label: c.label, icone: c.icone || "🏷️", type: c.type || "envie", perso: true };
+    }
+    return fusion;
+  }, [categoriesPerso]);
+
+  const sauverCategoriesPerso = useCallback(async (perso) => {
+    setCategoriesPerso(perso);
+    if (!modeLocal) {
+      const { setDoc, doc, base } = await fs();
+      await setDoc(doc(db, base, "app"), { categoriesPerso: perso }, { merge: true });
+    }
+    notifier("Catégories enregistrées", "🏷️");
+  }, [modeLocal, fs, notifier]);
 
   // ------- Soldes calculés -------
   const soldes = useMemo(() => {
@@ -445,9 +482,10 @@ export function DataProvider({ children }) {
 
   const valeur = {
     pret, user, modeLocal, erreurInit, toast, notifier,
+    categories, categoriesPerso, sauverCategoriesPerso,
     comptes, transactions, budgets, profil, soldes, recurrentes, projets, credits,
     ajouterCompte, modifierCompte, supprimerCompte,
-    ajouterTransaction, supprimerTransaction, ajouterTransactionsLot,
+    ajouterTransaction, modifierTransaction, supprimerTransaction, ajouterTransactionsLot,
     ajouterRecurrente, modifierRecurrente, supprimerRecurrente,
     ajouterProjet, modifierProjet, supprimerProjet,
     ajouterCredit, modifierCredit, supprimerCredit,

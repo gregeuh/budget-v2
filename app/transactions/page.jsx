@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
-import { cleMois, euros, CATEGORIES } from "@/lib/format";
+import { cleMois, euros } from "@/lib/format";
 import { statsMois } from "@/lib/conseils";
 import TxRow from "@/components/TxRow";
 import ImportCSV from "@/components/ImportCSV";
 
 export default function Transactions() {
-  const { transactions, comptes } = useBudget();
+  const { transactions, comptes, categories } = useBudget();
   const [compteId, setCompteId] = useState("tous");
   const [importOuvert, setImportOuvert] = useState(false);
   const [recherche, setRecherche] = useState("");
@@ -20,7 +20,7 @@ export default function Transactions() {
     const filtrees = transactions.filter((t) => {
       if (compteId !== "tous" && t.compteId !== compteId) return false;
       if (!q) return true;
-      const cat = CATEGORIES[t.categorie] || CATEGORIES.autre;
+      const cat = categories[t.categorie] || categories.autre;
       return normaliser(t.libelle).includes(q) || normaliser(cat.label).includes(q);
     });
     const groupes = {};

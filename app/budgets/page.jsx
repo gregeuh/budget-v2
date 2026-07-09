@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useBudget } from "@/lib/store";
-import { CATEGORIES, euros, cleMois, aujourdhui } from "@/lib/format";
+import { euros, cleMois, aujourdhui } from "@/lib/format";
 import { statsMois } from "@/lib/conseils";
 import Sheet from "@/components/Sheet";
 import FicheProjet from "@/components/FicheProjet";
+import MoisSelecteur from "@/components/MoisSelecteur";
 
 const REGLE = [
   { id: "besoin", label: "Besoins", cible: 50, couleur: "#3E9BFF" },
@@ -14,9 +15,9 @@ const REGLE = [
 ];
 
 function FicheBudget({ onFermer }) {
-  const { budgets, sauverApp } = useBudget();
+  const { budgets, sauverApp, categories } = useBudget();
   const [locaux, setLocaux] = useState({ ...budgets });
-  const cats = Object.entries(CATEGORIES).filter(([, c]) => c.type === "besoin" || c.type === "envie");
+  const cats = Object.entries(categories).filter(([, c]) => c.type === "besoin" || c.type === "envie");
 
   const valider = async () => {
     const propres = Object.fromEntries(
@@ -56,10 +57,10 @@ function FicheBudget({ onFermer }) {
 }
 
 export default function Budgets() {
-  const { transactions, budgets, profil, projets } = useBudget();
+  const { transactions, budgets, profil, projets, categories } = useBudget();
   const [edition, setEdition] = useState(false);
   const [ficheProjet, setFicheProjet] = useState(null); // null | "nouveau" | projet
-  const mois = cleMois(aujourdhui());
+  const [mois, setMois] = useState(cleMois(aujourdhui()));
   const s = statsMois(transactions, mois);
   const revenu = s.revenus || profil.revenuMensuel || 0;
 
@@ -71,6 +72,8 @@ export default function Budgets() {
           Modifier
         </button>
       </header>
+
+      <MoisSelecteur mois={mois} onChanger={setMois} />
 
       {/* Règle 50/30/20 */}
       <section className="rounded-ios bg-carte p-4 shadow-carte">
@@ -110,7 +113,7 @@ export default function Budgets() {
         ) : (
           <ul className="space-y-2">
             {Object.entries(budgets).map(([cat, limite]) => {
-              const c = CATEGORIES[cat] || CATEGORIES.autre;
+              const c = categories[cat] || categories.autre;
               const reel = s.parCategorie[cat] || 0;
               const pct = limite > 0 ? (reel / limite) * 100 : 0;
               const couleur = pct >= 100 ? "#FF6B5E" : pct >= 80 ? "#F5B93E" : "#2BB68C";
