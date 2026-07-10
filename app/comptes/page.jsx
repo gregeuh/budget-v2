@@ -191,7 +191,7 @@ export default function Comptes() {
                       {plafond && (
                         <div className="mt-3">
                           <div className="h-1.5 overflow-hidden rounded-full bg-voile">
-                            <div className="h-full rounded-full" style={{ width: `${Math.min(100, (solde / plafond) * 100)}%`, background: coul.vif }} />
+                            <div className="jauge-in h-full rounded-full" style={{ width: `${Math.min(100, (solde / plafond) * 100)}%`, background: coul.vif }} />
                           </div>
                           <p className="mt-1 text-xs text-sourdine">{Math.round((solde / plafond) * 100)} % du plafond ({euros(plafond)})</p>
                         </div>

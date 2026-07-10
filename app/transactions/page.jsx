@@ -119,7 +119,7 @@ export default function Transactions() {
               </span>
             </div>
             <ul className="space-y-2">
-              {txs.map((t) => <TxRow key={t.id} tx={t} avecCompte={compteId === "tous"} />)}
+              {txs.map((t, i) => <TxRow key={t.id} tx={t} avecCompte={compteId === "tous"} retard={i} />)}
             </ul>
           </section>
         );

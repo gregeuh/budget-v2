@@ -69,7 +69,7 @@ export default function Accueil() {
 
       <MoisSelecteur mois={mois} onChanger={setMois} />
 
-      <div className="pop-in grid grid-cols-2 gap-3">
+      <div key={mois} className="pop-in grid grid-cols-2 gap-3">
         <div className="rounded-ios bg-menthe-pale p-3.5">
           <p className="text-xs font-semibold uppercase tracking-wide text-menthe-texte">Entrées du mois</p>
           <p className="chiffres mt-0.5 text-xl font-bold text-menthe-texte">{euros(s.revenus)}</p>
@@ -98,7 +98,7 @@ export default function Accueil() {
             <span className="tnum">{Math.min(100, Math.round((projetPhare.montantActuel / projetPhare.objectif) * 100))} %</span>
           </div>
           <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-carte/60">
-            <div className="h-full rounded-full bg-lavande" style={{ width: `${Math.min(100, (projetPhare.montantActuel / projetPhare.objectif) * 100)}%` }} />
+            <div className="jauge-in h-full rounded-full bg-lavande" style={{ width: `${Math.min(100, (projetPhare.montantActuel / projetPhare.objectif) * 100)}%` }} />
           </div>
         </Link>
       )}
@@ -133,7 +133,7 @@ export default function Accueil() {
           </p>
         ) : (
           <ul className="space-y-2">
-            {recentes.map((t) => <TxRow key={t.id} tx={t} avecCompte />)}
+            {recentes.map((t, i) => <TxRow key={t.id} tx={t} avecCompte retard={i} />)}
           </ul>
         )}
       </section>

@@ -32,7 +32,7 @@ export default function DonutCat({ transactions, mois }) {
       <h3 className="mb-3 font-semibold">Répartition du mois</h3>
       <div className="flex items-center gap-4">
         <div className="relative h-28 w-28 shrink-0">
-        <svg viewBox="0 0 110 110" className="h-28 w-28 -rotate-90" role="img" aria-label="Répartition des dépenses par catégorie">
+        <svg viewBox="0 0 110 110" className="donut-in h-28 w-28" role="img" aria-label="Répartition des dépenses par catégorie">
           {parts.map(([cat, val], i) => {
             const frac = val / total;
             const seg = (

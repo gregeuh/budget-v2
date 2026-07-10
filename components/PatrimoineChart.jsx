@@ -87,9 +87,9 @@ export default function PatrimoineChart({ comptes, transactions }) {
             <stop offset="100%" stopColor="#2BB68C" stopOpacity="0" />
           </linearGradient>
         </defs>
-        <path d={aire} fill="url(#grad-patrimoine)" />
-        <path d={chemin} fill="none" stroke="#2BB68C" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-        <circle cx={x(points.length - 1)} cy={y(dernier.valeur)} r="4" fill="#2BB68C" />
+        <path d={aire} fill="url(#grad-patrimoine)" className="apparait-tard" />
+        <path d={chemin} pathLength="1" className="trace-in" fill="none" stroke="#2BB68C" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+        <circle cx={x(points.length - 1)} cy={y(dernier.valeur)} r="4" fill="#2BB68C" className="apparait-tard" />
         {points.map((p, i) =>
           i % 3 === 2 || i === points.length - 1 ? (
             <text key={i} x={x(i)} y={H + 12} textAnchor="middle" fontSize="10" fill="#7A8199">{p.label}</text>

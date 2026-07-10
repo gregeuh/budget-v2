@@ -93,7 +93,7 @@ export default function Budgets() {
                     <span className="tnum text-sourdine">{pct} % <span className="opacity-60">/ {r.cible} % visés</span></span>
                   </div>
                   <div className="relative h-2.5 overflow-hidden rounded-full bg-voile">
-                    <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, pct)}%`, background: r.couleur }} />
+                    <div className="jauge-in h-full rounded-full transition-all" style={{ width: `${Math.min(100, pct)}%`, background: r.couleur }} />
                     <div className="absolute top-0 h-full w-0.5 bg-black/40" style={{ left: `${r.cible}%` }} />
                   </div>
                 </div>
@@ -124,7 +124,7 @@ export default function Budgets() {
                     <span className="tnum text-sourdine">{euros(reel)} / {euros(limite)}</span>
                   </div>
                   <div className="h-2.5 overflow-hidden rounded-full bg-voile">
-                    <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, pct)}%`, background: couleur }} />
+                    <div className="jauge-in h-full rounded-full transition-all" style={{ width: `${Math.min(100, pct)}%`, background: couleur }} />
                   </div>
                   {pct >= 100 && <p className="mt-1.5 text-xs font-medium text-corail">Dépassé de {euros(reel - limite)}</p>}
                 </li>
@@ -157,7 +157,7 @@ export default function Budgets() {
                       <span className="tnum text-sm text-sourdine">{euros(p.montantActuel)} / {euros(p.objectif)}</span>
                     </div>
                     <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-voile">
-                      <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: atteint ? "#2BB68C" : "#8B7CF6" }} />
+                      <div className="jauge-in h-full rounded-full transition-all" style={{ width: `${pct}%`, background: atteint ? "#2BB68C" : "#8B7CF6" }} />
                     </div>
                     {p.echeance && !atteint && (
                       <p className="mt-1.5 text-xs text-sourdine">

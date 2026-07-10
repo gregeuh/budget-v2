@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { useBudget } from "@/lib/store";
 import TabBar from "./TabBar";
 import AddSheet from "./AddSheet";
@@ -12,6 +13,7 @@ import DrawerReglages from "./DrawerReglages";
 export default function AppShell({ children }) {
   const { pret, user, modeLocal, profil, comptes, erreurInit, reglagesOuverts } = useBudget();
   const [ajoutOuvert, setAjoutOuvert] = useState(false);
+  const chemin = usePathname();
 
   if (!pret) {
     return (
@@ -39,8 +41,8 @@ export default function AppShell({ children }) {
   return (
     <div className="mx-auto min-h-dvh max-w-md" style={{ paddingTop: "var(--safe-top)" }}>
       <Toast />
-      <main className="px-4 pb-36 pt-4">{children}</main>
-      <TabBar onAjouter={() => setAjoutOuvert(true)} />
+      <main key={chemin} className="page-in px-4 pb-36 pt-4">{children}</main>
+      <TabBar onAjouter={() => setAjoutOuvert(true)} ajoutOuvert={ajoutOuvert} />
       {ajoutOuvert && <AddSheet onFermer={() => setAjoutOuvert(false)} />}
       {reglagesOuverts && <DrawerReglages />}
     </div>

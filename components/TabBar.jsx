@@ -11,7 +11,7 @@ const ONGLETS = [
   { href: "/conseils", label: "Conseils", icone: "✨" },
 ];
 
-export default function TabBar({ onAjouter }) {
+export default function TabBar({ onAjouter, ajoutOuvert = false }) {
   const chemin = usePathname();
   return (
     <nav
@@ -28,7 +28,7 @@ export default function TabBar({ onAjouter }) {
               className="mx-auto -mt-7 flex h-14 w-14 items-center justify-center rounded-full text-2xl font-light text-white shadow-flottant active:scale-95 transition-transform"
               style={{ background: "linear-gradient(145deg, #35C79A, #1E9B77)" }}
             >
-              +
+              <span className={`transition-transform duration-300 ${ajoutOuvert ? "rotate-45" : ""}`}>+</span>
             </button>
           ) : (
             <Link
