@@ -16,9 +16,8 @@ export default function DrawerReglages() {
         role="dialog"
         aria-label="Réglages"
       >
-        <div className="mb-2 flex items-center justify-between">
-          <span className="text-sm font-semibold uppercase tracking-wide text-sourdine">Menu</span>
-          <button onClick={fermer} aria-label="Fermer" className="flex h-8 w-8 items-center justify-center rounded-full bg-voile text-sourdine">✕</button>
+        <div className="mb-3">
+          <button onClick={fermer} aria-label="Fermer" className="flex h-9 w-9 items-center justify-center rounded-full bg-voile text-sourdine">✕</button>
         </div>
         <ReglagesContenu />
       </aside>
