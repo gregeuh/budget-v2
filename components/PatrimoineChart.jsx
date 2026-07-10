@@ -33,12 +33,22 @@ export default function PatrimoineChart({ comptes, transactions }) {
     return out;
   }, [comptes, transactions]);
 
-  // Ne rien afficher si moins de 2 mois avec activité
-  const premiereActivite = useMemo(() => {
-    const dates = transactions.map((t) => t.date).sort();
-    return dates[0] || null;
-  }, [transactions]);
-  if (!premiereActivite || points.length < 2) return null;
+  const moisActifs = useMemo(() => new Set(transactions.map((t) => t.date.slice(0, 7))).size, [transactions]);
+
+  if (moisActifs < 2) {
+    const valeurActuelle = points[points.length - 1]?.valeur || 0;
+    return (
+      <div className="rounded-ios bg-carte p-4 shadow-carte">
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold">Évolution du patrimoine</h3>
+          <span className="chiffres text-sm font-bold">{euros(valeurActuelle)}</span>
+        </div>
+        <p className="mt-1 text-xs text-sourdine">
+          📈 La courbe apparaîtra dès ton deuxième mois d'utilisation — chaque fin de mois ajoutera un point.
+        </p>
+      </div>
+    );
+  }
 
   const vals = points.map((p) => p.valeur);
   const min = Math.min(...vals);
@@ -59,7 +69,7 @@ export default function PatrimoineChart({ comptes, transactions }) {
       <div className="mb-1 flex items-center justify-between">
         <h3 className="font-semibold">Évolution du patrimoine</h3>
         <span className={`tnum text-sm font-bold ${variation >= 0 ? "text-menthe" : "text-corail"}`}>
-          {variation >= 0 ? "+" : ""}{euros(variation)} sur 12 mois
+          {variation >= 0 ? "+" : ""}{euros(variation)} sur {points.length - 1} mois
         </span>
       </div>
       <p className="mb-2 text-xs text-sourdine">Soldes cumulés de tes comptes en fin de mois (hors titres-resto).</p>
