@@ -51,16 +51,18 @@ export default function CarrouselComptes({ onChange }) {
           return (
             <div
               key={c.id ?? "tous"}
-              className="relative w-[82%] shrink-0 snap-center overflow-hidden rounded-ios p-3.5 shadow-carte"
-              style={
-                estTous
+              className="relative w-[82%] shrink-0 snap-center overflow-hidden rounded-ios p-3.5 shadow-carte transition-[transform,opacity] duration-300"
+              style={{
+                ...(estTous
                   ? { background: "linear-gradient(135deg, #17203A, #1F8A6A)" }
                   : {
                       background: `linear-gradient(135deg, ${coul.fond}, transparent 70%)`,
                       backgroundColor: "var(--c-carte)",
                       border: `1px solid ${coul.vif}22`,
-                    }
-              }
+                    }),
+                transform: i === actif ? "scale(1)" : "scale(0.93)",
+                opacity: i === actif ? 1 : 0.55,
+              }}
             >
               <div className="reflet" />
               <div className="relative">

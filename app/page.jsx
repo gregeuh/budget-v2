@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { euros, moisLabel, aujourdhui, TYPES_COMPTE } from "@/lib/format";
 import { statsMois } from "@/lib/conseils";
@@ -18,6 +18,15 @@ export default function Accueil() {
   const { comptes, transactions, soldes, profil, credits, projets, setReglagesOuverts } = useBudget();
   const [mois, setMois] = useState(cleMois(aujourdhui()));
   const [compteActif, setCompteActif] = useState(null);
+  const [compact, setCompact] = useState(false);
+
+  useEffect(() => {
+    const surScroll = () => setCompact(window.scrollY > 96);
+    window.addEventListener("scroll", surScroll, { passive: true });
+    return () => window.removeEventListener("scroll", surScroll);
+  }, []);
+
+  const soir = new Date().getHours() < 6 || new Date().getHours() >= 18;
   const s = statsMois(transactions, mois);
   const totalCredits = credits.reduce((a, c) => a + (c.restant || 0), 0);
   const groupeDe = (c) => (TYPES_COMPTE[c.type] || TYPES_COMPTE.autre).groupe;
@@ -51,11 +60,30 @@ export default function Accueil() {
 
   return (
     <div className="space-y-4">
+      {/* En-tête compact au défilement */}
+      <div
+        className={`fixed inset-x-0 top-0 z-30 mx-auto max-w-md transition-all duration-300 ${
+          compact ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-3 opacity-0"
+        }`}
+      >
+        <div
+          className="border-b border-bordure bg-fond/85 px-4 pb-2 backdrop-blur-xl"
+          style={{ paddingTop: "calc(var(--safe-top) + 8px)" }}
+        >
+          <div className="flex items-baseline justify-between">
+            <span className="text-sm font-semibold">
+              {soir ? "Bonsoir" : "Bonjour"}{profil.prenom ? ` ${profil.prenom}` : ""}
+            </span>
+            <span className="chiffres text-base font-bold">{euros(patrimoine)}</span>
+          </div>
+        </div>
+      </div>
+
       <header className="flex items-start justify-between">
         <div>
           <p className="text-sm text-sourdine">
-            {new Date().getHours() < 6 || new Date().getHours() >= 18 ? "Bonsoir" : "Bonjour"}
-            {profil.prenom ? ` ${profil.prenom}` : ""} {new Date().getHours() < 6 || new Date().getHours() >= 18 ? "🌙" : "☀️"}
+            {soir ? "Bonsoir" : "Bonjour"}
+            {profil.prenom ? ` ${profil.prenom}` : ""} {soir ? "🌙" : "☀️"}
           </p>
           <h1 className="chiffres text-4xl font-bold leading-tight"><CountUp valeur={patrimoine} /></h1>
           <p className="text-sm text-sourdine">
