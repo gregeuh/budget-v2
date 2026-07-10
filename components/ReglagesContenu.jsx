@@ -18,9 +18,9 @@ function Ligne({ icone, label, detail, onClick, danger = false, droite = null, d
   return (
     <button
       onClick={onClick}
-      className={`flex w-full items-center gap-3 px-4 py-3.5 text-left active:bg-voile ${dernier ? "" : "border-b border-bordure"}`}
+      className={`flex w-full items-center gap-3 px-3.5 py-3 text-left active:bg-voile ${dernier ? "" : "border-b border-bordure"}`}
     >
-      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-base ${danger ? "bg-corail-pale" : "bg-voile"}`}>
+      <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm ${danger ? "bg-corail-pale" : "bg-voile"}`}>
         {icone}
       </span>
       <span className="min-w-0 flex-1">
@@ -76,7 +76,7 @@ function ProfilSheet({ onFermer }) {
           </label>
         </div>
         <p className="text-xs text-sourdine">Le jour du salaire alimente le compte à rebours de l'accueil et le budget restant par jour.</p>
-        <button onClick={enregistrer} className="w-full rounded-ios bg-encre py-3.5 font-semibold text-contraste">Enregistrer</button>
+        <button onClick={enregistrer} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste">Enregistrer</button>
       </div>
     </Sheet>
   );
@@ -208,12 +208,12 @@ export default function ReglagesContenu() {
       {/* En-tête profil */}
       <button onClick={() => setFiche("profil")} className="mx-auto block text-center">
         <span
-          className="mx-auto flex h-[72px] w-[72px] items-center justify-center rounded-full text-3xl font-bold text-white shadow-flottant"
+          className="mx-auto flex h-[60px] w-[60px] items-center justify-center rounded-full text-2xl font-bold text-white shadow-flottant"
           style={{ background: "linear-gradient(145deg, #35C79A, #17203A)" }}
         >
           {initiale || "👤"}
         </span>
-        <span className="mt-3 block text-xl font-bold">{profil.prenom || "Mon profil"}</span>
+        <span className="mt-2.5 block text-lg font-bold">{profil.prenom || "Mon profil"}</span>
         <span className="mt-0.5 block text-sm text-sourdine">
           {modeLocal ? "Données sur cet appareil" : user?.email}
         </span>
@@ -221,19 +221,19 @@ export default function ReglagesContenu() {
 
       {/* Tuiles d'accès rapide */}
       <div className="grid grid-cols-2 gap-3">
-        <button onClick={() => setFiche("categories")} className="rounded-ios bg-carte p-4 text-left shadow-carte active:scale-[0.98] transition-transform">
+        <button onClick={() => setFiche("categories")} className="rounded-ios bg-carte p-3.5 text-left shadow-carte active:scale-[0.98] transition-transform">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-lavande-pale text-xl">🏷️</span>
-          <span className="mt-6 block font-bold">Catégories</span>
+          <span className="mt-4 block font-bold">Catégories</span>
           <span className="block text-xs text-sourdine">{nbCategories > 0 ? `${nbCategories} personnalisée${nbCategories > 1 ? "s" : ""}` : "Personnalise tes libellés"}</span>
         </button>
-        <button onClick={() => setFiche("recurrentes")} className="relative rounded-ios bg-carte p-4 text-left shadow-carte active:scale-[0.98] transition-transform">
+        <button onClick={() => setFiche("recurrentes")} className="relative rounded-ios bg-carte p-3.5 text-left shadow-carte active:scale-[0.98] transition-transform">
           {nbRecurrentes > 0 && (
             <span className="absolute right-3 top-3 flex h-6 min-w-6 items-center justify-center rounded-full bg-corail px-1.5 text-xs font-bold text-white">
               {nbRecurrentes}
             </span>
           )}
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-ciel-pale text-xl">🔁</span>
-          <span className="mt-6 block font-bold">Récurrentes</span>
+          <span className="mt-4 block font-bold">Récurrentes</span>
           <span className="block text-xs text-sourdine">Tes opérations automatiques</span>
         </button>
       </div>

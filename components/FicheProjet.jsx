@@ -92,7 +92,7 @@ export default function FicheProjet({ projet, onFermer }) {
               className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none" />
           </label>
         </div>
-        <button onClick={valider} disabled={!objectif} className="w-full rounded-ios bg-encre py-3.5 font-semibold text-contraste disabled:opacity-40">
+        <button onClick={valider} disabled={!objectif} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40">
           {edition ? "Enregistrer" : "Créer le projet"}
         </button>
         {edition && (

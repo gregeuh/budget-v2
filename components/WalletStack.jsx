@@ -35,7 +35,7 @@ export default function WalletStack() {
           return (
             <div
               key={c.id}
-              className="relative overflow-hidden rounded-ios p-4 shadow-carte transition-[margin] duration-300"
+              className="relative overflow-hidden rounded-ios p-3.5 shadow-carte transition-[margin] duration-300"
               style={{
                 marginTop: i === 0 ? 0 : deplie ? 10 : -62,
                 background: `linear-gradient(135deg, ${coul.fond}, transparent 70%)`,

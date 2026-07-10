@@ -167,7 +167,7 @@ export default function ImportCSV({ onFermer }) {
         <div className="py-8 text-center">
           <div className="text-4xl">✅</div>
           <p className="mt-2 font-semibold">{termine} opération{termine > 1 ? "s" : ""} importée{termine > 1 ? "s" : ""}</p>
-          <button onClick={onFermer} className="mt-5 w-full rounded-ios bg-encre py-3.5 font-semibold text-contraste">Fermer</button>
+          <button onClick={onFermer} className="mt-5 w-full rounded-ios bg-encre py-3 font-semibold text-contraste">Fermer</button>
         </div>
       ) : !resultat?.operations ? (
         <div className="space-y-3">
@@ -182,7 +182,7 @@ export default function ImportCSV({ onFermer }) {
           </label>
           {resultat?.erreur && <p className="rounded-2xl bg-corail-pale px-3 py-2 text-sm text-corail-texte">{resultat.erreur}</p>}
           <input ref={fichierRef} type="file" accept=".csv,text/csv,text/plain" onChange={chargerFichier} className="hidden" />
-          <button onClick={() => fichierRef.current?.click()} disabled={!compteId} className="w-full rounded-ios bg-encre py-3.5 font-semibold text-contraste disabled:opacity-40">
+          <button onClick={() => fichierRef.current?.click()} disabled={!compteId} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40">
             Choisir le fichier CSV
           </button>
         </div>
@@ -215,7 +215,7 @@ export default function ImportCSV({ onFermer }) {
               </li>
             ))}
           </ul>
-          <button onClick={importer} disabled={nbSelection === 0 || enCours} className="w-full rounded-ios bg-encre py-3.5 font-semibold text-contraste disabled:opacity-40">
+          <button onClick={importer} disabled={nbSelection === 0 || enCours} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40">
             {enCours ? "Import en cours…" : `Importer ${nbSelection} opération${nbSelection > 1 ? "s" : ""}`}
           </button>
         </div>

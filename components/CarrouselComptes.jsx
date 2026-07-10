@@ -51,7 +51,7 @@ export default function CarrouselComptes({ onChange }) {
           return (
             <div
               key={c.id ?? "tous"}
-              className="relative w-[82%] shrink-0 snap-center overflow-hidden rounded-ios p-4 shadow-carte"
+              className="relative w-[82%] shrink-0 snap-center overflow-hidden rounded-ios p-3.5 shadow-carte"
               style={
                 estTous
                   ? { background: "linear-gradient(135deg, #17203A, #1F8A6A)" }
@@ -66,22 +66,22 @@ export default function CarrouselComptes({ onChange }) {
               <div className="relative">
                 <div className="flex items-start justify-between">
                   <span
-                    className="flex h-10 w-10 items-center justify-center rounded-xl text-xl"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl text-lg"
                     style={{ background: estTous ? "rgba(255,255,255,0.15)" : coul.vif + "26" }}
                   >
                     {estTous ? "✨" : t.icone}
                   </span>
                   <span
-                    className={`rounded-pill px-2.5 py-1 text-xs font-semibold ${estTous ? "bg-white/15 text-white" : "bg-voile text-sourdine"}`}
+                    className={`rounded-pill px-2 py-0.5 text-[11px] font-semibold ${estTous ? "bg-white/15 text-white" : "bg-voile text-sourdine"}`}
                   >
                     {estTous ? `${comptes.length} comptes` : t.label}
                   </span>
                 </div>
-                <div className="mt-5">
-                  <div className={`chiffres text-[38px] font-bold leading-none ${estTous ? "text-white" : ""}`}>
+                <div className="mt-3">
+                  <div className={`chiffres text-[30px] font-bold leading-none ${estTous ? "text-white" : ""}`}>
                     {euros(solde, { precis: true })}
                   </div>
-                  <div className={`mt-1 text-sm ${estTous ? "text-white/70" : "text-sourdine"}`}>
+                  <div className={`mt-0.5 text-[13px] ${estTous ? "text-white/70" : "text-sourdine"}`}>
                     {estTous ? "Tous les comptes" : c.nom}
                   </div>
                 </div>
@@ -100,7 +100,7 @@ export default function CarrouselComptes({ onChange }) {
       </div>
 
       {/* Points indicateurs */}
-      <div className="mt-3 flex justify-center gap-1.5">
+      <div className="mt-2 flex justify-center gap-1.5">
         {cartes.map((c, i) => (
           <span
             key={c.id ?? "tous"}

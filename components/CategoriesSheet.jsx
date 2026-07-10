@@ -45,7 +45,7 @@ export default function CategoriesSheet({ onFermer }) {
     <Sheet titre="Mes catégories" onFermer={onFermer}>
       <div className="space-y-4">
         {/* Formulaire */}
-        <div className="space-y-3 rounded-ios bg-carte p-4 shadow-carte">
+        <div className="space-y-3 rounded-ios bg-carte p-3.5 shadow-carte">
           <p className="text-sm font-semibold">{enEdition ? "Modifier la catégorie" : "Nouvelle catégorie"}</p>
           <div className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1">
             {EMOJIS.map((e) => (

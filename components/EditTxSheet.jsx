@@ -58,7 +58,7 @@ export default function EditTxSheet({ tx, onFermer }) {
             inputMode="decimal"
             value={montant}
             onChange={(e) => setMontant(e.target.value)}
-            className={`tnum w-40 bg-transparent text-center text-4xl font-bold outline-none ${estVirement ? "text-encre" : sens === "depense" ? "text-corail" : "text-menthe"}`}
+            className={`tnum w-40 bg-transparent text-center text-3xl font-bold outline-none ${estVirement ? "text-encre" : sens === "depense" ? "text-corail" : "text-menthe"}`}
           />
           <span className="text-2xl font-semibold text-sourdine">€</span>
         </div>
@@ -124,7 +124,7 @@ export default function EditTxSheet({ tx, onFermer }) {
           </button>
         )}
 
-        <button onClick={valider} className="w-full rounded-ios bg-encre py-3.5 font-semibold text-contraste active:scale-[0.99] transition-transform">
+        <button onClick={valider} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste active:scale-[0.99] transition-transform">
           Enregistrer
         </button>
         <button

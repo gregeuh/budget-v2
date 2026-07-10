@@ -54,13 +54,13 @@ export default function Onboarding() {
           <p className="mt-1 text-sourdine">Quelques infos pour personnaliser tes analyses — modifiable à tout moment dans le Profil.</p>
           <div className="mt-6 space-y-3">
             <input placeholder="Ton prénom" value={prenom} onChange={(e) => setPrenom(e.target.value)}
-              className="w-full rounded-ios border border-bordure bg-carte px-4 py-3.5 outline-none focus:border-menthe" />
+              className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe" />
             <input inputMode="decimal" placeholder="Revenu mensuel net (€)" value={revenu} onChange={(e) => setRevenu(e.target.value)}
-              className="tnum w-full rounded-ios border border-bordure bg-carte px-4 py-3.5 outline-none focus:border-menthe" />
+              className="tnum w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe" />
             <label className="block">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Jour d'arrivée du salaire</span>
               <select value={jourSalaire} onChange={(e) => setJourSalaire(e.target.value)}
-                className="w-full rounded-ios border border-bordure bg-carte px-4 py-3.5 outline-none">
+                className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none">
                 <option value={0}>Non renseigné</option>
                 {Array.from({ length: 28 }, (_, i) => i + 1).map((j) => (
                   <option key={j} value={j}>Le {j} du mois</option>
@@ -111,9 +111,9 @@ export default function Onboarding() {
           <h1 className="mt-3 text-3xl font-bold tracking-tight">C'est parti{prenom ? `, ${prenom.trim()}` : ""} !</h1>
           <p className="mt-1 text-sourdine">Tout est prêt. Trois réflexes pour bien démarrer :</p>
           <ul className="mt-5 space-y-3 text-sm">
-            <li className="rounded-ios bg-carte p-4 shadow-carte"><span className="font-semibold">➕ Le bouton central</span> — ajoute dépenses, revenus et virements en quelques secondes. Active « Chaque mois » pour le loyer ou le salaire.</li>
-            <li className="rounded-ios bg-carte p-4 shadow-carte"><span className="font-semibold">⬇︎ Importer CSV</span> — depuis l'onglet Opérations, importe un relevé bancaire, tout est catégorisé automatiquement.</li>
-            <li className="rounded-ios bg-carte p-4 shadow-carte"><span className="font-semibold">📲 Installer l'app</span> — dans Safari : Partager → « Sur l'écran d'accueil ».</li>
+            <li className="rounded-ios bg-carte p-3.5 shadow-carte"><span className="font-semibold">➕ Le bouton central</span> — ajoute dépenses, revenus et virements en quelques secondes. Active « Chaque mois » pour le loyer ou le salaire.</li>
+            <li className="rounded-ios bg-carte p-3.5 shadow-carte"><span className="font-semibold">⬇︎ Importer CSV</span> — depuis l'onglet Opérations, importe un relevé bancaire, tout est catégorisé automatiquement.</li>
+            <li className="rounded-ios bg-carte p-3.5 shadow-carte"><span className="font-semibold">📲 Installer l'app</span> — dans Safari : Partager → « Sur l'écran d'accueil ».</li>
           </ul>
         </div>
       )}
@@ -122,7 +122,7 @@ export default function Onboarding() {
         <button
           onClick={() => (etape < 2 ? setEtape(etape + 1) : terminer())}
           disabled={enCours}
-          className="w-full rounded-ios bg-encre py-3.5 font-semibold text-contraste disabled:opacity-40 active:scale-[0.99] transition-transform"
+          className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40 active:scale-[0.99] transition-transform"
         >
           {etape < 2 ? "Continuer" : enCours ? "…" : "Ouvrir mon budget"}
         </button>

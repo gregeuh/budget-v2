@@ -50,38 +50,38 @@ export default function Accueil() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <header className="flex items-start justify-between">
         <div>
           <p className="text-sm text-sourdine">
             {new Date().getHours() < 6 || new Date().getHours() >= 18 ? "Bonsoir" : "Bonjour"}
             {profil.prenom ? ` ${profil.prenom}` : ""} {new Date().getHours() < 6 || new Date().getHours() >= 18 ? "🌙" : "☀️"}
           </p>
-          <h1 className="chiffres text-[44px] font-bold leading-tight"><CountUp valeur={patrimoine} /></h1>
+          <h1 className="chiffres text-4xl font-bold leading-tight"><CountUp valeur={patrimoine} /></h1>
           <p className="text-sm text-sourdine">
             Patrimoine net
             {totalCredits > 0 && ` · crédits déduits (${euros(totalCredits)})`}
             {avantages > 0 && ` · hors titres-resto (${euros(avantages)})`}
           </p>
         </div>
-        <button onClick={() => setReglagesOuverts(true)} aria-label="Réglages" className="flex h-10 w-10 items-center justify-center rounded-full bg-carte text-lg shadow-carte active:scale-95 transition-transform">⚙️</button>
+        <button onClick={() => setReglagesOuverts(true)} aria-label="Réglages" className="flex h-9 w-9 items-center justify-center rounded-full bg-carte text-base shadow-carte active:scale-95 transition-transform">⚙️</button>
       </header>
 
       <MoisSelecteur mois={mois} onChanger={setMois} />
 
       <div key={mois} className="pop-in grid grid-cols-2 gap-3">
-        <div className="rounded-ios bg-menthe-pale p-3.5">
+        <div className="rounded-ios bg-menthe-pale p-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-menthe-texte">Entrées du mois</p>
-          <p className="chiffres mt-0.5 text-xl font-bold text-menthe-texte">{euros(s.revenus)}</p>
+          <p className="chiffres mt-0.5 text-lg font-bold text-menthe-texte">{euros(s.revenus)}</p>
         </div>
-        <div className="rounded-ios bg-corail-pale p-3.5">
+        <div className="rounded-ios bg-corail-pale p-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-corail-texte">Sorties du mois</p>
-          <p className="chiffres mt-0.5 text-xl font-bold text-corail-texte">{euros(s.depenses)}</p>
+          <p className="chiffres mt-0.5 text-lg font-bold text-corail-texte">{euros(s.depenses)}</p>
         </div>
       </div>
 
       {joursAvantSalaire !== null && (
-        <div className="rounded-ios bg-ciel-pale px-4 py-3 text-sm font-medium text-ciel-texte">
+        <div className="rounded-ios bg-ciel-pale px-3.5 py-2.5 text-sm font-medium text-ciel-texte">
           💼 {joursAvantSalaire === 0 ? "Jour de salaire !" : `Salaire dans ${joursAvantSalaire} jour${joursAvantSalaire > 1 ? "s" : ""}`}
           {resteAVivre !== null && joursAvantSalaire > 0 && (
             <span className="block text-xs opacity-80">

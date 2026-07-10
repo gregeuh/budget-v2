@@ -28,11 +28,11 @@ export default function DonutCat({ transactions, mois }) {
   let decalage = 0;
 
   return (
-    <div className="rounded-ios bg-carte p-4 shadow-carte">
+    <div className="rounded-ios bg-carte p-3.5 shadow-carte">
       <h3 className="mb-3 font-semibold">Répartition du mois</h3>
       <div className="flex items-center gap-4">
-        <div className="relative h-28 w-28 shrink-0">
-        <svg viewBox="0 0 110 110" className="donut-in h-28 w-28" role="img" aria-label="Répartition des dépenses par catégorie">
+        <div className="relative h-24 w-24 shrink-0">
+        <svg viewBox="0 0 110 110" className="donut-in h-24 w-24" role="img" aria-label="Répartition des dépenses par catégorie">
           {parts.map(([cat, val], i) => {
             const frac = val / total;
             const seg = (

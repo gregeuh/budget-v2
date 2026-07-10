@@ -49,7 +49,7 @@ export default function Conseils() {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold">Conseils</h1>
+      <h1 className="text-xl font-bold">Conseils</h1>
 
       {/* Conseils automatiques */}
       <section className="space-y-2">
@@ -72,7 +72,7 @@ export default function Conseils() {
       </section>
 
       {/* Coach IA */}
-      <section className="rounded-ios bg-carte p-4 shadow-carte">
+      <section className="rounded-ios bg-carte p-3.5 shadow-carte">
         <h2 className="font-semibold">Coach budgétaire ✨</h2>
         <p className="mb-3 text-xs text-sourdine">
           Le coach analyse un résumé anonymisé de tes chiffres (montants et catégories, sans libellés personnels). Informations générales à visée pédagogique, pas un conseil financier personnalisé.

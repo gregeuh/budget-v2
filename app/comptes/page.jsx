@@ -109,7 +109,7 @@ function FicheCompte({ compte, onFermer }) {
             className="tnum w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe"
           />
         </label>
-        <button onClick={valider} className="w-full rounded-ios bg-encre py-3.5 font-semibold text-contraste active:scale-[0.99] transition-transform">
+        <button onClick={valider} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste active:scale-[0.99] transition-transform">
           {edition ? "Enregistrer" : "Créer le compte"}
         </button>
         {edition && (
@@ -144,7 +144,7 @@ export default function Comptes() {
     <div className="space-y-5">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Comptes</h1>
+          <h1 className="text-xl font-bold">Comptes</h1>
           <p className="tnum text-sm text-sourdine">
             Total : {euros(total)}{(totalCredits > 0 || avantages > 0) && ` · Net : ${euros(total - totalCredits - avantages)}`}
           </p>
@@ -174,7 +174,7 @@ export default function Comptes() {
                   <li key={c.id}>
                     <button
                       onClick={() => setFiche(c)}
-                      className="w-full rounded-ios bg-carte p-4 text-left shadow-carte active:scale-[0.99] transition-transform"
+                      className="w-full rounded-ios bg-carte p-3.5 text-left shadow-carte active:scale-[0.99] transition-transform"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -227,7 +227,7 @@ export default function Comptes() {
               const n = mensualitesRestantes(c.restant, c.mensualite, c.taux);
               return (
                 <li key={c.id}>
-                  <button onClick={() => setFicheCredit(c)} className="w-full rounded-ios bg-carte p-4 text-left shadow-carte active:scale-[0.99] transition-transform">
+                  <button onClick={() => setFicheCredit(c)} className="w-full rounded-ios bg-carte p-3.5 text-left shadow-carte active:scale-[0.99] transition-transform">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-corail-pale text-xl">🏦</span>

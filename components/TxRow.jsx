@@ -16,9 +16,9 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
 
   return (
     <>
-      <li className="pop-in flex items-center gap-3 rounded-2xl bg-carte px-3 py-2.5 shadow-carte" style={{ animationDelay: `${Math.min(retard, 8) * 50}ms` }}>
+      <li className="pop-in flex items-center gap-3 rounded-2xl bg-carte px-3 py-2 shadow-carte" style={{ animationDelay: `${Math.min(retard, 8) * 50}ms` }}>
         <button onClick={() => setEdition(true)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-fond text-lg">{cat.icone}</span>
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-fond text-base">{cat.icone}</span>
           <span className="min-w-0 flex-1">
             <span className="block truncate text-sm font-semibold">
               {tx.libelle || cat.label}

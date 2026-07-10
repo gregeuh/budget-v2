@@ -100,9 +100,9 @@ export default function AddSheet({ onFermer }) {
           placeholder="0"
           value={montant}
           onChange={(e) => setMontant(e.target.value)}
-          className={`tnum w-40 bg-transparent text-center text-5xl font-bold outline-none placeholder:text-sourdine placeholder:opacity-50 ${mode === "depense" ? "text-corail" : mode === "revenu" ? "text-menthe" : "text-encre"}`}
+          className={`tnum w-40 bg-transparent text-center text-4xl font-bold outline-none placeholder:text-sourdine placeholder:opacity-50 ${mode === "depense" ? "text-corail" : mode === "revenu" ? "text-menthe" : "text-encre"}`}
         />
-        <span className="text-3xl font-semibold text-sourdine">€</span>
+        <span className="text-2xl font-semibold text-sourdine">€</span>
       </div>
 
       <div className="space-y-3">
@@ -207,7 +207,7 @@ export default function AddSheet({ onFermer }) {
         <button
           onClick={valider}
           disabled={!montant || !compteId || (mode === "virement" && (!versId || versId === compteId))}
-          className="w-full rounded-ios bg-encre py-3.5 font-semibold text-contraste disabled:opacity-40 active:scale-[0.99] transition-transform"
+          className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40 active:scale-[0.99] transition-transform"
         >
           Ajouter
         </button>

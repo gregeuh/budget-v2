@@ -18,7 +18,7 @@ module.exports = {
         peche: { DEFAULT: "#FF9D5C", pale: "var(--peche-pale)", texte: "var(--peche-texte)" },
         beurre: { DEFAULT: "#F5B93E", pale: "var(--beurre-pale)", texte: "var(--beurre-texte)" },
       },
-      borderRadius: { ios: "22px", pill: "999px" },
+      borderRadius: { ios: "18px", pill: "999px" },
       boxShadow: {
         carte: "var(--ombre-carte)",
         flottant: "0 8px 30px rgba(0,0,0,0.25)",

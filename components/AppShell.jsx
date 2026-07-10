@@ -41,7 +41,7 @@ export default function AppShell({ children }) {
   return (
     <div className="mx-auto min-h-dvh max-w-md" style={{ paddingTop: "var(--safe-top)" }}>
       <Toast />
-      <main key={chemin} className="page-in px-4 pb-36 pt-4">{children}</main>
+      <main key={chemin} className="page-in px-4 pb-32 pt-3">{children}</main>
       <TabBar onAjouter={() => setAjoutOuvert(true)} ajoutOuvert={ajoutOuvert} />
       {ajoutOuvert && <AddSheet onFermer={() => setAjoutOuvert(false)} />}
       {reglagesOuverts && <DrawerReglages />}

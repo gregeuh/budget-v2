@@ -30,12 +30,12 @@ export default function SpendChart({ transactions }) {
   }, [transactions]);
 
   const max = Math.max(1, ...donnees.map((d) => Math.max(d.depenses, d.revenus)));
-  const L = 320, H = 130, PAD = 6;
+  const L = 320, H = 104, PAD = 6;
   const largeurGroupe = (L - PAD * 2) / donnees.length;
   const barre = Math.min(16, largeurGroupe / 3);
 
   return (
-    <div className="rounded-ios bg-carte p-4 shadow-carte">
+    <div className="rounded-ios bg-carte p-3.5 shadow-carte">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="font-semibold">Revenus & dépenses</h3>
         <div className="flex gap-3 text-xs text-sourdine">

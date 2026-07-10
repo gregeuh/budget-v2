@@ -64,7 +64,7 @@ export default function Login() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-ios border border-bordure bg-carte px-4 py-3.5 outline-none focus:border-menthe"
+          className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe"
         />
         <input
           type="password"
@@ -72,14 +72,14 @@ export default function Login() {
           placeholder="Mot de passe"
           value={mdp}
           onChange={(e) => setMdp(e.target.value)}
-          className="w-full rounded-ios border border-bordure bg-carte px-4 py-3.5 outline-none focus:border-menthe"
+          className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe"
         />
         {erreur && <p className="text-sm text-corail">{erreur}</p>}
         {succes && <p className="text-sm font-medium text-menthe">{succes}</p>}
         <button
           onClick={valider}
           disabled={chargement}
-          className="w-full rounded-ios bg-encre py-3.5 font-semibold text-contraste disabled:opacity-40 active:scale-[0.99] transition-transform"
+          className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40 active:scale-[0.99] transition-transform"
         >
           {chargement ? "…" : mode === "connexion" ? "Se connecter" : "Créer mon compte"}
         </button>
@@ -92,7 +92,7 @@ export default function Login() {
 
         <button
           onClick={connexionGoogle}
-          className="flex w-full items-center justify-center gap-2.5 rounded-ios border border-bordure bg-carte py-3.5 font-semibold active:scale-[0.99] transition-transform"
+          className="flex w-full items-center justify-center gap-2.5 rounded-ios border border-bordure bg-carte py-3 font-semibold active:scale-[0.99] transition-transform"
         >
           <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
             <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.2 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/>

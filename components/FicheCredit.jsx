@@ -74,7 +74,7 @@ export default function FicheCredit({ credit, onFermer }) {
             ⚠️ Avec ce taux, la mensualité couvre à peine les intérêts : le crédit ne se rembourse pas.
           </p>
         )}
-        <button onClick={valider} disabled={!num(restant) || !num(mensualite)} className="w-full rounded-ios bg-encre py-3.5 font-semibold text-contraste disabled:opacity-40">
+        <button onClick={valider} disabled={!num(restant) || !num(mensualite)} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40">
           {edition ? "Enregistrer" : "Ajouter le crédit"}
         </button>
         {edition && (

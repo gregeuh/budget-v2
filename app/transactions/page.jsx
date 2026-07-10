@@ -56,7 +56,7 @@ export default function Transactions() {
   return (
     <div className="space-y-4">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Opérations</h1>
+        <h1 className="text-xl font-bold">Opérations</h1>
         <button onClick={() => setImportOuvert(true)} className="rounded-pill bg-encre px-4 py-2 text-sm font-semibold text-contraste">
           ⬇︎ Importer CSV
         </button>

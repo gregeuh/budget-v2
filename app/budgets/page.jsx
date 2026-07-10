@@ -49,7 +49,7 @@ function FicheBudget({ onFermer }) {
           </label>
         ))}
       </div>
-      <button onClick={valider} className="mt-3 w-full rounded-ios bg-encre py-3.5 font-semibold text-contraste">
+      <button onClick={valider} className="mt-3 w-full rounded-ios bg-encre py-3 font-semibold text-contraste">
         Enregistrer
       </button>
     </Sheet>
@@ -67,7 +67,7 @@ export default function Budgets() {
   return (
     <div className="space-y-5">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Budgets</h1>
+        <h1 className="text-xl font-bold">Budgets</h1>
         <button onClick={() => setEdition(true)} className="rounded-pill bg-encre px-4 py-2 text-sm font-semibold text-contraste">
           Modifier
         </button>
@@ -76,7 +76,7 @@ export default function Budgets() {
       <MoisSelecteur mois={mois} onChanger={setMois} />
 
       {/* Règle 50/30/20 */}
-      <section className="rounded-ios bg-carte p-4 shadow-carte">
+      <section className="rounded-ios bg-carte p-3.5 shadow-carte">
         <h2 className="font-semibold">Règle 50 / 30 / 20</h2>
         <p className="mb-3 text-xs text-sourdine">Part des revenus du mois consacrée à chaque poste.</p>
         {revenu === 0 ? (
@@ -118,7 +118,7 @@ export default function Budgets() {
               const pct = limite > 0 ? (reel / limite) * 100 : 0;
               const couleur = pct >= 100 ? "#FF6B5E" : pct >= 80 ? "#F5B93E" : "#2BB68C";
               return (
-                <li key={cat} className="rounded-ios bg-carte p-4 shadow-carte">
+                <li key={cat} className="rounded-ios bg-carte p-3.5 shadow-carte">
                   <div className="mb-1.5 flex items-center justify-between text-sm">
                     <span className="font-semibold">{c.icone} {c.label}</span>
                     <span className="tnum text-sourdine">{euros(reel)} / {euros(limite)}</span>
@@ -151,7 +151,7 @@ export default function Budgets() {
               const atteint = pct >= 100;
               return (
                 <li key={p.id}>
-                  <button onClick={() => setFicheProjet(p)} className="w-full rounded-ios bg-carte p-4 text-left shadow-carte active:scale-[0.99] transition-transform">
+                  <button onClick={() => setFicheProjet(p)} className="w-full rounded-ios bg-carte p-3.5 text-left shadow-carte active:scale-[0.99] transition-transform">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold">{p.icone} {p.nom}{atteint ? " 🎉" : ""}</span>
                       <span className="tnum text-sm text-sourdine">{euros(p.montantActuel)} / {euros(p.objectif)}</span>
