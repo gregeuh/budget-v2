@@ -18,7 +18,7 @@ export default function Transactions() {
   const parMois = useMemo(() => {
     const q = normaliser(recherche.trim());
     const filtrees = transactions.filter((t) => {
-      if (compteId !== "tous" && t.compteId !== compteId) return false;
+      if (compteId !== "tous" && t.compteId !== compteId && t.versId !== compteId) return false;
       if (!q) return true;
       const cat = categories[t.categorie] || categories.autre;
       return normaliser(t.libelle).includes(q) || normaliser(cat.label).includes(q);
@@ -40,6 +40,7 @@ export default function Transactions() {
     for (const { txs } of parMois) {
       for (const t of txs) {
         nb++;
+        if (t.versId || t.categorie === "virement" || t.categorie === "ajustement") continue;
         if (t.montant < 0) depense += -t.montant;
         else recu += t.montant;
       }

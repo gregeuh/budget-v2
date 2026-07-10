@@ -26,7 +26,7 @@ export default function Accueil() {
   const patrimoine = comptesPatrimoine.reduce((a, c) => a + (soldes[c.id] || 0), 0) - totalCredits;
   const projetPhare = [...projets].sort((a, b) => (b.montantActuel / (b.objectif || 1)) - (a.montantActuel / (a.objectif || 1)))[0];
   const recentes = [...transactions]
-    .filter((t) => !compteActif || t.compteId === compteActif)
+    .filter((t) => !compteActif || t.compteId === compteActif || t.versId === compteActif)
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0, 5);
   const compteAffiche = comptes.find((c) => c.id === compteActif);

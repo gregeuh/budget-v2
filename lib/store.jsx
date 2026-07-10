@@ -221,23 +221,23 @@ export function DataProvider({ children }) {
     if (!opts.silencieux) notifier(nouvelle.montant >= 0 ? "Revenu ajouté" : "Dépense ajoutée");
   }, [modeLocal, fs, notifier]);
 
-  const modifierTransaction = useCallback(async (id, maj) => {
+  const modifierTransaction = useCallback(async (id, maj, opts = {}) => {
     if (modeLocal) setTransactions((l) => l.map((t) => (t.id === id ? { ...t, ...maj } : t)));
     else {
       const { updateDoc, doc, base } = await fs();
       updateDoc(doc(db, `${base}/transactions`, id), maj).catch((e) => console.error("Écriture:", e));
     }
-    notifier("Opération modifiée");
+    if (!opts.silencieux) notifier("Opération modifiée");
   }, [modeLocal, fs, notifier]);
 
-  const supprimerTransaction = useCallback(async (id) => {
+  const supprimerTransaction = useCallback(async (id, opts = {}) => {
     const sauvegarde = transactions.find((t) => t.id === id);
     if (modeLocal) setTransactions((l) => l.filter((t) => t.id !== id));
     else {
       const { deleteDoc, doc, base } = await fs();
       deleteDoc(doc(db, `${base}/transactions`, id)).catch((e) => console.error("Écriture:", e));
     }
-    notifier("Opération supprimée", "🗑️", sauvegarde ? {
+    if (!opts.silencieux) notifier("Opération supprimée", "🗑️", sauvegarde ? {
       label: "Annuler",
       executer: () => {
         const { id: _ignore, ...reste } = sauvegarde;
@@ -457,6 +457,37 @@ export function DataProvider({ children }) {
     return true;
   }, [modeLocal, fs]);
 
+  // ------- Migration : fusion des anciens virements (deux écritures -> une) -------
+  const migrationVirements = useRef(false);
+  useEffect(() => {
+    if (!pret || migrationVirements.current || transactions.length === 0) return;
+    const sortants = transactions.filter((t) => t.categorie === "virement" && !t.versId && t.montant < 0);
+    if (sortants.length === 0) { migrationVirements.current = true; return; }
+    const entrants = transactions.filter((t) => t.categorie === "virement" && !t.versId && t.montant > 0);
+    const utilisees = new Set();
+    const paires = [];
+    for (const sortie of sortants) {
+      const entree = entrants.find(
+        (e) => !utilisees.has(e.id) && e.date === sortie.date && Math.abs(e.montant + sortie.montant) < 0.005 && e.compteId !== sortie.compteId
+      );
+      if (entree) { utilisees.add(entree.id); paires.push([sortie, entree]); }
+    }
+    migrationVirements.current = true;
+    if (paires.length === 0) return;
+    (async () => {
+      for (const [sortie, entree] of paires) {
+        const de = comptes.find((c) => c.id === sortie.compteId);
+        const vers = comptes.find((c) => c.id === entree.compteId);
+        await modifierTransaction(sortie.id, {
+          montant: Math.abs(sortie.montant),
+          versId: entree.compteId,
+          libelle: `${de?.nom || "Compte"} → ${vers?.nom || "Compte"}`,
+        }, { silencieux: true });
+        await supprimerTransaction(entree.id, { silencieux: true });
+      }
+    })();
+  }, [pret, transactions, comptes, modifierTransaction, supprimerTransaction]);
+
   // Registre fusionné (réactif pour l'UI + module pour les fonctions pures)
   useEffect(() => { definirCategoriesPerso(categoriesPerso); }, [categoriesPerso]);
   const categories = useMemo(() => {
@@ -480,7 +511,17 @@ export function DataProvider({ children }) {
   const soldes = useMemo(() => {
     const map = {};
     for (const c of comptes) map[c.id] = c.soldeInitial || 0;
-    for (const t of transactions) if (map[t.compteId] !== undefined && !t.horsSolde) map[t.compteId] += t.montant;
+    for (const t of transactions) {
+      if (t.horsSolde) continue;
+      if (t.versId) {
+        // Virement nouveau format : une seule écriture, deux soldes impactés
+        const val = Math.abs(t.montant);
+        if (map[t.compteId] !== undefined) map[t.compteId] -= val;
+        if (map[t.versId] !== undefined) map[t.versId] += val;
+      } else if (map[t.compteId] !== undefined) {
+        map[t.compteId] += t.montant;
+      }
+    }
     return map;
   }, [comptes, transactions]);
 

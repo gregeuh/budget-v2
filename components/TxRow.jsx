@@ -10,7 +10,9 @@ export default function TxRow({ tx, avecCompte = false }) {
   const [edition, setEdition] = useState(false);
   const cat = categories[tx.categorie] || categories.autre;
   const compte = comptes.find((c) => c.id === tx.compteId);
+  const versCompte = tx.versId ? comptes.find((c) => c.id === tx.versId) : null;
   const positif = tx.montant > 0;
+  const estVirement = Boolean(tx.versId);
 
   return (
     <>
@@ -23,11 +25,14 @@ export default function TxRow({ tx, avecCompte = false }) {
               {tx.horsSolde && <span className="ml-1.5 rounded-pill bg-voile px-1.5 py-0.5 align-middle text-[10px] font-medium text-sourdine">👻 hors solde</span>}
             </span>
             <span className="block text-xs text-sourdine">
-              {dateCourte(tx.date)}{avecCompte && compte ? ` · ${compte.nom}` : ""}
+              {dateCourte(tx.date)}
+              {estVirement
+                ? ` · ${compte?.nom || "?"} → ${versCompte?.nom || "?"}`
+                : avecCompte && compte ? ` · ${compte.nom}` : ""}
             </span>
           </span>
           <span className={`tnum shrink-0 text-sm font-bold ${cat.type === "virement" ? "text-sourdine" : positif ? "text-menthe" : "text-encre"}`}>
-            {positif ? "+" : ""}{euros(tx.montant, { precis: true })}
+            {estVirement ? "⇄ " : positif ? "+" : ""}{euros(estVirement ? Math.abs(tx.montant) : tx.montant, { precis: true })}
           </span>
         </button>
         <button

@@ -15,7 +15,8 @@ export default function EditTxSheet({ tx, onFermer }) {
   const [horsSolde, setHorsSolde] = useState(Boolean(tx.horsSolde));
   const [confirmeSuppr, setConfirmeSuppr] = useState(false);
 
-  const estVirement = (categories[tx.categorie] || {}).type === "virement";
+  const estVirement = Boolean(tx.versId);
+  const [versId, setVersId] = useState(tx.versId || "");
   const cats = Object.entries(categories).filter(([, c]) =>
     estVirement ? c.type === "virement" : sens === "revenu" ? c.type === "revenu" : c.type !== "revenu" && c.type !== "virement"
   );
@@ -24,10 +25,11 @@ export default function EditTxSheet({ tx, onFermer }) {
     const val = parseFloat(String(montant).replace(",", "."));
     if (!val || val <= 0) return;
     await modifierTransaction(tx.id, {
-      montant: estVirement ? tx.montant : sens === "depense" ? -val : val,
+      montant: estVirement ? Math.abs(val) : sens === "depense" ? -val : val,
       libelle: libelle.trim() || (categories[categorie]?.label ?? "Opération"),
       categorie,
       compteId,
+      ...(estVirement ? { versId } : {}),
       date,
       horsSolde: horsSolde || false,
     });
@@ -56,12 +58,10 @@ export default function EditTxSheet({ tx, onFermer }) {
             inputMode="decimal"
             value={montant}
             onChange={(e) => setMontant(e.target.value)}
-            disabled={estVirement}
-            className={`tnum w-40 bg-transparent text-center text-4xl font-bold outline-none ${estVirement ? "text-sourdine" : sens === "depense" ? "text-corail" : "text-menthe"}`}
+            className={`tnum w-40 bg-transparent text-center text-4xl font-bold outline-none ${estVirement ? "text-encre" : sens === "depense" ? "text-corail" : "text-menthe"}`}
           />
           <span className="text-2xl font-semibold text-sourdine">€</span>
         </div>
-        {estVirement && <p className="text-center text-xs text-sourdine">Le montant d'un virement ne se modifie pas ici — supprime les deux écritures et refais-le.</p>}
 
         <input
           placeholder="Libellé"
@@ -86,16 +86,31 @@ export default function EditTxSheet({ tx, onFermer }) {
 
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Compte</span>
+            <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">{estVirement ? "Depuis" : "Compte"}</span>
             <select value={compteId} onChange={(e) => setCompteId(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
               {comptes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
             </select>
           </label>
+          {estVirement ? (
+            <label className="block">
+              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Vers</span>
+              <select value={versId} onChange={(e) => setVersId(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+                {comptes.filter((c) => c.id !== compteId).map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
+              </select>
+            </label>
+          ) : (
+            <label className="block">
+              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Date</span>
+              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none" />
+            </label>
+          )}
+        </div>
+        {estVirement && (
           <label className="block">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Date</span>
             <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none" />
           </label>
-        </div>
+        )}
 
         {!estVirement && (
           <button

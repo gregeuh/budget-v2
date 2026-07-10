@@ -23,7 +23,14 @@ export default function PatrimoineChart({ comptes, transactions }) {
       const idsComptes = new Set(comptes.map((c) => c.id));
       let valeur = socle;
       for (const t of transactions) {
-        if (t.date <= limite && idsComptes.has(t.compteId)) valeur += t.montant;
+        if (t.date > limite || t.horsSolde) continue;
+        if (t.versId) {
+          const val = Math.abs(t.montant);
+          if (idsComptes.has(t.compteId)) valeur -= val;
+          if (idsComptes.has(t.versId)) valeur += val;
+        } else if (idsComptes.has(t.compteId)) {
+          valeur += t.montant;
+        }
       }
       out.push({
         label: d.toLocaleDateString("fr-FR", { month: "short" }).replace(".", ""),
