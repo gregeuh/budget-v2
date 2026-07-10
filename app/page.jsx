@@ -6,7 +6,7 @@ import { useBudget } from "@/lib/store";
 import { euros, moisLabel, aujourdhui, TYPES_COMPTE } from "@/lib/format";
 import { statsMois } from "@/lib/conseils";
 import { cleMois } from "@/lib/format";
-import WalletStack from "@/components/WalletStack";
+import CarrouselComptes from "@/components/CarrouselComptes";
 import SpendChart from "@/components/SpendChart";
 import DonutCat from "@/components/DonutCat";
 import TxRow from "@/components/TxRow";
@@ -17,6 +17,7 @@ import MoisSelecteur from "@/components/MoisSelecteur";
 export default function Accueil() {
   const { comptes, transactions, soldes, profil, credits, projets, setReglagesOuverts } = useBudget();
   const [mois, setMois] = useState(cleMois(aujourdhui()));
+  const [compteActif, setCompteActif] = useState(null);
   const s = statsMois(transactions, mois);
   const totalCredits = credits.reduce((a, c) => a + (c.restant || 0), 0);
   const groupeDe = (c) => (TYPES_COMPTE[c.type] || TYPES_COMPTE.autre).groupe;
@@ -24,7 +25,11 @@ export default function Accueil() {
   const avantages = comptes.filter((c) => groupeDe(c) === "avantages").reduce((a, c) => a + (soldes[c.id] || 0), 0);
   const patrimoine = comptesPatrimoine.reduce((a, c) => a + (soldes[c.id] || 0), 0) - totalCredits;
   const projetPhare = [...projets].sort((a, b) => (b.montantActuel / (b.objectif || 1)) - (a.montantActuel / (a.objectif || 1)))[0];
-  const recentes = [...transactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
+  const recentes = [...transactions]
+    .filter((t) => !compteActif || t.compteId === compteActif)
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 5);
+  const compteAffiche = comptes.find((c) => c.id === compteActif);
 
   // Compte à rebours du salaire + reste à vivre
   let joursAvantSalaire = null;
@@ -103,7 +108,7 @@ export default function Accueil() {
           <h2 className="font-bold">Mes comptes</h2>
           <Link href="/comptes" className="text-sm font-medium text-ciel">Gérer</Link>
         </div>
-        <WalletStack />
+        <CarrouselComptes onChange={setCompteActif} />
       </section>
 
       <div className="pt-4">
@@ -116,12 +121,15 @@ export default function Accueil() {
 
       <section>
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="font-bold">Dernières opérations</h2>
+          <h2 className="font-bold">
+            Dernières opérations
+            {compteAffiche && <span className="ml-1.5 text-sm font-medium text-sourdine">· {compteAffiche.nom}</span>}
+          </h2>
           <Link href="/transactions" className="text-sm font-medium text-ciel">Tout voir</Link>
         </div>
         {recentes.length === 0 ? (
           <p className="rounded-ios bg-carte p-5 text-center text-sm text-sourdine shadow-carte">
-            Ajoute ta première opération avec le bouton +
+            {compteAffiche ? `Aucune opération sur ${compteAffiche.nom} pour l'instant.` : "Ajoute ta première opération avec le bouton +"}
           </p>
         ) : (
           <ul className="space-y-2">
