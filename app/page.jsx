@@ -14,6 +14,7 @@ import PatrimoineChart from "@/components/PatrimoineChart";
 import CountUp from "@/components/CountUp";
 import MoisSelecteur from "@/components/MoisSelecteur";
 import BilanMensuel from "@/components/BilanMensuel";
+import { messageAccueil } from "@/lib/messagesAccueil";
 
 export default function Accueil() {
   const { comptes, transactions, soldes, profil, credits, projets, setReglagesOuverts } = useBudget();
@@ -27,7 +28,7 @@ export default function Accueil() {
     return () => window.removeEventListener("scroll", surScroll);
   }, []);
 
-  const soir = new Date().getHours() < 6 || new Date().getHours() >= 18;
+  const accueil = messageAccueil({ comptes, soldes, profil, transactions });
   const s = statsMois(transactions, mois);
   const totalCredits = credits.reduce((a, c) => a + (c.restant || 0), 0);
   const groupeDe = (c) => (TYPES_COMPTE[c.type] || TYPES_COMPTE.autre).groupe;
@@ -73,7 +74,7 @@ export default function Accueil() {
         >
           <div className="flex items-baseline justify-between">
             <span className="text-sm font-semibold">
-              {soir ? "Bonsoir" : "Bonjour"}{profil.prenom ? ` ${profil.prenom}` : ""}
+              {accueil.mot}{profil.prenom ? ` ${profil.prenom}` : ""} {accueil.emoji}
             </span>
             <span className={`chiffres text-base font-bold ${patrimoine < 0 ? "text-corail" : ""}`}>{euros(patrimoine)}</span>
           </div>
@@ -83,8 +84,10 @@ export default function Accueil() {
       <header className="flex items-start justify-between">
         <div>
           <p className="text-sm text-sourdine">
-            {soir ? "Bonsoir" : "Bonjour"}
-            {profil.prenom ? ` ${profil.prenom}` : ""} {soir ? "🌙" : "☀️"}
+            <span className="font-medium text-encre">
+              {accueil.mot}{profil.prenom ? ` ${profil.prenom}` : ""} {accueil.emoji}
+            </span>
+            {" "}· {accueil.phrase}
           </p>
           <h1 className={`chiffres text-4xl font-bold leading-tight ${patrimoine < 0 ? "text-corail" : ""}`}><CountUp valeur={patrimoine} /></h1>
           <p className="text-sm text-sourdine">

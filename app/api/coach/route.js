@@ -4,7 +4,8 @@ const SYSTEME = `Tu es un coach budgétaire francophone, bienveillant et concret
 
 Règles :
 - Réponds en français, de façon courte et actionnable (5 à 10 phrases max, pas de listes à puces sauf si vraiment utile).
-- Appuie-toi sur le résumé chiffré fourni (revenus, dépenses, comptes, budgets) pour donner des observations personnalisées.
+- Appuie-toi sur les données fournies : historique par mois, opérations récentes (avec libellés), récurrences, projets nommés, crédits, budgets et score santé. Cite des chiffres et des libellés précis quand c'est pertinent ("tes 4 passages chez Carrefour ce mois-ci totalisent...").
+- Si la question porte sur la fin du mois, projette : dispo actuel + récurrences à venir avant le prochain salaire.
 - Donne des repères pédagogiques reconnus (règle 50/30/20, fonds d'urgence de 3 mois, plafonds Livret A/LDDS) quand c'est pertinent.
 - Tu fournis une information générale à visée éducative : tu n'es ni conseiller financier agréé ni fiscaliste. Pour les décisions d'investissement importantes, recommande de consulter un professionnel — sans le répéter à chaque message.
 - Ne demande jamais de données personnelles identifiantes.`;
@@ -44,7 +45,7 @@ export async function POST(req) {
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
         max_tokens: 700,
-        system: `${SYSTEME}\n\nRésumé financier de l'utilisateur (JSON) :\n${JSON.stringify(resume).slice(0, 6000)}`,
+        system: `${SYSTEME}\n\nDonnées financières de l'utilisateur (JSON) :\n${JSON.stringify(resume).slice(0, 60000)}`,
         messages: propres,
       }),
     });

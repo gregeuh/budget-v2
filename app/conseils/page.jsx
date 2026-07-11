@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { genererConseils, resumePourCoach } from "@/lib/conseils";
+import { calculerScore } from "@/lib/score";
 import PointsSautillants from "@/components/PointsSautillants";
 import ScoreSante from "@/components/ScoreSante";
 
@@ -32,7 +33,10 @@ export default function Conseils() {
       const rep = await fetch("/api/coach", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: nouveaux.slice(-10), resume: resumePourCoach(donnees) }),
+        body: JSON.stringify({
+          messages: nouveaux.slice(-10),
+          resume: { ...resumePourCoach(donnees), scoreSante: (({ total, piliers }) => ({ total, piliers: piliers.map((p) => ({ pilier: p.label, points: p.points, sur: 20 })) }))(calculerScore(donnees)) },
+        }),
       });
       const data = await rep.json();
       setMessages((m) => [...m, { role: "assistant", content: data.reponse || data.erreur || "Réponse vide." }]);
@@ -45,8 +49,9 @@ export default function Conseils() {
 
   const suggestions = [
     "Analyse mon mois en cours",
-    "Où puis-je économiser ?",
-    "Comment répartir mon épargne ?",
+    "Vais-je finir le mois dans le vert ?",
+    "Où puis-je économiser sans me priver ?",
+    "Comment améliorer mon score santé ?",
   ];
 
   return (
@@ -79,7 +84,7 @@ export default function Conseils() {
       <section className="rounded-ios bg-carte p-3.5 shadow-carte">
         <h2 className="font-semibold">Coach budgétaire ✨</h2>
         <p className="mb-3 text-xs text-sourdine">
-          Le coach analyse un résumé anonymisé de tes chiffres (montants et catégories, sans libellés personnels). Informations générales à visée pédagogique, pas un conseil financier personnalisé.
+          Le coach reçoit tes chiffres via ta propre clé API : soldes, 6 mois d'historique, opérations récentes (avec libellés), récurrences, projets et score. Informations générales à visée pédagogique, pas un conseil financier personnalisé.
         </p>
 
         {messages.length === 0 && (
