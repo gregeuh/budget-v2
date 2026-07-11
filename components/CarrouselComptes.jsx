@@ -80,7 +80,7 @@ export default function CarrouselComptes({ onChange }) {
                   </span>
                 </div>
                 <div className="mt-3">
-                  <div className={`chiffres text-[30px] font-bold leading-none ${estTous ? "text-white" : ""}`}>
+                  <div className={`chiffres text-[30px] font-bold leading-none ${estTous ? "text-white" : solde < 0 ? "text-corail" : ""}`}>
                     {euros(solde, { precis: true })}
                   </div>
                   <div className={`mt-0.5 text-[13px] ${estTous ? "text-white/70" : "text-sourdine"}`}>
@@ -90,9 +90,9 @@ export default function CarrouselComptes({ onChange }) {
                 {plafond && (
                   <div className="mt-3">
                     <div className="h-1.5 overflow-hidden rounded-full bg-voile">
-                      <div className="jauge-in h-full rounded-full" style={{ width: `${Math.min(100, (solde / plafond) * 100)}%`, background: coul.vif }} />
+                      <div className="jauge-in h-full rounded-full" style={{ width: `${Math.max(0, Math.min(100, (solde / plafond) * 100))}%`, background: coul.vif }} />
                     </div>
-                    <p className="mt-1 text-[11px] text-sourdine">{Math.round((solde / plafond) * 100)} % du plafond</p>
+                    <p className="mt-1 text-[11px] text-sourdine">{Math.max(0, Math.round((solde / plafond) * 100))} % du plafond</p>
                   </div>
                 )}
               </div>

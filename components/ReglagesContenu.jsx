@@ -154,16 +154,9 @@ function RecurrentesSheet({ onFermer }) {
   );
 }
 
-/* ---- Panneau principal ---- */
-export default function ReglagesContenu() {
-  const {
-    profil, modeLocal, user, comptes, transactions, budgets,
-    recurrentes, projets, credits, categoriesPerso,
-    reinitialiserDemo, importerDonnees, notifier,
-  } = useBudget();
-
-  const [fiche, setFiche] = useState(null); // "profil" | "apparence" | "categories" | "recurrentes"
-  const [confirmeEffacer, setConfirmeEffacer] = useState(false);
+/* ---- Fiche données ---- */
+function DonneesSheet({ onFermer }) {
+  const { comptes, transactions, budgets, recurrentes, projets, credits, profil, categoriesPerso, importerDonnees, notifier } = useBudget();
 
   const exporter = () => {
     const blob = new Blob(
@@ -194,103 +187,103 @@ export default function ReglagesContenu() {
     l.readAsText(f);
   };
 
+  return (
+    <Sheet titre="Sauvegarde & données" onFermer={onFermer}>
+      <div className="space-y-3">
+        <p className="text-sm text-sourdine">
+          L'export JSON contient tout : comptes, opérations, budgets, projets, crédits, récurrences et catégories. C'est ta sauvegarde et ton ticket de migration.
+        </p>
+        <button onClick={exporter} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste">
+          ⬇︎ Exporter mes données
+        </button>
+        <label className="block w-full cursor-pointer rounded-ios bg-voile py-3 text-center font-semibold">
+          ⬆︎ Importer une sauvegarde
+          <input type="file" accept=".json,application/json" className="hidden" onChange={importer} />
+        </label>
+      </div>
+    </Sheet>
+  );
+}
+
+/* ---- Rangée plate et aérée ---- */
+function Rangee({ icone, label, onClick, danger = false, dernier = false }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex w-full items-center gap-4 py-4 text-left active:opacity-60 ${dernier ? "" : "border-b border-bordure"}`}
+    >
+      <span className="w-7 text-center text-xl">{icone}</span>
+      <span className={`flex-1 text-[16px] font-medium ${danger ? "text-corail" : ""}`}>{label}</span>
+      {!danger && <span className="text-lg text-sourdine/40">›</span>}
+    </button>
+  );
+}
+
+/* ---- Panneau principal (style épuré) ---- */
+export default function ReglagesContenu() {
+  const { profil, modeLocal, user, recurrentes, categoriesPerso, reinitialiserDemo } = useBudget();
+  const [fiche, setFiche] = useState(null);
+  const [confirmeEffacer, setConfirmeEffacer] = useState(false);
+
   const deconnexion = async () => {
     const { signOut } = await import("firebase/auth");
     await signOut(auth);
   };
 
-  const initiale = (profil.prenom || "").trim().charAt(0).toUpperCase();
   const nbRecurrentes = recurrentes.filter((r) => r.actif !== false).length;
   const nbCategories = Object.keys(categoriesPerso || {}).length;
 
   return (
-    <div className="space-y-5 pb-6">
-      {/* En-tête profil */}
-      <button onClick={() => setFiche("profil")} className="mx-auto block text-center">
-        <span
-          className="mx-auto flex h-[60px] w-[60px] items-center justify-center rounded-full text-2xl font-bold text-white shadow-flottant"
-          style={{ background: "linear-gradient(145deg, #35C79A, #17203A)" }}
-        >
-          {initiale || "👤"}
-        </span>
-        <span className="mt-2.5 block text-lg font-bold">{profil.prenom || "Mon profil"}</span>
-        <span className="mt-0.5 block text-sm text-sourdine">
-          {modeLocal ? "Données sur cet appareil" : user?.email}
-        </span>
-      </button>
+    <div className="flex min-h-full flex-col">
+      {/* Salutation */}
+      <h1 className="pb-5 pt-2 text-[26px] font-bold tracking-tight">
+        Salut{profil.prenom ? ` ${profil.prenom}` : ""} !
+      </h1>
+      <div className="border-b border-bordure" />
 
-      {/* Tuiles d'accès rapide */}
-      <div className="grid grid-cols-2 gap-3">
-        <button onClick={() => setFiche("categories")} className="rounded-ios bg-carte p-3.5 text-left shadow-carte active:scale-[0.98] transition-transform">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-lavande-pale text-xl">🏷️</span>
-          <span className="mt-4 block font-bold">Catégories</span>
-          <span className="block text-xs text-sourdine">{nbCategories > 0 ? `${nbCategories} personnalisée${nbCategories > 1 ? "s" : ""}` : "Personnalise tes libellés"}</span>
-        </button>
-        <button onClick={() => setFiche("recurrentes")} className="relative rounded-ios bg-carte p-3.5 text-left shadow-carte active:scale-[0.98] transition-transform">
-          {nbRecurrentes > 0 && (
-            <span className="absolute right-3 top-3 flex h-6 min-w-6 items-center justify-center rounded-full bg-corail px-1.5 text-xs font-bold text-white">
-              {nbRecurrentes}
-            </span>
-          )}
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-ciel-pale text-xl">🔁</span>
-          <span className="mt-4 block font-bold">Récurrentes</span>
-          <span className="block text-xs text-sourdine">Tes opérations automatiques</span>
-        </button>
-      </div>
+      {/* Liste plate */}
+      <nav className="pt-1">
+        <Rangee icone="👤" label="Mon profil" onClick={() => setFiche("profil")} />
+        <Rangee icone="🌗" label="Apparence" onClick={() => setFiche("apparence")} />
+        <Rangee icone="🏷️" label={`Catégories${nbCategories > 0 ? ` (${nbCategories})` : ""}`} onClick={() => setFiche("categories")} />
+        <Rangee icone="🔁" label={`Récurrentes${nbRecurrentes > 0 ? ` (${nbRecurrentes})` : ""}`} onClick={() => setFiche("recurrentes")} />
+        <Rangee icone="💾" label="Sauvegarde & données" onClick={() => setFiche("donnees")} dernier />
+      </nav>
 
-      {/* Groupe : préférences */}
-      <div className="overflow-hidden rounded-ios bg-carte shadow-carte">
-        <Ligne icone="👤" label="Mon profil" detail="Prénom, revenu, jour du salaire" onClick={() => setFiche("profil")} />
-        <Ligne
-          icone="🌗"
-          label="Apparence"
-          detail={THEMES.find((t) => t.id === (profil.theme || "auto"))?.label}
-          onClick={() => setFiche("apparence")}
+      {/* Zone de sortie, séparée par une bande */}
+      <div className="-mx-4 my-3 h-2 bg-voile" />
+      {modeLocal ? (
+        <Rangee
+          icone="🗑️"
+          label={confirmeEffacer ? "Confirmer l'effacement total ?" : "Tout effacer"}
+          danger
           dernier
+          onClick={() => {
+            if (!confirmeEffacer) return setConfirmeEffacer(true);
+            reinitialiserDemo();
+            setConfirmeEffacer(false);
+          }}
         />
-      </div>
+      ) : (
+        <Rangee icone="🚪" label="Se déconnecter" danger dernier onClick={deconnexion} />
+      )}
 
-      {/* Groupe : données */}
-      <div className="overflow-hidden rounded-ios bg-carte shadow-carte">
-        <Ligne icone="⬇︎" label="Exporter mes données" detail="Fichier JSON à conserver" onClick={exporter} droite={<span />} />
-        <label className="block cursor-pointer">
-          <Ligne icone="⬆︎" label="Importer une sauvegarde" detail="Restaurer un export JSON" onClick={() => {}} droite={<span />} dernier={modeLocal ? false : true} />
-          <input type="file" accept=".json,application/json" className="hidden" onChange={importer} />
-        </label>
-        {modeLocal && (
-          <Ligne
-            icone="🗑️"
-            label={confirmeEffacer ? "Confirmer l'effacement total ?" : "Tout effacer"}
-            detail={confirmeEffacer ? "Touche à nouveau pour confirmer" : undefined}
-            danger
-            droite={<span />}
-            dernier
-            onClick={() => {
-              if (!confirmeEffacer) return setConfirmeEffacer(true);
-              reinitialiserDemo();
-              setConfirmeEffacer(false);
-            }}
-          />
-        )}
+      {/* Pied de panneau */}
+      <div className="-mx-4 mt-auto bg-voile px-4 py-5">
+        <p className="text-xs leading-relaxed text-sourdine">
+          {modeLocal ? "Données stockées sur cet appareil — pense à exporter régulièrement." : `Connecté : ${user?.email}`}
+        </p>
+        <p className="mt-2 text-xs text-sourdine">
+          📲 Astuce : Safari → Partager → « Sur l'écran d'accueil » pour installer l'app.
+        </p>
+        <p className="mt-2 text-xs font-semibold text-sourdine/60">Budget v2</p>
       </div>
-
-      {/* Groupe : compte */}
-      <div className="overflow-hidden rounded-ios bg-carte shadow-carte">
-        {modeLocal ? (
-          <Ligne icone="📱" label="Sans connexion" detail="Les données restent sur cet appareil — exporte régulièrement" onClick={() => {}} droite={<span />} dernier />
-        ) : (
-          <Ligne icone="🚪" label="Se déconnecter" detail={user?.email} danger onClick={deconnexion} droite={<span />} dernier />
-        )}
-      </div>
-
-      <p className="px-4 text-center text-xs text-sourdine">
-        Astuce iPhone : Safari → Partager → « Sur l'écran d'accueil » pour installer l'app en plein écran.
-      </p>
 
       {fiche === "profil" && <ProfilSheet onFermer={() => setFiche(null)} />}
       {fiche === "apparence" && <ApparenceSheet onFermer={() => setFiche(null)} />}
       {fiche === "categories" && <CategoriesSheet onFermer={() => setFiche(null)} />}
       {fiche === "recurrentes" && <RecurrentesSheet onFermer={() => setFiche(null)} />}
+      {fiche === "donnees" && <DonneesSheet onFermer={() => setFiche(null)} />}
     </div>
   );
 }

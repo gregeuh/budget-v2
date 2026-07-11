@@ -142,7 +142,7 @@ export function DataProvider({ children }) {
           onSnapshot(collection(db, `${base}/credits`), (s) =>
             setCredits(s.docs.map((d) => ({ id: d.id, ...d.data() })))
           , surErreur),
-          onSnapshot(doc(db, base, "app"), (s) => {
+          onSnapshot(doc(db, `${base}/parametres/app`), (s) => {
             const d = s.data() || {};
             setBudgets(d.budgets || {});
             setProfil({ theme: "auto", jourSalaire: 0, ...(d.profil || {}) });
@@ -252,7 +252,7 @@ export function DataProvider({ children }) {
     setBudgets(b); setProfil(p);
     if (modeLocal) return;
     const { setDoc, doc, base } = await fs();
-    setDoc(doc(db, base, "app"), { budgets: b, profil: p }, { merge: true }).catch((e) => console.error("Écriture:", e));
+    setDoc(doc(db, `${base}/parametres/app`), { budgets: b, profil: p }, { merge: true }).catch((e) => console.error("Écriture:", e));
     notifier("Enregistré");
   }, [modeLocal, budgets, profil, fs, notifier]);
 
@@ -453,7 +453,7 @@ export function DataProvider({ children }) {
       }
       await batch.commit();
     }
-    await setDoc(doc(db, base, "app"), { budgets: donnees.budgets, profil: { ...donnees.profil, onboarde: true }, categoriesPerso: donnees.categoriesPerso }, { merge: true });
+    await setDoc(doc(db, `${base}/parametres/app`), { budgets: donnees.budgets, profil: { ...donnees.profil, onboarde: true }, categoriesPerso: donnees.categoriesPerso }, { merge: true });
     return true;
   }, [modeLocal, fs]);
 
@@ -502,7 +502,7 @@ export function DataProvider({ children }) {
     setCategoriesPerso(perso);
     if (!modeLocal) {
       const { setDoc, doc, base } = await fs();
-      await setDoc(doc(db, base, "app"), { categoriesPerso: perso }, { merge: true });
+      setDoc(doc(db, `${base}/parametres/app`), { categoriesPerso: perso }, { merge: true }).catch((e) => console.error("Écriture:", e));
     }
     notifier("Catégories enregistrées", "🏷️");
   }, [modeLocal, fs, notifier]);

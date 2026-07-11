@@ -74,7 +74,7 @@ export default function Accueil() {
             <span className="text-sm font-semibold">
               {soir ? "Bonsoir" : "Bonjour"}{profil.prenom ? ` ${profil.prenom}` : ""}
             </span>
-            <span className="chiffres text-base font-bold">{euros(patrimoine)}</span>
+            <span className={`chiffres text-base font-bold ${patrimoine < 0 ? "text-corail" : ""}`}>{euros(patrimoine)}</span>
           </div>
         </div>
       </div>
@@ -85,7 +85,7 @@ export default function Accueil() {
             {soir ? "Bonsoir" : "Bonjour"}
             {profil.prenom ? ` ${profil.prenom}` : ""} {soir ? "🌙" : "☀️"}
           </p>
-          <h1 className="chiffres text-4xl font-bold leading-tight"><CountUp valeur={patrimoine} /></h1>
+          <h1 className={`chiffres text-4xl font-bold leading-tight ${patrimoine < 0 ? "text-corail" : ""}`}><CountUp valeur={patrimoine} /></h1>
           <p className="text-sm text-sourdine">
             Patrimoine net
             {totalCredits > 0 && ` · crédits déduits (${euros(totalCredits)})`}

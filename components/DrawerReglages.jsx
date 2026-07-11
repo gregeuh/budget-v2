@@ -11,7 +11,7 @@ export default function DrawerReglages() {
     <div className="fixed inset-0 z-50 mx-auto max-w-md">
       <div className="fade-in absolute inset-0 bg-encre/30" onClick={fermer} />
       <aside
-        className="drawer-in absolute inset-y-0 left-0 w-[88%] max-w-sm overflow-y-auto bg-fond px-4 pb-10 shadow-flottant"
+        className="drawer-in absolute inset-y-0 left-0 flex w-[86%] max-w-sm flex-col overflow-y-auto bg-fond px-4 shadow-flottant"
         style={{ paddingTop: "calc(var(--safe-top) + 12px)" }}
         role="dialog"
         aria-label="Réglages"

@@ -186,14 +186,14 @@ export default function Comptes() {
                             <div className="text-xs" style={{ color: coul.texte }}>{t.label}</div>
                           </div>
                         </div>
-                        <span className="chiffres text-lg font-bold">{euros(solde)}</span>
+                        <span className={`chiffres text-lg font-bold ${solde < 0 ? "text-corail" : ""}`}>{euros(solde)}</span>
                       </div>
                       {plafond && (
                         <div className="mt-3">
                           <div className="h-1.5 overflow-hidden rounded-full bg-voile">
-                            <div className="jauge-in h-full rounded-full" style={{ width: `${Math.min(100, (solde / plafond) * 100)}%`, background: coul.vif }} />
+                            <div className="jauge-in h-full rounded-full" style={{ width: `${Math.max(0, Math.min(100, (solde / plafond) * 100))}%`, background: coul.vif }} />
                           </div>
-                          <p className="mt-1 text-xs text-sourdine">{Math.round((solde / plafond) * 100)} % du plafond ({euros(plafond)})</p>
+                          <p className="mt-1 text-xs text-sourdine">{Math.max(0, Math.round((solde / plafond) * 100))} % du plafond ({euros(plafond)})</p>
                         </div>
                       )}
                     </button>

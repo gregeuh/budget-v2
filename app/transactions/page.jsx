@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
-import { cleMois, euros } from "@/lib/format";
+import { cleMois, euros, aujourdhui, prochaineOccurrence, prochaineDateSalaire, dateCourte, TYPES_COMPTE } from "@/lib/format";
 import { statsMois } from "@/lib/conseils";
 import TxRow from "@/components/TxRow";
 import ImportCSV from "@/components/ImportCSV";
 
 export default function Transactions() {
-  const { transactions, comptes, categories } = useBudget();
+  const { transactions, comptes, categories, recurrentes, soldes, profil } = useBudget();
   const [compteId, setCompteId] = useState("tous");
   const [importOuvert, setImportOuvert] = useState(false);
   const [recherche, setRecherche] = useState("");
@@ -24,7 +24,7 @@ export default function Transactions() {
       return normaliser(t.libelle).includes(q) || normaliser(cat.label).includes(q);
     });
     const groupes = {};
-    for (const t of filtrees) {
+    for (const t of filtrees.filter((t) => t.date <= aujourdhui())) {
       const m = cleMois(t.date);
       (groupes[m] = groupes[m] || []).push(t);
     }
@@ -47,6 +47,64 @@ export default function Transactions() {
     }
     return { nb, depense, recu };
   }, [parMois, recherche]);
+
+  // ------- À venir : opérations futures réelles + échéances des récurrentes -------
+  const salaireISO = prochaineDateSalaire(profil.jourSalaire);
+  const horizonISO = salaireISO || new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+
+  const aVenir = useMemo(() => {
+    const auj = aujourdhui();
+    const reelles = transactions
+      .filter((t) => t.date > auj && t.date <= horizonISO)
+      .map((t) => ({ ...t, virtuel: false }));
+    const virtuelles = [];
+    for (const r of recurrentes) {
+      if (r.actif === false) continue;
+      let d = r.prochaine, garde = 0;
+      while (d && d <= horizonISO && garde < 24) {
+        if (d > auj) {
+          virtuelles.push({
+            id: `${r.id}-${d}`, date: d, montant: r.montant, categorie: r.categorie,
+            libelle: r.libelle, compteId: r.compteId, virtuel: true,
+          });
+        }
+        d = prochaineOccurrence(d, r.frequence);
+        garde++;
+      }
+    }
+    return [...reelles, ...virtuelles].sort((a, b) => a.date.localeCompare(b.date));
+  }, [transactions, recurrentes, horizonISO]);
+
+  const aVenirAffiche = useMemo(
+    () => aVenir.filter((t) => compteId === "tous" || t.compteId === compteId || t.versId === compteId),
+    [aVenir, compteId]
+  );
+
+  // Reste à vivre projeté : disponible sur les comptes du quotidien + flux prévus avant le salaire
+  const projection = useMemo(() => {
+    const scope = new Set(
+      comptes.filter((c) => !["epargne", "invest"].includes((TYPES_COMPTE[c.type] || TYPES_COMPTE.autre).groupe)).map((c) => c.id)
+    );
+    const dispo = comptes.filter((c) => scope.has(c.id)).reduce((a, c) => a + (soldes[c.id] || 0), 0);
+    let prevu = 0, attendu = 0;
+    for (const t of aVenir) {
+      if (t.horsSolde) continue;
+      if (salaireISO && t.date >= salaireISO) continue; // le jour de paie remet les compteurs
+      let impact = 0;
+      if (t.versId) {
+        const val = Math.abs(t.montant);
+        if (scope.has(t.compteId)) impact -= val;
+        if (scope.has(t.versId)) impact += val;
+      } else if (scope.has(t.compteId)) {
+        impact = t.montant;
+      }
+      if (impact < 0) prevu += -impact;
+      else attendu += impact;
+    }
+    const reste = dispo - prevu + attendu;
+    const jours = Math.max(1, Math.round((new Date(horizonISO) - new Date()) / 86400000));
+    return { dispo, prevu, attendu, reste, jours };
+  }, [comptes, soldes, aVenir, salaireISO, horizonISO]);
 
   const nomMois = (m) => {
     const s = new Date(m + "-15").toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
@@ -100,6 +158,68 @@ export default function Transactions() {
           {bilan.depense > 0 && ` · ${euros(bilan.depense)} dépensés`}
           {bilan.recu > 0 && ` · ${euros(bilan.recu)} reçus`}
         </div>
+      )}
+
+      {/* Reste à vivre projeté */}
+      {!recherche && (
+        <div className="rounded-ios bg-carte p-3.5 shadow-carte">
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-sm font-semibold">
+              💼 Reste à vivre
+              <span className="ml-1.5 font-medium text-sourdine">
+                {salaireISO ? `jusqu'au salaire (${dateCourte(salaireISO)})` : "sur 30 jours"}
+              </span>
+            </h2>
+            <span className="text-xs text-sourdine">{projection.jours} j</span>
+          </div>
+          <div className={`chiffres mt-1 text-3xl font-bold ${projection.reste < 0 ? "text-corail" : ""}`}>
+            {euros(projection.reste)}
+          </div>
+          <p className="tnum mt-1 text-xs text-sourdine">
+            {euros(projection.dispo)} dispo
+            {projection.prevu > 0 && ` − ${euros(projection.prevu)} prévus`}
+            {projection.attendu > 0 && ` + ${euros(projection.attendu)} attendus`}
+            {" "}· ~{euros(projection.reste / projection.jours)} / jour
+          </p>
+          {!salaireISO && (
+            <p className="mt-1.5 text-xs text-sourdine">Renseigne ton jour de salaire dans ⚙️ → Mon profil pour caler la projection sur ta paie.</p>
+          )}
+        </div>
+      )}
+
+      {/* À venir */}
+      {!recherche && aVenirAffiche.length > 0 && (
+        <section>
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-sourdine">À venir</h2>
+          <ul className="space-y-2">
+            {aVenirAffiche.map((t, i) =>
+              t.virtuel ? (
+                <li
+                  key={t.id}
+                  className="pop-in flex items-center gap-3 rounded-2xl border border-dashed border-bordure bg-carte/50 px-3 py-2 opacity-75"
+                  style={{ animationDelay: `${Math.min(i, 8) * 50}ms` }}
+                >
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-fond text-base">
+                    {(categories[t.categorie] || categories.autre).icone}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold">{t.libelle}</span>
+                    <span className="block text-xs text-sourdine">{dateCourte(t.date)} · 🔁 prévu</span>
+                  </span>
+                  <span className={`tnum shrink-0 text-sm font-bold ${t.montant > 0 ? "text-menthe" : "text-encre"}`}>
+                    {t.montant > 0 ? "+" : ""}{euros(t.montant, { precis: true })}
+                  </span>
+                </li>
+              ) : (
+                <TxRow key={t.id} tx={t} avecCompte={compteId === "tous"} retard={i} />
+              )
+            )}
+          </ul>
+        </section>
+      )}
+
+      {parMois.length > 0 && !recherche && (
+        <h2 className="!mb-0 text-sm font-semibold uppercase tracking-wide text-sourdine">Passées</h2>
       )}
 
       {parMois.length === 0 && (

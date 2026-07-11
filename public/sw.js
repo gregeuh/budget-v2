@@ -1,5 +1,5 @@
 // Service worker minimal : cache des ressources statiques, réseau d'abord pour le reste.
-const CACHE = "budget-v2-2";
+const CACHE = "budget-v2-4";
 const STATIQUES = ["/manifest.json", "/icons/icon-192.png", "/icons/icon-512.png"];
 
 self.addEventListener("install", (e) => {

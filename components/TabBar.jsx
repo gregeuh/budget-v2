@@ -34,6 +34,9 @@ export default function TabBar({ onAjouter, ajoutOuvert = false }) {
             <Link
               key={o.href}
               href={o.href}
+              onClick={() => {
+                if (chemin === o.href) window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
               className={`relative flex flex-col items-center gap-0.5 rounded-xl py-1 text-[10px] font-medium transition-colors ${
                 chemin === o.href ? "bg-voile text-encre" : "text-sourdine"
               }`}

@@ -9,6 +9,7 @@ import Login from "./Login";
 import Onboarding from "./Onboarding";
 import Toast from "./Toast";
 import DrawerReglages from "./DrawerReglages";
+import PointsSautillants from "./PointsSautillants";
 
 export default function AppShell({ children }) {
   const { pret, user, modeLocal, profil, comptes, erreurInit, reglagesOuverts } = useBudget();
@@ -41,6 +42,11 @@ export default function AppShell({ children }) {
   return (
     <div className="mx-auto min-h-dvh max-w-md" style={{ paddingTop: "var(--safe-top)" }}>
       <Toast />
+      {erreurInit && (
+        <div className="mx-4 mt-3 rounded-ios bg-corail-pale px-3.5 py-2 text-xs font-medium text-corail-texte">
+          ⚠️ {erreurInit}
+        </div>
+      )}
       <main key={chemin} className="page-in px-4 pb-32 pt-3">{children}</main>
       <TabBar onAjouter={() => setAjoutOuvert(true)} ajoutOuvert={ajoutOuvert} />
       {ajoutOuvert && <AddSheet onFermer={() => setAjoutOuvert(false)} />}

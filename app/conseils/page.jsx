@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { genererConseils, resumePourCoach } from "@/lib/conseils";
+import PointsSautillants from "@/components/PointsSautillants";
 
 const TONS = {
   alerte: "bg-corail-pale",
@@ -94,7 +95,7 @@ export default function Conseils() {
               {m.content}
             </div>
           ))}
-          {enCours && <div className="w-14 rounded-2xl bg-fond px-3.5 py-2.5 text-sm text-sourdine">…</div>}
+          {enCours && <div className="w-fit rounded-2xl bg-fond px-3.5 py-3"><PointsSautillants taille={6} couleur="var(--c-sourdine)" /></div>}
           <div ref={finRef} />
         </div>
 
