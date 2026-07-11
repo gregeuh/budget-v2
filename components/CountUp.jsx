@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { euros } from "@/lib/format";
 
-export default function CountUp({ valeur, duree = 700 }) {
+export default function CountUp({ valeur, duree = 700, entier = false }) {
   const [affiche, setAffiche] = useState(valeur);
   const precedent = useRef(null);
 
@@ -27,5 +27,5 @@ export default function CountUp({ valeur, duree = 700 }) {
     return () => cancelAnimationFrame(raf);
   }, [valeur, duree]);
 
-  return <>{euros(affiche)}</>;
+  return <>{entier ? Math.round(affiche) : euros(affiche)}</>;
 }

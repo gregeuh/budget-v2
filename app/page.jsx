@@ -13,6 +13,7 @@ import TxRow from "@/components/TxRow";
 import PatrimoineChart from "@/components/PatrimoineChart";
 import CountUp from "@/components/CountUp";
 import MoisSelecteur from "@/components/MoisSelecteur";
+import BilanMensuel from "@/components/BilanMensuel";
 
 export default function Accueil() {
   const { comptes, transactions, soldes, profil, credits, projets, setReglagesOuverts } = useBudget();
@@ -32,7 +33,7 @@ export default function Accueil() {
   const groupeDe = (c) => (TYPES_COMPTE[c.type] || TYPES_COMPTE.autre).groupe;
   const comptesPatrimoine = comptes.filter((c) => groupeDe(c) !== "avantages");
   const avantages = comptes.filter((c) => groupeDe(c) === "avantages").reduce((a, c) => a + (soldes[c.id] || 0), 0);
-  const patrimoine = comptesPatrimoine.reduce((a, c) => a + (soldes[c.id] || 0), 0) - totalCredits;
+  const patrimoine = comptesPatrimoine.reduce((a, c) => a + (soldes[c.id] || 0), 0);
   const projetPhare = [...projets].sort((a, b) => (b.montantActuel / (b.objectif || 1)) - (a.montantActuel / (a.objectif || 1)))[0];
   const recentes = [...transactions]
     .filter((t) => !compteActif || t.compteId === compteActif || t.versId === compteActif)
@@ -87,13 +88,15 @@ export default function Accueil() {
           </p>
           <h1 className={`chiffres text-4xl font-bold leading-tight ${patrimoine < 0 ? "text-corail" : ""}`}><CountUp valeur={patrimoine} /></h1>
           <p className="text-sm text-sourdine">
-            Patrimoine net
-            {totalCredits > 0 && ` · crédits déduits (${euros(totalCredits)})`}
+            Patrimoine
             {avantages > 0 && ` · hors titres-resto (${euros(avantages)})`}
+            {totalCredits > 0 && ` · hors crédits (−${euros(totalCredits)})`}
           </p>
         </div>
         <button onClick={() => setReglagesOuverts(true)} aria-label="Réglages" className="flex h-9 w-9 items-center justify-center rounded-full bg-carte text-base shadow-carte active:scale-95 transition-transform">⚙️</button>
       </header>
+
+      <BilanMensuel />
 
       <MoisSelecteur mois={mois} onChanger={setMois} />
 

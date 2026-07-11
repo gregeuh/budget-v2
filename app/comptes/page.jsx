@@ -146,7 +146,7 @@ export default function Comptes() {
         <div>
           <h1 className="text-xl font-bold">Comptes</h1>
           <p className="tnum text-sm text-sourdine">
-            Total : {euros(total)}{(totalCredits > 0 || avantages > 0) && ` · Net : ${euros(total - totalCredits - avantages)}`}
+            Total : {euros(total)}{avantages > 0 && ` · hors titres-resto : ${euros(total - avantages)}`}
           </p>
         </div>
         <button onClick={() => setFiche("nouveau")} className="rounded-pill bg-encre px-4 py-2 text-sm font-semibold text-contraste">

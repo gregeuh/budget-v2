@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { genererConseils, resumePourCoach } from "@/lib/conseils";
 import PointsSautillants from "@/components/PointsSautillants";
+import ScoreSante from "@/components/ScoreSante";
 
 const TONS = {
   alerte: "bg-corail-pale",
@@ -51,6 +52,8 @@ export default function Conseils() {
   return (
     <div className="space-y-5">
       <h1 className="text-xl font-bold">Conseils</h1>
+
+      <ScoreSante />
 
       {/* Conseils automatiques */}
       <section className="space-y-2">
