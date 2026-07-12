@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { cleMois, euros, aujourdhui, prochaineOccurrence, prochaineDateSalaire, dateCourte, TYPES_COMPTE } from "@/lib/format";
 import { statsMois } from "@/lib/conseils";
@@ -105,6 +105,15 @@ export default function Transactions() {
     const jours = Math.max(1, Math.round((new Date(horizonISO) - new Date()) / 86400000));
     return { dispo, prevu, attendu, reste, jours };
   }, [comptes, soldes, aVenir, salaireISO, horizonISO]);
+
+  const [astuce, setAstuce] = useState(false);
+  useEffect(() => {
+    try { setAstuce(!localStorage.getItem("astuce-swipe")); } catch {}
+  }, []);
+  const fermerAstuce = () => {
+    setAstuce(false);
+    try { localStorage.setItem("astuce-swipe", "1"); } catch {}
+  };
 
   const nomMois = (m) => {
     const s = new Date(m + "-15").toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
@@ -219,7 +228,14 @@ export default function Transactions() {
       )}
 
       {parMois.length > 0 && !recherche && (
-        <h2 className="!mb-0 text-sm font-semibold uppercase tracking-wide text-sourdine">Passées</h2>
+        <div className="flex items-baseline justify-between">
+          <h2 className="!mb-0 text-sm font-semibold uppercase tracking-wide text-sourdine">Passées</h2>
+          {astuce && (
+            <button onClick={fermerAstuce} className="text-[11px] font-medium text-sourdine">
+              👈 Glisse une ligne pour supprimer · OK
+            </button>
+          )}
+        </div>
       )}
 
       {parMois.length === 0 && (
