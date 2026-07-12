@@ -118,10 +118,10 @@ export default function Conseils() {
           <button
             onClick={envoyer}
             disabled={!saisie.trim() || enCours}
-            aria-label="Envoyer"
+            aria-label={enCours ? "Le coach réfléchit" : "Envoyer"}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-encre text-contraste disabled:opacity-40"
           >
-            ↑
+            {enCours ? <PointsSautillants taille={4} couleur="var(--c-contraste)" /> : "↑"}
           </button>
         </div>
       </section>

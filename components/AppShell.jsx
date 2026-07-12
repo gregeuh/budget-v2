@@ -18,8 +18,8 @@ export default function AppShell({ children }) {
 
   if (!pret) {
     return (
-      <div className="flex h-dvh items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-bordure border-t-menthe" />
+      <div className="flex h-dvh items-center justify-center bg-fond">
+        <PointsSautillants taille={12} />
       </div>
     );
   }

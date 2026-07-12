@@ -15,6 +15,7 @@ import CountUp from "@/components/CountUp";
 import ChiffresRoulants from "@/components/ChiffresRoulants";
 import MoisSelecteur from "@/components/MoisSelecteur";
 import BilanMensuel from "@/components/BilanMensuel";
+import PremiersPas from "@/components/PremiersPas";
 import { messageAccueil } from "@/lib/messagesAccueil";
 
 export default function Accueil() {
@@ -99,6 +100,8 @@ export default function Accueil() {
         </div>
         <button onClick={() => setReglagesOuverts(true)} aria-label="Réglages" className="flex h-9 w-9 items-center justify-center rounded-full bg-carte text-base shadow-carte active:scale-95 transition-transform">⚙️</button>
       </header>
+
+      <PremiersPas onAjouter={() => document.querySelector("[data-bouton-ajout]")?.click()} />
 
       <BilanMensuel />
 

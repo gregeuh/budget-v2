@@ -78,6 +78,19 @@ export default function AddSheet({ onFermer }) {
     setEtape(2);
   };
 
+  // Doublon probable : même compte, même montant, même jour (± libellé proche)
+  const doublon = useMemo(() => {
+    if (mode === "virement" || valeur <= 0 || !compteId) return null;
+    const signe = mode === "depense" ? -1 : 1;
+    return transactions.find(
+      (t) =>
+        t.date === date &&
+        t.compteId === compteId &&
+        Math.abs(t.montant - signe * valeur) < 0.005 &&
+        !t.versId
+    ) || null;
+  }, [transactions, mode, valeur, compteId, date]);
+
   const cats = Object.entries(categories).filter(([, c]) =>
     mode === "revenu" ? c.type === "revenu" : c.type !== "revenu" && c.type !== "virement"
   );
@@ -253,6 +266,12 @@ export default function AddSheet({ onFermer }) {
                 <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${horsSolde ? "translate-x-[22px]" : "translate-x-0.5"}`} />
               </span>
             </button>
+          )}
+
+          {doublon && (
+            <div className="fade-in rounded-ios bg-beurre-pale px-3.5 py-2.5 text-xs text-beurre-texte">
+              ⚠️ Une opération identique existe déjà ce jour-là ({doublon.libelle || "sans libellé"}, {euros(doublon.montant, { precis: true })}). Doublon ?
+            </div>
           )}
 
           <button

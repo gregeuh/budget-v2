@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { euros, dateCourte } from "@/lib/format";
 import Sheet from "./Sheet";
+import PointsSautillants from "./PointsSautillants";
 
 // ---- Catégorisation automatique par mots-clés (banques françaises) ----
 const REGLES_CAT = [
@@ -215,8 +216,15 @@ export default function ImportCSV({ onFermer }) {
               </li>
             ))}
           </ul>
-          <button onClick={importer} disabled={nbSelection === 0 || enCours} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40">
-            {enCours ? "Import en cours…" : `Importer ${nbSelection} opération${nbSelection > 1 ? "s" : ""}`}
+          <button onClick={importer} disabled={nbSelection === 0 || enCours} className="flex w-full items-center justify-center gap-2 rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40">
+            {enCours ? (
+              <>
+                <PointsSautillants taille={6} couleur="var(--c-contraste)" />
+                <span>Import en cours</span>
+              </>
+            ) : (
+              `Importer ${nbSelection} opération${nbSelection > 1 ? "s" : ""}`
+            )}
           </button>
         </div>
       )}
