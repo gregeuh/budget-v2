@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
-import { FREQUENCES, aujourdhui } from "@/lib/format";
+import { FREQUENCES, aujourdhui, euros } from "@/lib/format";
 import Sheet from "./Sheet";
 
 const MODES = [
@@ -11,10 +11,14 @@ const MODES = [
   { id: "virement", label: "Virement" },
 ];
 
+const TOUCHES = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "⌫"];
+
 export default function AddSheet({ onFermer }) {
   const { comptes, transactions, categories, ajouterTransaction, ajouterRecurrente, virement } = useBudget();
+  const [etape, setEtape] = useState(1);
   const [mode, setMode] = useState("depense");
   const [montant, setMontant] = useState("");
+  const [impulsion, setImpulsion] = useState(0);
   const [libelle, setLibelle] = useState("");
   const [categorie, setCategorie] = useState("courses");
   const [compteId, setCompteId] = useState(comptes[0]?.id || "");
@@ -23,7 +27,28 @@ export default function AddSheet({ onFermer }) {
   const [frequence, setFrequence] = useState("unefois");
   const [horsSolde, setHorsSolde] = useState(false);
 
-  // Libellés fréquents (2+ occurrences) pour préremplir en un tap
+  const valeur = parseFloat(String(montant).replace(",", ".")) || 0;
+  const couleurMontant = mode === "depense" ? "text-corail" : mode === "revenu" ? "text-menthe" : "text-encre";
+
+  // ---- Pavé numérique ----
+  const taper = (t) => {
+    setMontant((m) => {
+      if (t === "⌫") return m.slice(0, -1);
+      if (t === ",") {
+        if (m.includes(",")) return m;
+        return m === "" ? "0," : m + ",";
+      }
+      // chiffre
+      const [ent, dec] = m.split(",");
+      if (dec !== undefined && dec.length >= 2) return m;       // 2 décimales max
+      if (dec === undefined && ent.length >= 7) return m;       // 9 999 999 max
+      if (m === "0") return t;                                   // pas de zéro en tête
+      return m + t;
+    });
+    setImpulsion((i) => i + 1);
+  };
+
+  // ---- Suggestions (libellés fréquents) ----
   const suggestions = useMemo(() => {
     if (mode === "virement") return [];
     const map = new Map();
@@ -40,13 +65,14 @@ export default function AddSheet({ onFermer }) {
       map.set(cle, e);
     }
     return [...map.values()].filter((e) => e.n >= 2).sort((a, b) => b.n - a.n).slice(0, 6);
-  }, [transactions, mode]);
+  }, [transactions, mode, categories]);
 
   const appliquerSuggestion = (sug) => {
     setLibelle(sug.libelle);
     setCategorie(sug.categorie);
     if (comptes.some((c) => c.id === sug.compteId)) setCompteId(sug.compteId);
-    if (!montant) setMontant(String(Math.abs(sug.montant)).replace(".", ","));
+    if (!montant) { setMontant(String(Math.abs(sug.montant)).replace(".", ",")); setImpulsion((i) => i + 1); }
+    setEtape(2);
   };
 
   const cats = Object.entries(categories).filter(([, c]) =>
@@ -54,164 +80,187 @@ export default function AddSheet({ onFermer }) {
   );
 
   const valider = async () => {
-    const val = parseFloat(String(montant).replace(",", "."));
-    if (!val || val <= 0 || !compteId) return;
+    if (!valeur || valeur <= 0 || !compteId) return;
     if (mode === "virement") {
       if (!versId || versId === compteId) return;
-      await virement(compteId, versId, val, date);
+      await virement(compteId, versId, valeur, date);
     } else {
       const base = {
         compteId,
-        montant: mode === "depense" ? -val : val,
+        montant: mode === "depense" ? -valeur : valeur,
         categorie,
         libelle: libelle.trim() || (categories[categorie]?.label ?? "Opération"),
         ...(horsSolde ? { horsSolde: true } : {}),
       };
-      if (frequence === "unefois") {
-        await ajouterTransaction({ ...base, date });
-      } else {
-        // Crée la règle : les occurrences échues (dont celle du jour) sont postées automatiquement
-        await ajouterRecurrente({ ...base, frequence, prochaine: date });
-      }
+      if (frequence === "unefois") await ajouterTransaction({ ...base, date });
+      else await ajouterRecurrente({ ...base, frequence, prochaine: date });
     }
     onFermer();
   };
 
+  const tailleMontant =
+    montant.length <= 5 ? "text-[54px]" : montant.length <= 7 ? "text-[44px]" : "text-[36px]";
+
   return (
     <Sheet titre="Nouvelle opération" onFermer={onFermer}>
-      {/* Sélecteur de mode */}
-      <div className="mb-5 grid grid-cols-3 rounded-pill bg-voile p-1">
-        {MODES.map((m) => (
-          <button
-            key={m.id}
-            onClick={() => { setMode(m.id); if (m.id === "revenu") setCategorie("salaire"); else setCategorie("courses"); }}
-            className={`rounded-pill py-2 text-sm font-semibold transition-colors ${mode === m.id ? "bg-carte shadow-carte" : "text-sourdine"}`}
-          >
-            {m.label}
-          </button>
-        ))}
-      </div>
+      {etape === 1 ? (
+        <div key="e1" className="pop-in">
+          {/* Mode */}
+          <div className="mb-4 grid grid-cols-3 rounded-pill bg-voile p-1">
+            {MODES.map((m) => (
+              <button
+                key={m.id}
+                onClick={() => { setMode(m.id); setCategorie(m.id === "revenu" ? "salaire" : "courses"); }}
+                className={`rounded-pill py-2 text-sm font-semibold transition-colors ${mode === m.id ? "bg-carte shadow-carte" : "text-sourdine"}`}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
 
-      {/* Montant */}
-      <div className="mb-4 flex items-baseline justify-center gap-1">
-        <input
-          autoFocus
-          inputMode="decimal"
-          placeholder="0"
-          value={montant}
-          onChange={(e) => setMontant(e.target.value)}
-          className={`tnum w-40 bg-transparent text-center text-4xl font-bold outline-none placeholder:text-sourdine placeholder:opacity-50 ${mode === "depense" ? "text-corail" : mode === "revenu" ? "text-menthe" : "text-encre"}`}
-        />
-        <span className="text-2xl font-semibold text-sourdine">€</span>
-      </div>
+          {/* Montant géant animé */}
+          <div className="flex h-[76px] items-center justify-center">
+            <span key={impulsion} className={`rebond chiffres font-bold leading-none ${tailleMontant} ${montant ? couleurMontant : "text-sourdine/40"}`}>
+              {montant || "0"}
+              <span className="ml-1 text-[0.55em] font-semibold text-sourdine">€</span>
+            </span>
+          </div>
 
-      <div className="space-y-3">
-        {mode !== "virement" && (
-          <>
-            {suggestions.length > 0 && !libelle && (
-              <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
-                {suggestions.map((sug) => (
-                  <button
-                    key={sug.libelle}
-                    onClick={() => appliquerSuggestion(sug)}
-                    className="shrink-0 rounded-pill bg-voile px-3 py-1.5 text-sm font-medium"
-                  >
-                    {(categories[sug.categorie] || categories.autre).icone} {sug.libelle}
-                  </button>
-                ))}
-              </div>
-            )}
-            <input
-              placeholder="Libellé (ex : Carrefour, Loyer…)"
-              value={libelle}
-              onChange={(e) => setLibelle(e.target.value)}
-              className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe"
-            />
-            <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 py-1">
-              {cats.map(([id, c]) => (
-                <button
-                  key={id}
-                  onClick={() => setCategorie(id)}
-                  className={`shrink-0 rounded-pill border px-3 py-1.5 text-sm font-medium ${categorie === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte text-encre"}`}
-                >
-                  {c.icone} {c.label}
+          {/* Suggestions */}
+          {suggestions.length > 0 && (
+            <div className="no-scrollbar -mx-1 mb-3 flex gap-2 overflow-x-auto px-1">
+              {suggestions.map((sug) => (
+                <button key={sug.libelle} onClick={() => appliquerSuggestion(sug)}
+                  className="shrink-0 rounded-pill bg-voile px-3 py-1.5 text-sm font-medium">
+                  {(categories[sug.categorie] || categories.autre).icone} {sug.libelle}
                 </button>
               ))}
             </div>
-          </>
-        )}
+          )}
 
-        <div className="grid grid-cols-2 gap-3">
-          <label className="block">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">{mode === "virement" ? "Depuis" : "Compte"}</span>
-            <select value={compteId} onChange={(e) => setCompteId(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
-              {comptes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
-            </select>
-          </label>
-          {mode === "virement" ? (
+          {/* Pavé numérique */}
+          <div className="grid grid-cols-3 gap-2">
+            {TOUCHES.map((t) => (
+              <button
+                key={t}
+                onClick={() => taper(t)}
+                className={`chiffres h-14 rounded-2xl text-2xl font-semibold transition-transform duration-100 active:scale-90 ${
+                  t === "⌫" ? "bg-voile text-sourdine" : "bg-carte shadow-carte active:bg-voile"
+                }`}
+                aria-label={t === "⌫" ? "Effacer" : t}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+
+          {comptes.length === 0 ? (
+            <p className="mt-3 text-center text-sm text-sourdine">Crée d'abord un compte dans l'onglet Comptes.</p>
+          ) : (
+            <button
+              onClick={() => setEtape(2)}
+              disabled={valeur <= 0}
+              className="mt-3 w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40 active:scale-[0.99] transition-transform"
+            >
+              Continuer
+            </button>
+          )}
+        </div>
+      ) : (
+        <div key="e2" className="pop-in space-y-3">
+          {/* Rappel du montant, tap = retour */}
+          <button onClick={() => setEtape(1)} className="flex w-full items-center gap-3 rounded-ios bg-voile px-3.5 py-2.5">
+            <span className="text-sourdine">‹</span>
+            <span className={`chiffres flex-1 text-left text-xl font-bold ${couleurMontant}`}>{euros(valeur, { precis: true })}</span>
+            <span className="text-xs font-medium text-sourdine">Modifier</span>
+          </button>
+
+          {mode !== "virement" && (
+            <>
+              <input
+                placeholder="Libellé (ex : Carrefour, Loyer…)"
+                value={libelle}
+                onChange={(e) => setLibelle(e.target.value)}
+                className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe"
+              />
+              <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 py-1">
+                {cats.map(([id, c]) => (
+                  <button key={id} onClick={() => setCategorie(id)}
+                    className={`shrink-0 rounded-pill border px-3 py-1.5 text-sm font-medium ${categorie === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte text-encre"}`}>
+                    {c.icone} {c.label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
+          <div className="grid grid-cols-2 gap-3">
             <label className="block">
-              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Vers</span>
-              <select value={versId} onChange={(e) => setVersId(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
-                {comptes.filter((c) => c.id !== compteId).map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
+              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">{mode === "virement" ? "Depuis" : "Compte"}</span>
+              <select value={compteId} onChange={(e) => setCompteId(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+                {comptes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
               </select>
             </label>
-          ) : (
+            {mode === "virement" ? (
+              <label className="block">
+                <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Vers</span>
+                <select value={versId} onChange={(e) => setVersId(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+                  {comptes.filter((c) => c.id !== compteId).map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
+                </select>
+              </label>
+            ) : (
+              <label className="block">
+                <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Date</span>
+                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none" />
+              </label>
+            )}
+          </div>
+
+          {mode === "virement" && (
             <label className="block">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Date</span>
               <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none" />
             </label>
           )}
-        </div>
 
-        {comptes.length === 0 && (
-          <p className="text-center text-sm text-sourdine">Crée d'abord un compte dans l'onglet Comptes.</p>
-        )}
-
-        {mode !== "virement" && (
-          <div>
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Répéter</span>
-            <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
-              {[["unefois", "Une seule fois"], ...Object.entries(FREQUENCES).map(([id, f]) => [id, f.label])].map(([id, label]) => (
-                <button
-                  key={id}
-                  onClick={() => setFrequence(id)}
-                  className={`shrink-0 rounded-pill border px-3 py-1.5 text-sm font-medium ${frequence === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte"}`}
-                >
-                  {label}
-                </button>
-              ))}
+          {mode !== "virement" && (
+            <div>
+              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Répéter</span>
+              <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
+                {[["unefois", "Une seule fois"], ...Object.entries(FREQUENCES).map(([id, f]) => [id, f.label])].map(([id, label]) => (
+                  <button key={id} onClick={() => setFrequence(id)}
+                    className={`shrink-0 rounded-pill border px-3 py-1.5 text-sm font-medium ${frequence === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte"}`}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {frequence !== "unefois" && (
+                <p className="mt-1.5 text-xs text-sourdine">
+                  🔁 Sera ajoutée automatiquement {FREQUENCES[frequence].label.toLowerCase()} à partir du {new Date(date).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}.
+                </p>
+              )}
             </div>
-            {frequence !== "unefois" && (
-              <p className="mt-1.5 text-xs text-sourdine">
-                🔁 Sera ajoutée automatiquement {FREQUENCES[frequence].label.toLowerCase()} à partir du {new Date(date).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}. Gérable depuis Profil → Récurrentes.
-              </p>
-            )}
-          </div>
-        )}
+          )}
 
-        {mode !== "virement" && (
+          {mode !== "virement" && (
+            <button onClick={() => setHorsSolde(!horsSolde)}
+              className={`flex w-full items-center justify-between rounded-ios border px-3.5 py-2.5 text-left transition-colors ${horsSolde ? "border-menthe bg-menthe-pale" : "border-bordure bg-carte"}`}>
+              <span className="text-sm font-semibold">👻 Hors solde</span>
+              <span className={`relative ml-3 h-6 w-11 shrink-0 rounded-full transition-colors ${horsSolde ? "bg-menthe" : "bg-voile"}`}>
+                <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${horsSolde ? "translate-x-[22px]" : "translate-x-0.5"}`} />
+              </span>
+            </button>
+          )}
+
           <button
-            onClick={() => setHorsSolde(!horsSolde)}
-            className={`flex w-full items-center justify-between rounded-ios border p-3.5 text-left transition-colors ${horsSolde ? "border-menthe bg-menthe-pale" : "border-bordure bg-carte"}`}
+            onClick={valider}
+            disabled={!valeur || !compteId || (mode === "virement" && (!versId || versId === compteId))}
+            className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40 active:scale-[0.99] transition-transform"
           >
-            <span>
-              <span className="block text-sm font-semibold">👻 Hors solde</span>
-              <span className="block text-xs text-sourdine">Comptée dans les statistiques et budgets, mais sans modifier le solde du compte (espèces, dépense déjà réajustée…)</span>
-            </span>
-            <span className={`relative ml-3 h-7 w-12 shrink-0 rounded-full transition-colors ${horsSolde ? "bg-menthe" : "bg-voile"}`}>
-              <span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${horsSolde ? "translate-x-[22px]" : "translate-x-0.5"}`} />
-            </span>
+            Ajouter {euros(valeur, { precis: true })}
           </button>
-        )}
-
-        <button
-          onClick={valider}
-          disabled={!montant || !compteId || (mode === "virement" && (!versId || versId === compteId))}
-          className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40 active:scale-[0.99] transition-transform"
-        >
-          Ajouter
-        </button>
-      </div>
+        </div>
+      )}
     </Sheet>
   );
 }
