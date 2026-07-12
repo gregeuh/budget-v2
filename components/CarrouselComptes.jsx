@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import FicheCompte from "./FicheCompte";
 import Link from "next/link";
 import { useBudget } from "@/lib/store";
 import { TYPES_COMPTE, COULEURS, euros, PLAFONDS } from "@/lib/format";
@@ -9,6 +10,7 @@ export default function CarrouselComptes({ onChange }) {
   const { comptes, soldes } = useBudget();
   const rail = useRef(null);
   const [actif, setActif] = useState(0);
+  const [fiche, setFiche] = useState(null);
 
   const total = comptes.reduce((a, c) => a + (soldes[c.id] || 0), 0);
   const cartes = [{ id: null, nom: "Tous les comptes" }, ...comptes];
@@ -51,7 +53,9 @@ export default function CarrouselComptes({ onChange }) {
           return (
             <div
               key={c.id ?? "tous"}
-              className="relative w-[82%] shrink-0 snap-center overflow-hidden rounded-ios p-3.5 shadow-carte transition-[transform,opacity] duration-300"
+              onClick={() => { if (!estTous && i === actif) setFiche(c); }}
+              role={estTous ? undefined : "button"}
+              className={`relative w-[82%] shrink-0 snap-center overflow-hidden rounded-ios p-3.5 shadow-carte transition-[transform,opacity] duration-300 ${!estTous && i === actif ? "cursor-pointer" : ""}`}
               style={{
                 ...(estTous
                   ? { background: "linear-gradient(135deg, #17203A, #1F8A6A)" }
@@ -83,8 +87,9 @@ export default function CarrouselComptes({ onChange }) {
                   <div className={`chiffres text-[30px] font-bold leading-none ${estTous ? "text-white" : solde < 0 ? "text-corail" : ""}`}>
                     {euros(solde, { precis: true })}
                   </div>
-                  <div className={`mt-0.5 text-[13px] ${estTous ? "text-white/70" : "text-sourdine"}`}>
+                  <div className={`mt-0.5 flex items-center gap-1 text-[13px] ${estTous ? "text-white/70" : "text-sourdine"}`}>
                     {estTous ? "Tous les comptes" : c.nom}
+                    {!estTous && i === actif && <span className="text-sourdine/50">›</span>}
                   </div>
                 </div>
                 {plafond && (
@@ -100,6 +105,8 @@ export default function CarrouselComptes({ onChange }) {
           );
         })}
       </div>
+
+      {fiche && <FicheCompte compte={fiche} onFermer={() => setFiche(null)} />}
 
       {/* Points indicateurs */}
       <div className="mt-2 flex justify-center gap-1.5">
