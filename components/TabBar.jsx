@@ -41,7 +41,7 @@ export default function TabBar({ onAjouter, ajoutOuvert = false }) {
                 chemin === o.href ? "bg-voile text-encre" : "text-sourdine"
               }`}
             >
-              <span className={`text-lg transition-transform ${chemin === o.href ? "scale-110" : "grayscale opacity-60"}`}>{o.icone}</span>
+              <span key={chemin === o.href ? "actif" : "inactif"} className={`text-lg ${chemin === o.href ? "saut-onglet" : "grayscale opacity-60"}`}>{o.icone}</span>
               {o.label}
             </Link>
           )

@@ -26,6 +26,9 @@ export default function AddSheet({ onFermer }) {
   const [date, setDate] = useState(aujourdhui());
   const [frequence, setFrequence] = useState("unefois");
   const [horsSolde, setHorsSolde] = useState(false);
+  const [secousse, setSecousse] = useState(0);
+
+  const secouer = () => setSecousse((s) => s + 1);
 
   const valeur = parseFloat(String(montant).replace(",", ".")) || 0;
   const couleurMontant = mode === "depense" ? "text-corail" : mode === "revenu" ? "text-menthe" : "text-encre";
@@ -119,7 +122,7 @@ export default function AddSheet({ onFermer }) {
           </div>
 
           {/* Montant géant animé */}
-          <div className="flex h-[76px] items-center justify-center">
+          <div key={`sec-${secousse}`} className={`flex h-[76px] items-center justify-center ${secousse ? "secousse" : ""}`}>
             <span key={impulsion} className={`rebond chiffres font-bold leading-none ${tailleMontant} ${montant ? couleurMontant : "text-sourdine/40"}`}>
               {montant || "0"}
               <span className="ml-1 text-[0.55em] font-semibold text-sourdine">€</span>
@@ -140,11 +143,12 @@ export default function AddSheet({ onFermer }) {
 
           {/* Pavé numérique */}
           <div className="grid grid-cols-3 gap-2">
-            {TOUCHES.map((t) => (
+            {TOUCHES.map((t, i) => (
               <button
                 key={t}
                 onClick={() => taper(t)}
-                className={`chiffres h-14 rounded-2xl text-2xl font-semibold transition-transform duration-100 active:scale-90 ${
+                style={{ animationDelay: `${i * 22}ms` }}
+                className={`pop-in chiffres h-14 rounded-2xl text-2xl font-semibold transition-transform duration-100 active:scale-90 ${
                   t === "⌫" ? "bg-voile text-sourdine" : "bg-carte shadow-carte active:bg-voile"
                 }`}
                 aria-label={t === "⌫" ? "Effacer" : t}
@@ -158,9 +162,8 @@ export default function AddSheet({ onFermer }) {
             <p className="mt-3 text-center text-sm text-sourdine">Crée d'abord un compte dans l'onglet Comptes.</p>
           ) : (
             <button
-              onClick={() => setEtape(2)}
-              disabled={valeur <= 0}
-              className="mt-3 w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40 active:scale-[0.99] transition-transform"
+              onClick={() => (valeur > 0 ? setEtape(2) : secouer())}
+              className={`mt-3 w-full rounded-ios bg-encre py-3 font-semibold text-contraste active:scale-[0.99] transition-transform ${valeur <= 0 ? "opacity-40" : ""}`}
             >
               Continuer
             </button>
@@ -253,9 +256,15 @@ export default function AddSheet({ onFermer }) {
           )}
 
           <button
-            onClick={valider}
-            disabled={!valeur || !compteId || (mode === "virement" && (!versId || versId === compteId))}
-            className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40 active:scale-[0.99] transition-transform"
+            key={`btn-${secousse}`}
+            onClick={() => {
+              const invalide = !valeur || !compteId || (mode === "virement" && (!versId || versId === compteId));
+              if (invalide) return secouer();
+              valider();
+            }}
+            className={`w-full rounded-ios bg-encre py-3 font-semibold text-contraste active:scale-[0.99] transition-transform ${
+              !valeur || !compteId || (mode === "virement" && (!versId || versId === compteId)) ? "opacity-40" : ""
+            } ${secousse ? "secousse" : ""}`}
           >
             Ajouter {euros(valeur, { precis: true })}
           </button>

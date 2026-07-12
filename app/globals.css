@@ -102,7 +102,11 @@ html.sombre .reflet {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
 }
-.sheet-in { animation: sheet-up 0.28s cubic-bezier(0.32, 0.72, 0, 1); }
+.sheet-in { animation: sheet-ressort 0.42s cubic-bezier(0.34, 1.28, 0.64, 1); }
+@keyframes sheet-ressort {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
 
 @keyframes drawer-left {
   from { transform: translateX(-100%); }
@@ -166,6 +170,43 @@ html.sombre .reflet {
   100% { transform: scale(1); }
 }
 .rebond { animation: rebond 0.18s ease-out; display: inline-block; }
+
+/* Saut de l'onglet qui devient actif */
+@keyframes saut-onglet {
+  0% { transform: scale(1) translateY(0); }
+  40% { transform: scale(1.25) translateY(-4px); }
+  70% { transform: scale(0.95) translateY(1px); }
+  100% { transform: scale(1.1) translateY(0); }
+}
+.saut-onglet { animation: saut-onglet 0.4s cubic-bezier(0.34, 1.4, 0.64, 1); }
+
+/* Secousse sur action invalide */
+@keyframes secousse {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-7px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(3px); }
+}
+.secousse { animation: secousse 0.35s ease; }
+
+/* Compteur roulant (odomètre) */
+.roulette {
+  display: inline-block;
+  overflow: hidden;
+  height: 1em;
+  line-height: 1;
+  vertical-align: baseline;
+}
+.roulette-bande {
+  display: block;
+  transition: transform 0.85s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.roulette-bande > span {
+  display: block;
+  height: 1em;
+  line-height: 1;
+}
 
 @keyframes fade-in {
   from { opacity: 0; }

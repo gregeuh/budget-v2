@@ -12,6 +12,7 @@ import DonutCat from "@/components/DonutCat";
 import TxRow from "@/components/TxRow";
 import PatrimoineChart from "@/components/PatrimoineChart";
 import CountUp from "@/components/CountUp";
+import ChiffresRoulants from "@/components/ChiffresRoulants";
 import MoisSelecteur from "@/components/MoisSelecteur";
 import BilanMensuel from "@/components/BilanMensuel";
 import { messageAccueil } from "@/lib/messagesAccueil";
@@ -89,7 +90,7 @@ export default function Accueil() {
             </span>
             {" "}· {accueil.phrase}
           </p>
-          <h1 className={`chiffres text-4xl font-bold leading-tight ${patrimoine < 0 ? "text-corail" : ""}`}><CountUp valeur={patrimoine} /></h1>
+          <h1 className={`chiffres text-4xl font-bold leading-tight ${patrimoine < 0 ? "text-corail" : ""}`}><ChiffresRoulants valeur={patrimoine} /></h1>
           <p className="text-sm text-sourdine">
             Patrimoine
             {avantages > 0 && ` · hors titres-resto (${euros(avantages)})`}
