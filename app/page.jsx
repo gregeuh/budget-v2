@@ -105,6 +105,14 @@ export default function Accueil() {
 
       <BilanMensuel />
 
+      <section>
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="font-bold">Mes comptes</h2>
+          <Link href="/comptes" className="text-sm font-medium text-ciel">Gérer</Link>
+        </div>
+        <CarrouselComptes onChange={setCompteActif} />
+      </section>
+
       <MoisSelecteur mois={mois} onChanger={setMois} />
 
       <div key={mois} className="pop-in grid grid-cols-2 gap-3">
@@ -140,14 +148,6 @@ export default function Accueil() {
           </div>
         </Link>
       )}
-
-      <section>
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="font-bold">Mes comptes</h2>
-          <Link href="/comptes" className="text-sm font-medium text-ciel">Gérer</Link>
-        </div>
-        <CarrouselComptes onChange={setCompteActif} />
-      </section>
 
       <div className="pt-4">
         <PatrimoineChart comptes={comptesPatrimoine} transactions={transactions} />

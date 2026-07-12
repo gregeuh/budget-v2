@@ -1,8 +1,27 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+
 export default function Sheet({ titre, onFermer, children }) {
-  return (
-    <div className="fixed inset-0 z-50 mx-auto max-w-md">
+  const [monte, setMonte] = useState(false);
+
+  // Rendu hors de la page (portail) : sinon l'animation de transition de page
+  // crée un contexte d'empilement et la barre d'onglets passe par-dessus.
+  useEffect(() => {
+    setMonte(true);
+    const scrollY = window.scrollY;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+      window.scrollTo(0, scrollY);
+    };
+  }, []);
+
+  if (!monte) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[100] mx-auto max-w-md">
       <div className="fade-in absolute inset-0 bg-black/40" onClick={onFermer} />
       <div
         className="sheet-in absolute inset-x-0 bottom-0 max-h-[88dvh] overflow-y-auto rounded-t-[22px] bg-fond px-4 pt-3"
@@ -15,6 +34,7 @@ export default function Sheet({ titre, onFermer, children }) {
         </div>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
