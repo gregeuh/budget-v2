@@ -49,6 +49,15 @@ export default function Transactions() {
     return { nb, depense, recu };
   }, [parMois, recherche]);
 
+  const [astuce, setAstuce] = useState(false);
+  useEffect(() => {
+    try { setAstuce(!localStorage.getItem("astuce-swipe")); } catch {}
+  }, []);
+  const fermerAstuce = () => {
+    setAstuce(false);
+    try { localStorage.setItem("astuce-swipe", "1"); } catch {}
+  };
+
   const projection = useMemo(
     () => calculerProjection({ comptes, soldes, transactions, recurrentes, profil }),
     [comptes, soldes, transactions, recurrentes, profil]

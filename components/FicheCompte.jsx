@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { TYPES_COMPTE, COULEURS, PLAFONDS, euros, cleMois, aujourdhui, dateCourte } from "@/lib/format";
 import Sheet from "./Sheet";
@@ -21,6 +21,8 @@ export default function FicheCompte({ compte, onFermer }) {
   const [ajustOuvert, setAjustOuvert] = useState(false);
   const [soldeReel, setSoldeReel] = useState("");
   const [succes, setSucces] = useState(false);
+  const minuterie = useRef(null);
+  useEffect(() => () => clearTimeout(minuterie.current), []);
 
   const t = TYPES_COMPTE[compte.type] || TYPES_COMPTE.autre;
   const coul = COULEURS[t.couleur];
@@ -65,7 +67,7 @@ export default function FicheCompte({ compte, onFermer }) {
     setSoldeReel("");
     setAjustOuvert(false);
     setSucces(true);
-    setTimeout(() => setSucces(false), 1600);
+    minuterie.current = setTimeout(() => setSucces(false), 1600);
   };
 
   return (
