@@ -208,6 +208,54 @@ html.sombre .reflet {
   line-height: 1;
 }
 
+/* Physique commune (Linear/Things) : tout arrive avec un léger dépassement */
+:root {
+  --ressort: cubic-bezier(0.34, 1.32, 0.64, 1);
+  --doux: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Coche qui se dessine (célébration discrète) */
+@keyframes coche-trace {
+  to { stroke-dashoffset: 0; }
+}
+.coche-trace {
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: coche-trace 0.45s var(--doux) 0.1s forwards;
+}
+@keyframes coche-halo {
+  0% { transform: scale(0.6); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.coche-halo { animation: coche-halo 0.4s var(--ressort) both; }
+
+/* Défilement vivant : les blocs se révèlent en montant à l'entrée dans l'écran */
+.reveler {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s var(--doux), transform 0.5s var(--doux);
+}
+.reveler.vu {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Transition partagée (View Transitions API) : la carte devient l'en-tête de sa fiche.
+   Ignoré silencieusement par les navigateurs qui ne la supportent pas. */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(carte-active),
+  ::view-transition-new(carte-active) {
+    animation-duration: 0.42s;
+    animation-timing-function: var(--doux);
+    mix-blend-mode: normal;
+  }
+  ::view-transition-group(carte-active) {
+    animation-duration: 0.42s;
+    animation-timing-function: var(--doux);
+  }
+}
+
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }

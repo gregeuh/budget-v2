@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { TYPES_COMPTE, COULEURS, PLAFONDS, euros, cleMois, aujourdhui, dateCourte } from "@/lib/format";
 import Sheet from "./Sheet";
+import CocheAnimee from "./CocheAnimee";
 import TxRow from "./TxRow";
 
 function LigneStat({ label, valeur, couleur = "", dernier = false }) {
@@ -19,6 +20,7 @@ export default function FicheCompte({ compte, onFermer }) {
   const { transactions, soldes, ajouterTransaction, notifier } = useBudget();
   const [ajustOuvert, setAjustOuvert] = useState(false);
   const [soldeReel, setSoldeReel] = useState("");
+  const [succes, setSucces] = useState(false);
 
   const t = TYPES_COMPTE[compte.type] || TYPES_COMPTE.autre;
   const coul = COULEURS[t.couleur];
@@ -62,6 +64,8 @@ export default function FicheCompte({ compte, onFermer }) {
     notifier(`Solde ajusté (${ecart > 0 ? "+" : ""}${euros(ecart, { precis: true })})`, "⚖️");
     setSoldeReel("");
     setAjustOuvert(false);
+    setSucces(true);
+    setTimeout(() => setSucces(false), 1600);
   };
 
   return (
@@ -74,6 +78,7 @@ export default function FicheCompte({ compte, onFermer }) {
             background: `linear-gradient(135deg, ${coul.fond}, transparent 70%)`,
             backgroundColor: "var(--c-carte)",
             border: `1px solid ${coul.vif}33`,
+            viewTransitionName: "carte-active",
           }}
         >
           <div className="reflet" />
@@ -121,7 +126,12 @@ export default function FicheCompte({ compte, onFermer }) {
         </div>
 
         {/* Ajustement du solde */}
-        {!ajustOuvert ? (
+        {succes ? (
+          <div className="fade-in flex items-center justify-center gap-3 rounded-ios bg-menthe-pale py-4">
+            <CocheAnimee taille={40} />
+            <span className="text-sm font-semibold text-menthe-texte">Solde à jour</span>
+          </div>
+        ) : !ajustOuvert ? (
           <button
             onClick={() => { setAjustOuvert(true); setSoldeReel(String(solde).replace(".", ",")); }}
             className="flex w-full items-center justify-between rounded-ios bg-carte px-3.5 py-3 shadow-carte active:bg-voile"

@@ -16,6 +16,7 @@ import ChiffresRoulants from "@/components/ChiffresRoulants";
 import MoisSelecteur from "@/components/MoisSelecteur";
 import BilanMensuel from "@/components/BilanMensuel";
 import PremiersPas from "@/components/PremiersPas";
+import Reveler from "@/components/Reveler";
 import { messageAccueil } from "@/lib/messagesAccueil";
 import { calculerProjection } from "@/lib/projection";
 
@@ -141,12 +142,12 @@ export default function Accueil() {
       )}
 
       <div className="pt-4">
-        <PatrimoineChart comptes={comptesPatrimoine} transactions={transactions} />
+        <Reveler><PatrimoineChart comptes={comptesPatrimoine} transactions={transactions} /></Reveler>
       </div>
 
-      <SpendChart transactions={transactions} />
+      <Reveler retard={60}><SpendChart transactions={transactions} /></Reveler>
 
-      <DonutCat transactions={transactions} mois={mois} />
+      <Reveler retard={120}><DonutCat transactions={transactions} mois={mois} /></Reveler>
 
       <section>
         <div className="mb-2 flex items-center justify-between">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useBudget } from "@/lib/store";
 import TabBar from "./TabBar";
@@ -10,9 +10,15 @@ import Onboarding from "./Onboarding";
 import Toast from "./Toast";
 import DrawerReglages from "./DrawerReglages";
 import PointsSautillants from "./PointsSautillants";
+import Confettis from "./Confettis";
 
 export default function AppShell({ children }) {
-  const { pret, user, modeLocal, profil, comptes, erreurInit, reglagesOuverts } = useBudget();
+  const { pret, user, modeLocal, profil, comptes, erreurInit, reglagesOuverts, celebration } = useBudget();
+  const [fete, setFete] = useState(false);
+
+  useEffect(() => {
+    if (celebration > 0) setFete(true);
+  }, [celebration]);
   const [ajoutOuvert, setAjoutOuvert] = useState(false);
   const chemin = usePathname();
 
@@ -51,6 +57,7 @@ export default function AppShell({ children }) {
       <TabBar onAjouter={() => setAjoutOuvert(true)} ajoutOuvert={ajoutOuvert} />
       {ajoutOuvert && <AddSheet onFermer={() => setAjoutOuvert(false)} />}
       {reglagesOuverts && <DrawerReglages />}
+      <Confettis actif={fete} onFini={() => setFete(false)} />
     </div>
   );
 }

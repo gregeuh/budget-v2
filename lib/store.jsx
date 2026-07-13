@@ -45,6 +45,9 @@ export function DataProvider({ children }) {
   const [toast, setToast] = useState(null);
   const [categoriesPerso, setCategoriesPerso] = useState({});
   const [reglagesOuverts, setReglagesOuverts] = useState(false);
+  const [celebration, setCelebration] = useState(0);
+
+  const celebrer = useCallback(() => setCelebration((n) => n + 1), []);
   const notifier = useCallback((message, icone = "✓", action = null) => {
     setToast({ id: Date.now(), message, icone, action });
   }, []);
@@ -535,6 +538,7 @@ export function DataProvider({ children }) {
     pret, user, modeLocal, erreurInit, toast, notifier,
     categories, categoriesPerso, sauverCategoriesPerso,
     reglagesOuverts, setReglagesOuverts,
+    celebration, celebrer,
     comptes, transactions, budgets, profil, soldes, recurrentes, projets, credits,
     ajouterCompte, modifierCompte, supprimerCompte,
     ajouterTransaction, modifierTransaction, supprimerTransaction, ajouterTransactionsLot,

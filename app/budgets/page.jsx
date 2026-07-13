@@ -57,14 +57,15 @@ function FicheBudget({ onFermer }) {
 }
 
 export default function Budgets() {
-  const { transactions, budgets, profil, projets, categories, modifierProjet, notifier } = useBudget();
+  const { transactions, budgets, profil, projets, categories, modifierProjet, notifier, celebrer } = useBudget();
 
   const contribuerProjet = (id, montant) => {
     const p = projets.find((x) => x.id === id);
     if (!p) return;
     const nouveau = (p.montantActuel || 0) + montant;
     modifierProjet(id, { montantActuel: nouveau });
-    const atteint = nouveau >= (p.objectif || 0);
+    const atteint = nouveau >= (p.objectif || 0) && (p.montantActuel || 0) < (p.objectif || 0);
+    if (atteint) celebrer();
     notifier(atteint ? `Objectif « ${p.nom} » atteint ! 🎉` : `+${montant} € sur « ${p.nom} »`, atteint ? "🏆" : "🐷");
   };
   const [edition, setEdition] = useState(false);

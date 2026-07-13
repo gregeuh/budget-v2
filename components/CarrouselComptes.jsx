@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import FicheCompte from "./FicheCompte";
+import { transitionPartagee } from "@/lib/transition";
 import Link from "next/link";
 import { useBudget } from "@/lib/store";
 import { TYPES_COMPTE, COULEURS, euros, PLAFONDS } from "@/lib/format";
@@ -53,7 +54,7 @@ export default function CarrouselComptes({ onChange }) {
           return (
             <div
               key={c.id ?? "tous"}
-              onClick={() => { if (!estTous && i === actif) setFiche(c); }}
+              onClick={() => { if (!estTous && i === actif) transitionPartagee(() => setFiche(c)); }}
               role={estTous ? undefined : "button"}
               className={`relative w-[82%] shrink-0 snap-center overflow-hidden rounded-ios p-3.5 shadow-carte transition-[transform,opacity] duration-300 ${!estTous && i === actif ? "cursor-pointer" : ""}`}
               style={{
@@ -66,6 +67,7 @@ export default function CarrouselComptes({ onChange }) {
                     }),
                 transform: i === actif ? "scale(1)" : "scale(0.93)",
                 opacity: i === actif ? 1 : 0.55,
+                viewTransitionName: !estTous && i === actif && !fiche ? "carte-active" : undefined,
               }}
             >
               <div className="reflet" />
@@ -106,7 +108,7 @@ export default function CarrouselComptes({ onChange }) {
         })}
       </div>
 
-      {fiche && <FicheCompte compte={fiche} onFermer={() => setFiche(null)} />}
+      {fiche && <FicheCompte compte={fiche} onFermer={() => transitionPartagee(() => setFiche(null))} />}
 
       {/* Points indicateurs */}
       <div className="mt-2 flex justify-center gap-1.5">
