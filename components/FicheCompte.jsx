@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { TYPES_COMPTE, COULEURS, PLAFONDS, euros, cleMois, aujourdhui, dateCourte } from "@/lib/format";
 import Sheet from "./Sheet";
@@ -16,7 +16,9 @@ function LigneStat({ label, valeur, couleur = "", dernier = false }) {
 }
 
 export default function FicheCompte({ compte, onFermer }) {
-  const { transactions, soldes, comptes } = useBudget();
+  const { transactions, soldes, ajouterTransaction, notifier } = useBudget();
+  const [ajustOuvert, setAjustOuvert] = useState(false);
+  const [soldeReel, setSoldeReel] = useState("");
 
   const t = TYPES_COMPTE[compte.type] || TYPES_COMPTE.autre;
   const coul = COULEURS[t.couleur];
@@ -44,6 +46,23 @@ export default function FicheCompte({ compte, onFermer }) {
   }, [transactions, compte.id]);
 
   const recentes = stats.liees.filter((tx) => tx.date <= aujourdhui()).slice(0, 15);
+
+  const reel = parseFloat(String(soldeReel).replace(",", "."));
+  const ecart = Number.isFinite(reel) ? Math.round((reel - solde) * 100) / 100 : null;
+
+  const ajuster = async () => {
+    if (ecart === null || Math.abs(ecart) < 0.005) return;
+    await ajouterTransaction({
+      compteId: compte.id,
+      montant: ecart,
+      categorie: "ajustement",
+      libelle: "Ajustement de solde",
+      date: aujourdhui(),
+    }, { silencieux: true });
+    notifier(`Solde ajusté (${ecart > 0 ? "+" : ""}${euros(ecart, { precis: true })})`, "⚖️");
+    setSoldeReel("");
+    setAjustOuvert(false);
+  };
 
   return (
     <Sheet titre={compte.nom} onFermer={onFermer}>
@@ -100,6 +119,54 @@ export default function FicheCompte({ compte, onFermer }) {
             dernier
           />
         </div>
+
+        {/* Ajustement du solde */}
+        {!ajustOuvert ? (
+          <button
+            onClick={() => { setAjustOuvert(true); setSoldeReel(String(solde).replace(".", ",")); }}
+            className="flex w-full items-center justify-between rounded-ios bg-carte px-3.5 py-3 shadow-carte active:bg-voile"
+          >
+            <span className="flex items-center gap-2 text-sm font-semibold">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-voile text-sm">⚖️</span>
+              Ajuster le solde
+            </span>
+            <span className="text-sourdine/50">›</span>
+          </button>
+        ) : (
+          <div className="fade-in rounded-ios bg-menthe-pale p-3.5">
+            <p className="text-sm font-semibold text-menthe-texte">Solde réel de ta banque</p>
+            <p className="mt-0.5 text-xs text-sourdine">
+              L'app calcule {euros(solde, { precis: true })}. Saisis le vrai solde : l'écart sera enregistré comme un ajustement, sans fausser tes statistiques.
+            </p>
+            <div className="mt-2.5 flex gap-2">
+              <input
+                inputMode="decimal"
+                autoFocus
+                value={soldeReel}
+                onChange={(e) => setSoldeReel(e.target.value)}
+                placeholder="ex : 612,40"
+                className="tnum min-w-0 flex-1 rounded-xl border border-bordure bg-carte px-3 py-2.5 outline-none focus:border-menthe"
+              />
+              <button
+                onClick={ajuster}
+                disabled={ecart === null || Math.abs(ecart) < 0.005}
+                className="rounded-xl bg-menthe px-4 text-sm font-semibold text-white disabled:opacity-40"
+              >
+                Ajuster
+              </button>
+            </div>
+            <div className="mt-1.5 flex items-center justify-between">
+              {ecart !== null && Math.abs(ecart) >= 0.005 ? (
+                <p className="tnum text-xs font-semibold text-menthe-texte">
+                  Écart : {ecart > 0 ? "+" : ""}{euros(ecart, { precis: true })}
+                </p>
+              ) : <span />}
+              <button onClick={() => { setAjustOuvert(false); setSoldeReel(""); }} className="text-xs font-medium text-sourdine">
+                Annuler
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Opérations du compte */}
         <div>
