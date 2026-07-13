@@ -5,7 +5,7 @@ import { useBudget } from "@/lib/store";
 import { auth } from "@/lib/firebase";
 import Sheet from "@/components/Sheet";
 import CategoriesSheet from "@/components/CategoriesSheet";
-import { toutesCategories as CATEGORIES, FREQUENCES, euros, dateCourte } from "@/lib/format";
+import { toutesCategories as CATEGORIES, FREQUENCES, euros, dateCourte, isoLocal } from "@/lib/format";
 
 const THEMES = [
   { id: "auto", label: "Automatique", detail: "Suit le réglage de l'iPhone", icone: "🌗" },
@@ -166,7 +166,7 @@ function DonneesSheet({ onFermer }) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `budget-export-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `budget-export-${isoLocal()}.json`;
     a.click();
     URL.revokeObjectURL(url);
     notifier("Export téléchargé", "⬇︎");

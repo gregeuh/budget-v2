@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { euros } from "@/lib/format";
+import { euros, isoLocal, cleMoisLocal } from "@/lib/format";
 
 export default function PatrimoineChart({ comptes, transactions }) {
   const points = useMemo(() => {
@@ -19,7 +19,7 @@ export default function PatrimoineChart({ comptes, transactions }) {
     for (let i = profondeur; i >= 0; i--) {
       const d = new Date();
       d.setMonth(d.getMonth() - i + 1, 0); // dernier jour du mois visé
-      const limite = i === 0 ? "9999-12-31" : d.toISOString().slice(0, 10);
+      const limite = isoLocal(i === 0 ? "9999-12-31" : d);
       const idsComptes = new Set(comptes.map((c) => c.id));
       let valeur = socle;
       for (const t of transactions) {

@@ -6,8 +6,10 @@ const decaler = (mois, n) => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 };
 
+import { cleMoisLocal, isoLocal } from "@/lib/format";
+
 export default function MoisSelecteur({ mois, onChanger }) {
-  const actuel = new Date().toISOString().slice(0, 7);
+  const actuel = cleMoisLocal();
   const label = new Date(mois + "-15").toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
   const auFutur = mois >= actuel;
 

@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { statsMois } from "@/lib/conseils";
-import { euros } from "@/lib/format";
+import { euros, cleMoisLocal } from "@/lib/format";
 
 export default function SpendChart({ transactions }) {
   const donnees = useMemo(() => {
@@ -18,7 +18,7 @@ export default function SpendChart({ transactions }) {
       const d = new Date();
       d.setDate(1);
       d.setMonth(d.getMonth() - i);
-      const cle = d.toISOString().slice(0, 7);
+      const cle = cleMoisLocal(d);
       const s = statsMois(transactions, cle);
       out.push({
         label: d.toLocaleDateString("fr-FR", { month: "short" }).replace(".", ""),

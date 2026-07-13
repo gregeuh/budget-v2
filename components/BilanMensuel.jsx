@@ -2,18 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
-import { euros, TYPES_COMPTE } from "@/lib/format";
+import { euros, TYPES_COMPTE, moisDecaleLocal } from "@/lib/format";
 import { statsMois } from "@/lib/conseils";
 import Sheet from "./Sheet";
 
 const CLE_FERME = "bilan-ferme";
 
-const moisDecale = (n) => {
-  const d = new Date();
-  d.setDate(1);
-  d.setMonth(d.getMonth() + n);
-  return d.toISOString().slice(0, 7);
-};
+const moisDecale = (n) => moisDecaleLocal(n);
 
 const nomMois = (m) => {
   const s = new Date(m + "-15").toLocaleDateString("fr-FR", { month: "long" });
