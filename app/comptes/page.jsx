@@ -80,12 +80,12 @@ function FicheCompte({ compte, onFermer }) {
             )}
           </div>
         )}
-        <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 py-1">
+        <div className="flex flex-wrap gap-1.5">
           {Object.entries(TYPES_COMPTE).map(([id, t]) => (
             <button
               key={id}
               onClick={() => setType(id)}
-              className={`shrink-0 rounded-pill border px-3 py-1.5 text-sm font-medium ${type === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte"}`}
+              className={`rounded-pill border px-2.5 py-1.5 text-[13px] font-medium ${type === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte"}`}
             >
               {t.icone} {t.label}
             </button>
@@ -182,7 +182,7 @@ export default function Comptes() {
                             {t.icone}
                           </span>
                           <div>
-                            <div className="font-semibold">{c.nom}</div>
+                            <div className="truncate font-semibold">{c.nom}</div>
                             <div className="text-xs" style={{ color: coul.texte }}>{t.label}</div>
                           </div>
                         </div>
@@ -232,7 +232,7 @@ export default function Comptes() {
                       <div className="flex items-center gap-3">
                         <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-corail-pale text-xl">🏦</span>
                         <div>
-                          <div className="font-semibold">{c.nom}</div>
+                          <div className="truncate font-semibold">{c.nom}</div>
                           <div className="text-xs text-sourdine">
                             {euros(c.mensualite)} / mois{n ? ` · fin ≈ ${new Date(Date.now() + n * 30.44 * 86400000).toLocaleDateString("fr-FR", { month: "short", year: "numeric" })}` : ""}
                           </div>

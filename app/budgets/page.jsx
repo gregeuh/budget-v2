@@ -170,8 +170,8 @@ export default function Budgets() {
                     className="cursor-pointer"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold">{p.icone} {p.nom}{atteint ? " 🎉" : ""}</span>
-                      <span className="tnum text-sm text-sourdine">{euros(p.montantActuel)} / {euros(p.objectif)}</span>
+                      <span className="min-w-0 flex-1 truncate pr-2 font-semibold">{p.icone} {p.nom}{atteint ? " 🎉" : ""}</span>
+                      <span className="tnum shrink-0 text-sm text-sourdine">{euros(p.montantActuel)} / {euros(p.objectif)}</span>
                     </div>
                     <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-voile">
                       <div className="jauge-in h-full rounded-full transition-all" style={{ width: `${pct}%`, background: atteint ? "#2BB68C" : "#8B7CF6" }} />

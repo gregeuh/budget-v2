@@ -86,7 +86,7 @@ export default function CarrouselComptes({ onChange }) {
                   </span>
                 </div>
                 <div className="mt-3">
-                  <div className={`chiffres text-[30px] font-bold leading-none ${estTous ? "text-white" : solde < 0 ? "text-corail" : ""}`}>
+                  <div className={`chiffres font-bold leading-none ${Math.abs(solde) >= 100000 ? "text-[22px]" : Math.abs(solde) >= 10000 ? "text-[26px]" : "text-[30px]"} ${estTous ? "text-white" : solde < 0 ? "text-corail" : ""}`}>
                     {euros(solde, { precis: true })}
                   </div>
                   <div className={`mt-0.5 flex items-center gap-1 text-[13px] ${estTous ? "text-white/70" : "text-sourdine"}`}>

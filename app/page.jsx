@@ -66,10 +66,10 @@ export default function Accueil() {
           style={{ paddingTop: "calc(var(--safe-top) + 8px)" }}
         >
           <div className="flex items-baseline justify-between">
-            <span className="text-sm font-semibold">
+            <span className="min-w-0 truncate text-sm font-semibold">
               {accueil.mot}{profil.prenom ? ` ${profil.prenom}` : ""} {accueil.emoji}
             </span>
-            <span className={`chiffres text-base font-bold ${patrimoine < 0 ? "text-corail" : ""}`}>{euros(patrimoine)}</span>
+            <span className={`chiffres shrink-0 pl-2 text-base font-bold ${patrimoine < 0 ? "text-corail" : ""}`}>{euros(patrimoine)}</span>
           </div>
         </div>
       </div>
@@ -78,11 +78,11 @@ export default function Accueil() {
         <div>
           <p className="text-sm text-sourdine">
             <span className="font-medium text-encre">
-              {accueil.mot}{profil.prenom ? ` ${profil.prenom}` : ""} {accueil.emoji}
+              {accueil.mot}{profil.prenom ? ` ${profil.prenom.slice(0, 20)}` : ""} {accueil.emoji}
             </span>
             {" "}· {accueil.phrase}
           </p>
-          <h1 className={`chiffres text-4xl font-bold leading-tight ${patrimoine < 0 ? "text-corail" : ""}`}><ChiffresRoulants valeur={patrimoine} /></h1>
+          <h1 className={`chiffres font-bold leading-tight ${Math.abs(patrimoine) >= 100000 ? "text-[28px]" : Math.abs(patrimoine) >= 10000 ? "text-[32px]" : "text-4xl"} ${patrimoine < 0 ? "text-corail" : ""}`}><ChiffresRoulants valeur={patrimoine} /></h1>
           <p className="text-sm text-sourdine">
             Patrimoine
             {avantages > 0 && ` · hors titres-resto (${euros(avantages)})`}

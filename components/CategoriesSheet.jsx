@@ -47,10 +47,10 @@ export default function CategoriesSheet({ onFermer }) {
         {/* Formulaire */}
         <div className="space-y-3 rounded-ios bg-carte p-3.5 shadow-carte">
           <p className="text-sm font-semibold">{enEdition ? "Modifier la catégorie" : "Nouvelle catégorie"}</p>
-          <div className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1">
+          <div className="flex flex-wrap gap-1.5">
             {EMOJIS.map((e) => (
               <button key={e} onClick={() => setIcone(e)}
-                className={`shrink-0 rounded-xl p-2 text-xl ${icone === e ? "bg-encre" : "bg-fond"}`}>{e}</button>
+                className={`rounded-xl p-2 text-xl ${icone === e ? "bg-encre" : "bg-fond"}`}>{e}</button>
             ))}
           </div>
           <input
@@ -59,10 +59,10 @@ export default function CategoriesSheet({ onFermer }) {
             onChange={(e) => setNom(e.target.value)}
             className="w-full rounded-ios border border-bordure bg-fond px-4 py-3 outline-none focus:border-menthe"
           />
-          <div className="grid grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-2 gap-1.5">
             {TYPES.map((t) => (
               <button key={t.id} onClick={() => setType(t.id)}
-                className={`rounded-pill py-1.5 text-xs font-semibold ${type === t.id ? "bg-encre text-contraste" : "bg-fond text-sourdine"}`}>
+                className={`rounded-pill py-2 text-[13px] font-semibold ${type === t.id ? "bg-encre text-contraste" : "bg-fond text-sourdine"}`}>
                 {t.label}
               </button>
             ))}

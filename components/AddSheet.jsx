@@ -144,10 +144,10 @@ export default function AddSheet({ onFermer }) {
 
           {/* Suggestions */}
           {suggestions.length > 0 && (
-            <div className="no-scrollbar -mx-1 mb-3 flex gap-2 overflow-x-auto px-1">
+            <div className="mb-3 flex flex-wrap gap-1.5">
               {suggestions.map((sug) => (
                 <button key={sug.libelle} onClick={() => appliquerSuggestion(sug)}
-                  className="shrink-0 rounded-pill bg-voile px-3 py-1.5 text-sm font-medium">
+                  className="rounded-pill bg-voile px-2.5 py-1.5 text-[13px] font-medium">
                   {(categories[sug.categorie] || categories.autre).icone} {sug.libelle}
                 </button>
               ))}
@@ -199,10 +199,10 @@ export default function AddSheet({ onFermer }) {
                 onChange={(e) => setLibelle(e.target.value)}
                 className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe"
               />
-              <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 py-1">
+              <div className="flex flex-wrap gap-1.5">
                 {cats.map(([id, c]) => (
                   <button key={id} onClick={() => setCategorie(id)}
-                    className={`shrink-0 rounded-pill border px-3 py-1.5 text-sm font-medium ${categorie === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte text-encre"}`}>
+                    className={`rounded-pill border px-2.5 py-1.5 text-[13px] font-medium ${categorie === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte text-encre"}`}>
                     {c.icone} {c.label}
                   </button>
                 ))}
@@ -211,41 +211,41 @@ export default function AddSheet({ onFermer }) {
           )}
 
           <div className="grid grid-cols-2 gap-3">
-            <label className="block">
+            <label className="block min-w-0">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">{mode === "virement" ? "Depuis" : "Compte"}</span>
-              <select value={compteId} onChange={(e) => setCompteId(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+              <select value={compteId} onChange={(e) => setCompteId(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
                 {comptes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
               </select>
             </label>
             {mode === "virement" ? (
-              <label className="block">
+              <label className="block min-w-0">
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Vers</span>
-                <select value={versId} onChange={(e) => setVersId(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+                <select value={versId} onChange={(e) => setVersId(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
                   {comptes.filter((c) => c.id !== compteId).map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
                 </select>
               </label>
             ) : (
-              <label className="block">
+              <label className="block min-w-0">
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Date</span>
-                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none" />
+                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-2 py-3 text-[15px] outline-none" />
               </label>
             )}
           </div>
 
           {mode === "virement" && (
-            <label className="block">
+            <label className="block min-w-0">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Date</span>
-              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none" />
+              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-2 py-3 text-[15px] outline-none" />
             </label>
           )}
 
           {mode !== "virement" && (
             <div>
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Répéter</span>
-              <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
+              <div className="grid grid-cols-2 gap-1.5">
                 {[["unefois", "Une seule fois"], ...Object.entries(FREQUENCES).map(([id, f]) => [id, f.label])].map(([id, label]) => (
                   <button key={id} onClick={() => setFrequence(id)}
-                    className={`shrink-0 rounded-pill border px-3 py-1.5 text-sm font-medium ${frequence === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte"}`}>
+                    className={`truncate rounded-pill border px-2.5 py-1.5 text-[13px] font-medium ${frequence === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte"}`}>
                     {label}
                   </button>
                 ))}

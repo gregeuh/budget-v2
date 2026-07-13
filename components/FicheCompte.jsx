@@ -89,7 +89,7 @@ export default function FicheCompte({ compte, onFermer }) {
             <span className="rounded-pill bg-voile px-2 py-0.5 text-[11px] font-semibold text-sourdine">{t.label}</span>
           </div>
           <div className="relative mt-4">
-            <div className={`chiffres text-[34px] font-bold leading-none ${solde < 0 ? "text-corail" : ""}`}>
+            <div className={`chiffres font-bold leading-none ${Math.abs(solde) >= 100000 ? "text-[24px]" : Math.abs(solde) >= 10000 ? "text-[28px]" : "text-[34px]"} ${solde < 0 ? "text-corail" : ""}`}>
               {euros(solde, { precis: true })}
             </div>
             <div className="mt-1 text-[13px] text-sourdine">Solde actuel</div>

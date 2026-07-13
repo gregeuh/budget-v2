@@ -71,12 +71,12 @@ export default function EditTxSheet({ tx, onFermer }) {
         />
 
         {!estVirement && (
-          <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 py-1">
+          <div className="flex flex-wrap gap-1.5">
             {cats.map(([id, c]) => (
               <button
                 key={id}
                 onClick={() => setCategorie(id)}
-                className={`shrink-0 rounded-pill border px-3 py-1.5 text-sm font-medium ${categorie === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte"}`}
+                className={`rounded-pill border px-2.5 py-1.5 text-[13px] font-medium ${categorie === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte"}`}
               >
                 {c.icone} {c.label}
               </button>
@@ -85,28 +85,28 @@ export default function EditTxSheet({ tx, onFermer }) {
         )}
 
         <div className="grid grid-cols-2 gap-3">
-          <label className="block">
+          <label className="block min-w-0">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">{estVirement ? "Depuis" : "Compte"}</span>
             <select value={compteId} onChange={(e) => setCompteId(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
               {comptes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
             </select>
           </label>
           {estVirement ? (
-            <label className="block">
+            <label className="block min-w-0">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Vers</span>
               <select value={versId} onChange={(e) => setVersId(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
                 {comptes.filter((c) => c.id !== compteId).map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
               </select>
             </label>
           ) : (
-            <label className="block">
+            <label className="block min-w-0">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Date</span>
               <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none" />
             </label>
           )}
         </div>
         {estVirement && (
-          <label className="block">
+          <label className="block min-w-0">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Date</span>
             <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none" />
           </label>

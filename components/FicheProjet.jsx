@@ -67,9 +67,9 @@ export default function FicheProjet({ projet, onFermer }) {
           </div>
         )}
 
-        <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 py-1">
+        <div className="flex flex-wrap gap-1.5">
           {ICONES.map((i) => (
-            <button key={i} onClick={() => setIcone(i)} className={`shrink-0 rounded-xl p-2 text-xl ${icone === i ? "bg-encre" : "bg-carte shadow-carte"}`}>
+            <button key={i} onClick={() => setIcone(i)} className={`rounded-xl p-2 text-xl ${icone === i ? "bg-encre" : "bg-carte shadow-carte"}`}>
               {i}
             </button>
           ))}

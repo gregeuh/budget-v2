@@ -47,18 +47,18 @@ export default function FicheCredit({ credit, onFermer }) {
           className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe"
         />
         <div className="grid grid-cols-2 gap-3">
-          <label className="block">
+          <label className="block min-w-0">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Restant dû (€)</span>
             <input inputMode="decimal" placeholder="8500" value={restant} onChange={(e) => setRestant(e.target.value)}
               className="tnum w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none focus:border-menthe" />
           </label>
-          <label className="block">
+          <label className="block min-w-0">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Mensualité (€)</span>
             <input inputMode="decimal" placeholder="220" value={mensualite} onChange={(e) => setMensualite(e.target.value)}
               className="tnum w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none focus:border-menthe" />
           </label>
         </div>
-        <label className="block">
+        <label className="block min-w-0">
           <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Taux annuel % (option, pour affiner la durée)</span>
           <input inputMode="decimal" placeholder="4,5" value={taux} onChange={(e) => setTaux(e.target.value)}
             className="tnum w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none focus:border-menthe" />

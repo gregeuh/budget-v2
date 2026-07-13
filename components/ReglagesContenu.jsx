@@ -52,18 +52,18 @@ function ProfilSheet({ onFermer }) {
   return (
     <Sheet titre="Mon profil" onFermer={onFermer}>
       <div className="space-y-3">
-        <label className="block">
+        <label className="block min-w-0">
           <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Prénom</span>
           <input value={prenom} onChange={(e) => setPrenom(e.target.value)} placeholder="Ton prénom"
             className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe" />
         </label>
         <div className="grid grid-cols-2 gap-3">
-          <label className="block">
+          <label className="block min-w-0">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Revenu mensuel net</span>
             <input inputMode="decimal" value={revenu} onChange={(e) => setRevenu(e.target.value)} placeholder="ex : 2300"
               className="tnum w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe" />
           </label>
-          <label className="block">
+          <label className="block min-w-0">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Jour du salaire</span>
             <select value={jourSalaire} onChange={(e) => setJourSalaire(e.target.value)}
               className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
