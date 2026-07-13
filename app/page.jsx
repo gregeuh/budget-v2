@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { euros, moisLabel, aujourdhui, TYPES_COMPTE } from "@/lib/format";
 import { statsMois } from "@/lib/conseils";
@@ -17,9 +17,10 @@ import MoisSelecteur from "@/components/MoisSelecteur";
 import BilanMensuel from "@/components/BilanMensuel";
 import PremiersPas from "@/components/PremiersPas";
 import { messageAccueil } from "@/lib/messagesAccueil";
+import { calculerProjection } from "@/lib/projection";
 
 export default function Accueil() {
-  const { comptes, transactions, soldes, profil, credits, projets, setReglagesOuverts } = useBudget();
+  const { comptes, transactions, soldes, profil, credits, projets, recurrentes, setReglagesOuverts } = useBudget();
   const [mois, setMois] = useState(cleMois(aujourdhui()));
   const [compteActif, setCompteActif] = useState(null);
   const [compact, setCompact] = useState(false);
@@ -45,22 +46,11 @@ export default function Accueil() {
   const compteAffiche = comptes.find((c) => c.id === compteActif);
 
   // Compte à rebours du salaire + reste à vivre
-  let joursAvantSalaire = null;
-  let resteAVivre = null;
-  if (profil.jourSalaire >= 1) {
-    const auj = new Date();
-    const dernierJourMois = new Date(auj.getFullYear(), auj.getMonth() + 1, 0).getDate();
-    let prochaine = new Date(auj.getFullYear(), auj.getMonth(), Math.min(profil.jourSalaire, dernierJourMois));
-    if (prochaine <= auj && prochaine.getDate() !== auj.getDate()) {
-      const djm2 = new Date(auj.getFullYear(), auj.getMonth() + 2, 0).getDate();
-      prochaine = new Date(auj.getFullYear(), auj.getMonth() + 1, Math.min(profil.jourSalaire, djm2));
-    }
-    joursAvantSalaire = Math.max(0, Math.round((prochaine - auj) / 86400000));
-    const soldesCourants = comptes
-      .filter((c) => !["livretA", "ldds", "pea"].includes(c.type))
-      .reduce((a, c) => a + (soldes[c.id] || 0), 0);
-    resteAVivre = Math.max(0, soldesCourants);
-  }
+  const projection = useMemo(
+    () => calculerProjection({ comptes, soldes, transactions, recurrentes, profil }),
+    [comptes, soldes, transactions, recurrentes, profil]
+  );
+  const joursAvantSalaire = projection.salaireISO ? projection.jours : null;
 
   return (
     <div className="space-y-4">
@@ -127,14 +117,15 @@ export default function Accueil() {
       </div>
 
       {joursAvantSalaire !== null && (
-        <div className="rounded-ios bg-ciel-pale px-3.5 py-2.5 text-sm font-medium text-ciel-texte">
-          💼 {joursAvantSalaire === 0 ? "Jour de salaire !" : `Salaire dans ${joursAvantSalaire} jour${joursAvantSalaire > 1 ? "s" : ""}`}
-          {resteAVivre !== null && joursAvantSalaire > 0 && (
+        <Link href="/transactions" className={`block rounded-ios px-3.5 py-2.5 text-sm font-medium ${projection.reste < 0 ? "bg-corail-pale text-corail-texte" : "bg-ciel-pale text-ciel-texte"}`}>
+          💼 {joursAvantSalaire === 0 ? "Jour de salaire ! 🎉" : `Salaire dans ${joursAvantSalaire} jour${joursAvantSalaire > 1 ? "s" : ""}`}
+          {joursAvantSalaire > 0 && (
             <span className="block text-xs opacity-80">
-              Reste à vivre : {euros(resteAVivre)}, soit ~{euros(resteAVivre / joursAvantSalaire)} / jour
+              Reste à vivre : {euros(projection.reste)}, soit ~{euros(projection.parJour)} / jour
+              {projection.prevu > 0 && ` (${euros(projection.prevu)} de prévus déduits)`}
             </span>
           )}
-        </div>
+        </Link>
       )}
 
       {projetPhare && projetPhare.objectif > 0 && (

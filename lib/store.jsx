@@ -200,13 +200,18 @@ export function DataProvider({ children }) {
     if (modeLocal) {
       setComptes((l) => l.filter((c) => c.id !== id));
       setTransactions((l) => l.filter((t) => t.compteId !== id));
+      setRecurrentes((l) => l.filter((r) => r.compteId !== id));
       notifier("Compte supprimé", "🗑️");
       return;
     }
     const { deleteDoc, doc, getDocs, query, where, collection, base } = await fs();
-    const q = query(collection(db, `${base}/transactions`), where("compteId", "==", id));
-    const snap = await getDocs(q);
-    snap.docs.forEach((d) => deleteDoc(d.ref).catch((e) => console.error("Écriture:", e)));
+    const qTx = query(collection(db, `${base}/transactions`), where("compteId", "==", id));
+    const snapTx = await getDocs(qTx);
+    snapTx.docs.forEach((d) => deleteDoc(d.ref).catch((e) => console.error("Écriture:", e)));
+    // Les récurrentes du compte supprimé partiraient sinon en orphelines (invisibles dans les calculs)
+    const qRec = query(collection(db, `${base}/recurrentes`), where("compteId", "==", id));
+    const snapRec = await getDocs(qRec);
+    snapRec.docs.forEach((d) => deleteDoc(d.ref).catch((e) => console.error("Écriture:", e)));
     deleteDoc(doc(db, `${base}/comptes`, id)).catch((e) => console.error("Écriture:", e));
     notifier("Compte supprimé", "🗑️");
   }, [modeLocal, fs]);
@@ -301,13 +306,14 @@ export function DataProvider({ children }) {
     (async () => {
       for (const r of recurrentes) {
         if (r.actif === false || !r.prochaine) continue;
+        if (!comptes.some((c) => c.id === r.compteId)) continue; // compte supprimé : rien à poster
         if (r.prochaine <= aujourdhui()) {
           const prochaine = await posterOccurrencesDues(r);
           await modifierRecurrente(r.id, { prochaine });
         }
       }
     })();
-  }, [pret, recurrentes, posterOccurrencesDues, modifierRecurrente]);
+  }, [pret, recurrentes, comptes, posterOccurrencesDues, modifierRecurrente]);
 
   // ------- Projets d'épargne -------
   const ajouterProjet = useCallback(async (p) => {

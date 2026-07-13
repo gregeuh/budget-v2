@@ -1,11 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useBudget } from "@/lib/store";
 
 export default function Toast() {
   const { toast } = useBudget();
   const [visible, setVisible] = useState(false);
+  const [monte, setMonte] = useState(false);
+
+  useEffect(() => setMonte(true), []);
 
   useEffect(() => {
     if (!toast) return;
@@ -14,12 +18,12 @@ export default function Toast() {
     return () => clearTimeout(minuterie);
   }, [toast?.id]);
 
-  if (!toast) return null;
+  if (!toast || !monte) return null;
 
-  return (
+  return createPortal(
     <div
       aria-live="polite"
-      className="pointer-events-none fixed inset-x-0 z-[60] mx-auto flex max-w-md justify-center px-4"
+      className="pointer-events-none fixed inset-x-0 z-[120] mx-auto flex max-w-md justify-center px-4"
       style={{ top: "calc(var(--safe-top) + 14px)" }}
     >
       <div
@@ -38,6 +42,7 @@ export default function Toast() {
           </button>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

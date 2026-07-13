@@ -159,8 +159,15 @@ export default function Budgets() {
               const pct = p.objectif > 0 ? Math.min(100, (p.montantActuel / p.objectif) * 100) : 0;
               const atteint = pct >= 100;
               return (
-                <li key={p.id}>
-                  <button onClick={() => setFicheProjet(p)} className="w-full rounded-ios bg-carte p-3.5 text-left shadow-carte active:scale-[0.99] transition-transform">
+                <li key={p.id} className="rounded-ios bg-carte p-3.5 shadow-carte">
+                  {/* Zone d'ouverture de la fiche (div cliquable : on ne peut pas imbriquer des boutons) */}
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setFicheProjet(p)}
+                    onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setFicheProjet(p)}
+                    className="cursor-pointer"
+                  >
                     <div className="flex items-center justify-between">
                       <span className="font-semibold">{p.icone} {p.nom}{atteint ? " 🎉" : ""}</span>
                       <span className="tnum text-sm text-sourdine">{euros(p.montantActuel)} / {euros(p.objectif)}</span>
@@ -173,7 +180,22 @@ export default function Budgets() {
                         Échéance : {new Date(p.echeance).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
                       </p>
                     )}
-                  </button>
+                  </div>
+
+                  {/* Contribution rapide */}
+                  {!atteint && (
+                    <div className="mt-2.5 flex gap-1.5">
+                      {[20, 50, 100].map((v) => (
+                        <button
+                          key={v}
+                          onClick={() => contribuerProjet(p.id, v)}
+                          className="flex-1 rounded-pill bg-lavande-pale py-1.5 text-xs font-semibold text-lavande-texte active:scale-95 transition-transform"
+                        >
+                          +{v} €
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </li>
               );
             })}

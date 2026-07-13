@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
-import { cleMois, euros, aujourdhui, prochaineOccurrence, prochaineDateSalaire, dateCourte, TYPES_COMPTE } from "@/lib/format";
+import { cleMois, euros, aujourdhui, dateCourte } from "@/lib/format";
+import { calculerProjection } from "@/lib/projection";
 import { statsMois } from "@/lib/conseils";
 import TxRow from "@/components/TxRow";
 import ImportCSV from "@/components/ImportCSV";
@@ -48,72 +49,16 @@ export default function Transactions() {
     return { nb, depense, recu };
   }, [parMois, recherche]);
 
-  // ------- À venir : opérations futures réelles + échéances des récurrentes -------
-  const salaireISO = prochaineDateSalaire(profil.jourSalaire);
-  const horizonISO = salaireISO || new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
-
-  const aVenir = useMemo(() => {
-    const auj = aujourdhui();
-    const reelles = transactions
-      .filter((t) => t.date > auj && t.date <= horizonISO)
-      .map((t) => ({ ...t, virtuel: false }));
-    const virtuelles = [];
-    for (const r of recurrentes) {
-      if (r.actif === false) continue;
-      let d = r.prochaine, garde = 0;
-      while (d && d <= horizonISO && garde < 24) {
-        if (d > auj) {
-          virtuelles.push({
-            id: `${r.id}-${d}`, date: d, montant: r.montant, categorie: r.categorie,
-            libelle: r.libelle, compteId: r.compteId, virtuel: true,
-          });
-        }
-        d = prochaineOccurrence(d, r.frequence);
-        garde++;
-      }
-    }
-    return [...reelles, ...virtuelles].sort((a, b) => a.date.localeCompare(b.date));
-  }, [transactions, recurrentes, horizonISO]);
+  const projection = useMemo(
+    () => calculerProjection({ comptes, soldes, transactions, recurrentes, profil }),
+    [comptes, soldes, transactions, recurrentes, profil]
+  );
+  const { salaireISO, aVenir } = projection;
 
   const aVenirAffiche = useMemo(
     () => aVenir.filter((t) => compteId === "tous" || t.compteId === compteId || t.versId === compteId),
     [aVenir, compteId]
   );
-
-  // Reste à vivre projeté : disponible sur les comptes du quotidien + flux prévus avant le salaire
-  const projection = useMemo(() => {
-    const scope = new Set(
-      comptes.filter((c) => !["epargne", "invest"].includes((TYPES_COMPTE[c.type] || TYPES_COMPTE.autre).groupe)).map((c) => c.id)
-    );
-    const dispo = comptes.filter((c) => scope.has(c.id)).reduce((a, c) => a + (soldes[c.id] || 0), 0);
-    let prevu = 0, attendu = 0;
-    for (const t of aVenir) {
-      if (t.horsSolde) continue;
-      if (salaireISO && t.date >= salaireISO) continue; // le jour de paie remet les compteurs
-      let impact = 0;
-      if (t.versId) {
-        const val = Math.abs(t.montant);
-        if (scope.has(t.compteId)) impact -= val;
-        if (scope.has(t.versId)) impact += val;
-      } else if (scope.has(t.compteId)) {
-        impact = t.montant;
-      }
-      if (impact < 0) prevu += -impact;
-      else attendu += impact;
-    }
-    const reste = dispo - prevu + attendu;
-    const jours = Math.max(1, Math.round((new Date(horizonISO) - new Date()) / 86400000));
-    return { dispo, prevu, attendu, reste, jours };
-  }, [comptes, soldes, aVenir, salaireISO, horizonISO]);
-
-  const [astuce, setAstuce] = useState(false);
-  useEffect(() => {
-    try { setAstuce(!localStorage.getItem("astuce-swipe")); } catch {}
-  }, []);
-  const fermerAstuce = () => {
-    setAstuce(false);
-    try { localStorage.setItem("astuce-swipe", "1"); } catch {}
-  };
 
   const nomMois = (m) => {
     const s = new Date(m + "-15").toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
