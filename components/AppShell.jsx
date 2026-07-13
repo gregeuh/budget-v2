@@ -47,7 +47,7 @@ export default function AppShell({ children }) {
           ⚠️ {erreurInit}
         </div>
       )}
-      <main key={chemin} className="page-in px-4 pb-32 pt-3">{children}</main>
+      <main key={chemin} className="page-in px-4 pb-40 pt-3">{children}</main>
       <TabBar onAjouter={() => setAjoutOuvert(true)} ajoutOuvert={ajoutOuvert} />
       {ajoutOuvert && <AddSheet onFermer={() => setAjoutOuvert(false)} />}
       {reglagesOuverts && <DrawerReglages />}

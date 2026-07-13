@@ -24,10 +24,9 @@ export default function TabBar({ onAjouter, ajoutOuvert = false }) {
             <button
               key="ajout"
               onClick={onAjouter}
-              aria-label="Ajouter une opération"
               data-bouton-ajout
               aria-label="Ajouter une opération"
-              className="mx-auto -mt-6 flex h-12 w-12 items-center justify-center rounded-full text-xl font-light text-white shadow-flottant active:scale-95 transition-transform"
+              className="mx-auto -mt-2.5 flex h-12 w-12 items-center justify-center rounded-full text-xl font-light text-white shadow-flottant ring-4 ring-fond active:scale-95 transition-transform"
               style={{ background: "linear-gradient(145deg, #35C79A, #1E9B77)" }}
             >
               <span className={`transition-transform duration-300 ${ajoutOuvert ? "rotate-45" : ""}`}>+</span>
