@@ -6,7 +6,7 @@ const decaler = (mois, n) => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 };
 
-import { cleMoisLocal, isoLocal } from "@/lib/format";
+import { cleMoisLocal } from "@/lib/format";
 
 export default function MoisSelecteur({ mois, onChanger }) {
   const actuel = cleMoisLocal();

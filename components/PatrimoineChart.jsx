@@ -19,7 +19,7 @@ export default function PatrimoineChart({ comptes, transactions }) {
     for (let i = profondeur; i >= 0; i--) {
       const d = new Date();
       d.setMonth(d.getMonth() - i + 1, 0); // dernier jour du mois visé
-      const limite = isoLocal(i === 0 ? "9999-12-31" : d);
+      const limite = i === 0 ? "9999-12-31" : isoLocal(d);
       const idsComptes = new Set(comptes.map((c) => c.id));
       let valeur = socle;
       for (const t of transactions) {
