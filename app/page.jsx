@@ -16,6 +16,7 @@ import ChiffresRoulants from "@/components/ChiffresRoulants";
 import MoisSelecteur from "@/components/MoisSelecteur";
 import BilanMensuel from "@/components/BilanMensuel";
 import PremiersPas from "@/components/PremiersPas";
+import BanniereConfig from "@/components/BanniereConfig";
 import Reveler from "@/components/Reveler";
 import { messageAccueil } from "@/lib/messagesAccueil";
 import { calculerProjection } from "@/lib/projection";
@@ -103,6 +104,8 @@ export default function Accueil() {
         </div>
         <CarrouselComptes onChange={setCompteActif} />
       </section>
+
+      <BanniereConfig />
 
       <MoisSelecteur mois={mois} onChanger={setMois} />
 

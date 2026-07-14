@@ -279,13 +279,17 @@ export function DataProvider({ children }) {
     return date;
   }, [ajouterTransaction]);
 
-  const ajouterRecurrente = useCallback(async (r) => {
+  const ajouterRecurrente = useCallback(async (r, opts = {}) => {
     const prochaine = await posterOccurrencesDues(r);
     const donnees = { actif: true, ...r, prochaine };
-    if (modeLocal) return setRecurrentes((l) => [...l, { id: genId(), ...donnees }]);
+    if (modeLocal) {
+      setRecurrentes((l) => [...l, { id: genId(), ...donnees }]);
+      if (!opts.silencieux) notifier("Récurrence créée", "🔁");
+      return;
+    }
     const { addDoc, collection, base } = await fs();
     addDoc(collection(db, `${base}/recurrentes`), donnees).catch((e) => console.error("Écriture:", e));
-    notifier("Récurrence créée", "🔁");
+    if (!opts.silencieux) notifier("Récurrence créée", "🔁");
   }, [modeLocal, fs, posterOccurrencesDues, notifier]);
 
   const modifierRecurrente = useCallback(async (id, maj) => {
