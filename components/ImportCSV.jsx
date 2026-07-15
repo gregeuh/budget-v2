@@ -5,6 +5,7 @@ import { useBudget } from "@/lib/store";
 import { euros, dateCourte } from "@/lib/format";
 import Sheet from "./Sheet";
 import PointsSautillants from "./PointsSautillants";
+import Rapprochement from "./Rapprochement";
 
 // ---- Catégorisation automatique par mots-clés (banques françaises) ----
 const REGLES_CAT = [
@@ -107,12 +108,13 @@ function analyserCSV(texte) {
 }
 
 export default function ImportCSV({ onFermer }) {
-  const { comptes, transactions, categories, ajouterTransactionsLot } = useBudget();
+  const { comptes, transactions, soldes, categories, ajouterTransactionsLot, fusionnerTransactions } = useBudget();
   const [compteId, setCompteId] = useState(comptes[0]?.id || "");
   const [resultat, setResultat] = useState(null); // { operations } | { erreur }
   const [selection, setSelection] = useState({});
   const [enCours, setEnCours] = useState(false);
-  const [termine, setTermine] = useState(0);
+  const [termine, setTermine] = useState(null); // { ajouts, fusions }
+  const [etapeRappro, setEtapeRappro] = useState(false);
   const fichierRef = useRef(null);
 
   const dejaImportees = useMemo(() => {
@@ -149,14 +151,43 @@ export default function ImportCSV({ onFermer }) {
     });
   };
 
-  const importer = async () => {
+  // Étape 1 -> 2 : passer au rapprochement avec les opérations sélectionnées
+  const versRapprochement = () => {
+    setEtapeRappro(true);
+  };
+
+  const lignesSelectionnees = () =>
+    resultat.operations
+      .map((o, i) => ({ ...o, _i: i }))
+      .filter((o) => selection[o._i])
+      .map((o) => ({ montant: o.montant, categorie: o.categorie, libelle: o.libelle, date: o.date }));
+
+  // Étape 2 : appliquer les décisions
+  const appliquer = async (decisions) => {
     setEnCours(true);
-    const aImporter = resultat.operations
-      .filter((_, i) => selection[i])
-      .map((o) => ({ compteId, montant: o.montant, categorie: o.categorie, libelle: o.libelle, date: o.date, importCSV: true }));
-    await ajouterTransactionsLot(aImporter);
-    setEnCours(false);
-    setTermine(aImporter.length);
+    try {
+      const ajouts = decisions
+        .filter((d) => d.choix.action === "ajouter")
+        .map((d) => ({
+          compteId,
+          montant: d.ligne.montant,
+          categorie: d.ligne.categorie,
+          libelle: d.ligne.libelle,
+          date: d.ligne.date,
+          importe: true,
+        }));
+
+      const fusions = decisions
+        .filter((d) => d.choix.action === "fusionner" && d.choix.txId)
+        .map((d) => ({ id: d.choix.txId, libelle: d.ligne.libelle, date: d.ligne.date }));
+
+      if (ajouts.length > 0) await ajouterTransactionsLot(ajouts);
+      if (fusions.length > 0) await fusionnerTransactions(fusions);
+
+      setTermine({ ajouts: ajouts.length, fusions: fusions.length });
+    } finally {
+      setEnCours(false);
+    }
   };
 
   const nbSelection = Object.values(selection).filter(Boolean).length;
@@ -164,12 +195,26 @@ export default function ImportCSV({ onFermer }) {
 
   return (
     <Sheet titre="Importer un relevé CSV" onFermer={onFermer}>
-      {termine > 0 ? (
+      {termine ? (
         <div className="py-8 text-center">
           <div className="text-4xl">✅</div>
-          <p className="mt-2 font-semibold">{termine} opération{termine > 1 ? "s" : ""} importée{termine > 1 ? "s" : ""}</p>
+          <p className="mt-2 font-semibold">Import terminé</p>
+          <p className="mt-1 text-sm text-sourdine">
+            {termine.ajouts > 0 && `${termine.ajouts} opération${termine.ajouts > 1 ? "s" : ""} ajoutée${termine.ajouts > 1 ? "s" : ""}`}
+            {termine.ajouts > 0 && termine.fusions > 0 && " · "}
+            {termine.fusions > 0 && `${termine.fusions} fusionnée${termine.fusions > 1 ? "s" : ""} (solde inchangé)`}
+          </p>
           <button onClick={onFermer} className="mt-5 w-full rounded-ios bg-encre py-3 font-semibold text-contraste">Fermer</button>
         </div>
+      ) : etapeRappro ? (
+        <Rapprochement
+          lignes={lignesSelectionnees()}
+          compteId={compteId}
+          soldeActuel={soldes[compteId] || 0}
+          onValider={appliquer}
+          onRetour={() => setEtapeRappro(false)}
+          enCours={enCours}
+        />
       ) : !resultat?.operations ? (
         <div className="space-y-3">
           <p className="text-sm text-sourdine">
@@ -216,15 +261,8 @@ export default function ImportCSV({ onFermer }) {
               </li>
             ))}
           </ul>
-          <button onClick={importer} disabled={nbSelection === 0 || enCours} className="flex w-full items-center justify-center gap-2 rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40">
-            {enCours ? (
-              <>
-                <PointsSautillants taille={6} couleur="var(--c-contraste)" />
-                <span>Import en cours</span>
-              </>
-            ) : (
-              `Importer ${nbSelection} opération${nbSelection > 1 ? "s" : ""}`
-            )}
+          <button onClick={versRapprochement} disabled={nbSelection === 0} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40">
+            Vérifier {nbSelection} opération{nbSelection > 1 ? "s" : ""} →
           </button>
         </div>
       )}

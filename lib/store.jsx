@@ -238,6 +238,21 @@ export function DataProvider({ children }) {
     if (!opts.silencieux) notifier("Opération modifiée");
   }, [modeLocal, fs, notifier]);
 
+  // Fusion : la transaction existante est CONSERVÉE (même id, même catégorie, même impact
+  // budgétaire) et enrichie du libellé exact de la banque. Le solde ne bouge pas.
+  const fusionnerTransactions = useCallback(async (paires) => {
+    for (const { id, libelle, date } of paires) {
+      const maj = { libelleBanque: libelle, importe: true };
+      if (date) maj.date = date;
+      if (modeLocal) {
+        setTransactions((l) => l.map((t) => (t.id === id ? { ...t, ...maj } : t)));
+      } else {
+        const { updateDoc, doc, base } = await fs();
+        updateDoc(doc(db, `${base}/transactions`, id), maj).catch((e) => console.error("Écriture:", e));
+      }
+    }
+  }, [modeLocal, fs]);
+
   const supprimerTransaction = useCallback(async (id, opts = {}) => {
     const sauvegarde = transactions.find((t) => t.id === id);
     if (modeLocal) setTransactions((l) => l.filter((t) => t.id !== id));
@@ -545,7 +560,7 @@ export function DataProvider({ children }) {
     celebration, celebrer,
     comptes, transactions, budgets, profil, soldes, recurrentes, projets, credits,
     ajouterCompte, modifierCompte, supprimerCompte,
-    ajouterTransaction, modifierTransaction, supprimerTransaction, ajouterTransactionsLot,
+    ajouterTransaction, modifierTransaction, supprimerTransaction, ajouterTransactionsLot, fusionnerTransactions,
     ajouterRecurrente, modifierRecurrente, supprimerRecurrente,
     ajouterProjet, modifierProjet, supprimerProjet,
     ajouterCredit, modifierCredit, supprimerCredit,

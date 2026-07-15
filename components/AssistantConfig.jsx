@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { euros, isoLocal, toutesCategories } from "@/lib/format";
-import { detecterRecurrences } from "@/lib/detection";
+import { detecterRecurrences, normaliserLibelle } from "@/lib/detection";
 import Sheet from "./Sheet";
 import PointsSautillants from "./PointsSautillants";
 
@@ -40,6 +40,21 @@ function joliLibelle(brut = "") {
   return s ? s.charAt(0).toUpperCase() + s.slice(1) : "Opération";
 }
 
+// Une récurrence détectée correspond-elle à une récurrente déjà active ?
+function dejaConfiguree(detectee, recurrentes) {
+  const cle = normaliserLibelle(detectee.libelle);
+  return recurrentes.find((r) => {
+    if (r.actif === false) return false;
+    if (r.montant > 0 !== detectee.montantMedian > 0) return false;
+    const memeLibelle = cle && normaliserLibelle(r.libelle || "") === cle;
+    const ecartMontant = Math.abs(Math.abs(r.montant) - Math.abs(detectee.montantMedian));
+    const memeMontant = ecartMontant < Math.max(1, Math.abs(detectee.montantMedian) * 0.02);
+    const jourR = Number(String(r.prochaine || "").slice(8, 10)) || 0;
+    const memeJour = jourR > 0 && Math.abs(jourR - detectee.jour) <= 3;
+    return memeLibelle || (memeMontant && memeJour);
+  }) || null;
+}
+
 export default function AssistantConfig({ onFermer }) {
   const { comptes, transactions, recurrentes, profil, sauverApp, ajouterRecurrente, notifier } = useBudget();
 
@@ -67,16 +82,22 @@ export default function AssistantConfig({ onFermer }) {
   useEffect(() => {
     const charges = detectees.filter((d) => !d.revenu);
     setPropositions(
-      charges.map((d, i) => ({
-        id: `regle-${i}`,
-        libelle: joliLibelle(d.libelle),
-        montant: d.montantMedian,
-        jour: d.jour,
-        categorie: d.categorie,
-        note: `${d.occurrences} fois détecté${d.variable ? " · montant variable" : ""}`,
-        coche: d.confiance >= 0.6,
-        source: "regles",
-      }))
+      charges.map((d, i) => {
+        const existante = dejaConfiguree(d, recurrentes);
+        return {
+          id: `regle-${i}`,
+          libelle: joliLibelle(d.libelle),
+          montant: d.montantMedian,
+          jour: d.jour,
+          categorie: d.categorie,
+          note: existante
+            ? `Déjà configuré : « ${existante.libelle} »`
+            : `${d.occurrences} fois détecté${d.variable ? " · montant variable" : ""}`,
+          coche: existante ? false : d.confiance >= 0.6,
+          dejaLa: Boolean(existante),
+          source: "regles",
+        };
+      })
     );
     const revenu = detectees.find((d) => d.revenu);
     if (revenu && !profil.revenuMensuel) {
@@ -119,16 +140,20 @@ export default function AssistantConfig({ onFermer }) {
       const charges = (data.recurrences || []).filter((x) => x.type === "charge");
       if (charges.length > 0) {
         setPropositions(
-          charges.map((x, i) => ({
-            id: `ia-${i}`,
-            libelle: x.libelle,
-            montant: x.montant,
-            jour: x.jour,
-            categorie: toutesCategories[x.categorie] ? x.categorie : "autre",
-            note: x.note || `Confiance ${Math.round(x.confiance * 100)} %`,
-            coche: x.confiance >= 0.6,
-            source: "ia",
-          }))
+          charges.map((x, i) => {
+            const existante = dejaConfiguree({ libelle: x.libelle, montantMedian: x.montant, jour: x.jour }, recurrentes);
+            return {
+              id: `ia-${i}`,
+              libelle: x.libelle,
+              montant: x.montant,
+              jour: x.jour,
+              categorie: toutesCategories[x.categorie] ? x.categorie : "autre",
+              note: existante ? `Déjà configuré : « ${existante.libelle} »` : x.note || `Confiance ${Math.round(x.confiance * 100)} %`,
+              coche: existante ? false : x.confiance >= 0.6,
+              dejaLa: Boolean(existante),
+              source: "ia",
+            };
+          })
         );
       }
       const revenu = (data.recurrences || []).find((x) => x.type === "revenu");
@@ -222,11 +247,15 @@ export default function AssistantConfig({ onFermer }) {
             Sans tes revenus, l&apos;app ne peut calculer ni ton reste à vivre, ni ton taux d&apos;épargne, ni ton score. Une fois réglé, ton salaire s&apos;ajoutera <strong>tout seul</strong> chaque mois.
           </p>
 
-          {detectees.some((d) => d.revenu) && (
+          {salaireExistant ? (
+            <p className="rounded-ios bg-voile px-3.5 py-2.5 text-xs text-sourdine">
+              ✓ Une récurrence de revenu existe déjà — cette étape mettra seulement ton profil à jour, sans en créer une seconde.
+            </p>
+          ) : detectees.some((d) => d.revenu) ? (
             <p className="rounded-ios bg-menthe-pale px-3.5 py-2.5 text-xs text-menthe-texte">
               ✨ J&apos;ai repéré un revenu récurrent dans ton historique et pré-rempli les champs — vérifie-les.
             </p>
-          )}
+          ) : null}
 
           <label className="block">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Montant net mensuel</span>
@@ -274,7 +303,7 @@ export default function AssistantConfig({ onFermer }) {
 
               <ul className="space-y-2">
                 {propositions.map((p) => (
-                  <li key={p.id} className={`flex items-center gap-2.5 rounded-2xl px-3 py-2 shadow-carte ${p.coche ? "bg-carte ring-1 ring-menthe/40" : "bg-carte opacity-60"}`}>
+                  <li key={p.id} className={`flex items-center gap-2.5 rounded-2xl px-3 py-2 shadow-carte ${p.coche ? "bg-carte ring-1 ring-menthe/40" : p.dejaLa ? "bg-voile/50 opacity-70" : "bg-carte opacity-60"}`}>
                     <button
                       onClick={() => basculer(p.id)}
                       aria-label={p.coche ? "Décocher" : "Cocher"}
@@ -285,6 +314,7 @@ export default function AssistantConfig({ onFermer }) {
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-semibold">
                         {(toutesCategories[p.categorie] || toutesCategories.autre).icone} {p.libelle}
+                        {p.dejaLa && <span className="ml-1.5 rounded-pill bg-voile px-1.5 py-0.5 align-middle text-[10px] font-medium text-sourdine">✓ déjà là</span>}
                       </span>
                       <span className="block truncate text-[11px] text-sourdine">le {p.jour} · {p.note}</span>
                     </span>
