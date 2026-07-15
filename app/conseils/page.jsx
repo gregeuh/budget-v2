@@ -6,6 +6,7 @@ import { genererConseils, resumePourCoach } from "@/lib/conseils";
 import { calculerScore } from "@/lib/score";
 import PointsSautillants from "@/components/PointsSautillants";
 import ScoreSante from "@/components/ScoreSante";
+import AnalyseDepenses from "@/components/AnalyseDepenses";
 
 const TONS = {
   alerte: "bg-corail-pale",
@@ -59,6 +60,8 @@ export default function Conseils() {
       <h1 className="text-xl font-bold">Conseils</h1>
 
       <ScoreSante />
+
+      <AnalyseDepenses />
 
       {/* Conseils automatiques */}
       <section className="space-y-2">

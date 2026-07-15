@@ -157,7 +157,8 @@ function RecurrentesSheet({ onFermer }) {
 
 /* ---- Fiche données ---- */
 function DonneesSheet({ onFermer }) {
-  const { comptes, transactions, budgets, recurrentes, projets, credits, profil, categoriesPerso, importerDonnees, notifier } = useBudget();
+  const { comptes, transactions, budgets, recurrentes, projets, credits, profil, categoriesPerso, importerDonnees, notifier, dernierImport, annulerImport } = useBudget();
+  const [annulation, setAnnulation] = useState(false);
 
   const exporter = () => {
     const blob = new Blob(
@@ -194,6 +195,32 @@ function DonneesSheet({ onFermer }) {
         <p className="text-sm text-sourdine">
           L'export JSON contient tout : comptes, opérations, budgets, projets, crédits, récurrences et catégories. C'est ta sauvegarde et ton ticket de migration.
         </p>
+        {dernierImport && (
+          <div className="rounded-ios bg-corail-pale p-3.5">
+            <p className="text-sm font-semibold text-corail-texte">Dernier import CSV</p>
+            <p className="mt-0.5 text-xs text-corail-texte/80">
+              {dernierImport.ajouts} opération{dernierImport.ajouts > 1 ? "s" : ""} ajoutée{dernierImport.ajouts > 1 ? "s" : ""}
+              {dernierImport.fusions > 0 && ` · ${dernierImport.fusions} fusionnée${dernierImport.fusions > 1 ? "s" : ""}`}
+            </p>
+            <button
+              onClick={async () => {
+                if (!annulation) return setAnnulation(true);
+                const r = await annulerImport(dernierImport.id);
+                notifier(`Import annulé (${r.ajouts} supprimée${r.ajouts > 1 ? "s" : ""})`, "↩️");
+                setAnnulation(false);
+              }}
+              className="mt-2 w-full rounded-ios bg-corail py-2.5 text-sm font-semibold text-white"
+            >
+              {annulation ? "Confirmer l'annulation ?" : "↩️ Annuler ce dernier import"}
+            </button>
+            {annulation && (
+              <button onClick={() => setAnnulation(false)} className="mt-1.5 w-full text-xs font-medium text-corail-texte">
+                Non, garder
+              </button>
+            )}
+          </div>
+        )}
+
         <button onClick={exporter} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste">
           ⬇︎ Exporter mes données
         </button>

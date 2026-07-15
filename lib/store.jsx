@@ -240,9 +240,16 @@ export function DataProvider({ children }) {
 
   // Fusion : la transaction existante est CONSERVÉE (même id, même catégorie, même impact
   // budgétaire) et enrichie du libellé exact de la banque. Le solde ne bouge pas.
-  const fusionnerTransactions = useCallback(async (paires) => {
+  const fusionnerTransactions = useCallback(async (paires, lotId = null) => {
     for (const { id, libelle, date } of paires) {
-      const maj = { libelleBanque: libelle, importe: true };
+      const avant = transactions.find((t) => t.id === id);
+      const maj = {
+        libelleBanque: libelle,
+        importe: true,
+        ...(lotId ? { lotImport: lotId } : {}),
+        // Mémorise l'état antérieur pour permettre l'annulation
+        avantFusion: { date: avant?.date ?? null, libelleBanque: avant?.libelleBanque ?? null },
+      };
       if (date) maj.date = date;
       if (modeLocal) {
         setTransactions((l) => l.map((t) => (t.id === id ? { ...t, ...maj } : t)));
@@ -251,7 +258,63 @@ export function DataProvider({ children }) {
         updateDoc(doc(db, `${base}/transactions`, id), maj).catch((e) => console.error("Écriture:", e));
       }
     }
-  }, [modeLocal, fs]);
+  }, [modeLocal, fs, transactions]);
+
+  // ------- Annulation d'un import (ajouts supprimés, fusions rétablies) -------
+  const annulerImport = useCallback(async (lotId) => {
+    if (!lotId) return { ajouts: 0, fusions: 0 };
+    const ajouts = transactions.filter((t) => t.lotImport === lotId && !t.avantFusion);
+    const fusions = transactions.filter((t) => t.lotImport === lotId && t.avantFusion);
+
+    if (modeLocal) {
+      const idsAjouts = new Set(ajouts.map((t) => t.id));
+      setTransactions((l) =>
+        l
+          .filter((t) => !idsAjouts.has(t.id))
+          .map((t) => {
+            if (t.lotImport !== lotId || !t.avantFusion) return t;
+            const { avantFusion, lotImport, libelleBanque, importe, ...reste } = t;
+            return {
+              ...reste,
+              date: avantFusion.date || t.date,
+              ...(avantFusion.libelleBanque ? { libelleBanque: avantFusion.libelleBanque } : {}),
+            };
+          })
+      );
+    } else {
+      const { deleteDoc, updateDoc, doc, base, deleteField } = await fs();
+      for (const t of ajouts) {
+        deleteDoc(doc(db, `${base}/transactions`, t.id)).catch((e) => console.error("Écriture:", e));
+      }
+      for (const t of fusions) {
+        updateDoc(doc(db, `${base}/transactions`, t.id), {
+          date: t.avantFusion?.date || t.date,
+          libelleBanque: t.avantFusion?.libelleBanque ?? deleteField(),
+          lotImport: deleteField(),
+          avantFusion: deleteField(),
+          importe: deleteField(),
+        }).catch((e) => console.error("Écriture:", e));
+      }
+    }
+
+    notifier(`Import annulé (${ajouts.length} supprimée${ajouts.length > 1 ? "s" : ""}, ${fusions.length} rétablie${fusions.length > 1 ? "s" : ""})`, "↩️");
+    return { ajouts: ajouts.length, fusions: fusions.length };
+  }, [modeLocal, fs, transactions, notifier]);
+
+  // Le dernier lot d'import présent dans les données
+  const dernierImport = useMemo(() => {
+    const lots = new Map();
+    for (const t of transactions) {
+      if (!t.lotImport) continue;
+      const e = lots.get(t.lotImport) || { id: t.lotImport, ajouts: 0, fusions: 0, date: t.dateImport || "" };
+      if (t.avantFusion) e.fusions++;
+      else e.ajouts++;
+      if (t.dateImport && t.dateImport > e.date) e.date = t.dateImport;
+      lots.set(t.lotImport, e);
+    }
+    const tous = [...lots.values()].sort((a, b) => (b.id > a.id ? 1 : -1));
+    return tous[0] || null;
+  }, [transactions]);
 
   const supprimerTransaction = useCallback(async (id, opts = {}) => {
     const sauvegarde = transactions.find((t) => t.id === id);
@@ -561,6 +624,7 @@ export function DataProvider({ children }) {
     comptes, transactions, budgets, profil, soldes, recurrentes, projets, credits,
     ajouterCompte, modifierCompte, supprimerCompte,
     ajouterTransaction, modifierTransaction, supprimerTransaction, ajouterTransactionsLot, fusionnerTransactions,
+    annulerImport, dernierImport,
     ajouterRecurrente, modifierRecurrente, supprimerRecurrente,
     ajouterProjet, modifierProjet, supprimerProjet,
     ajouterCredit, modifierCredit, supprimerCredit,

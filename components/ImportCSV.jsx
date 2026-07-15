@@ -108,7 +108,7 @@ function analyserCSV(texte) {
 }
 
 export default function ImportCSV({ onFermer }) {
-  const { comptes, transactions, soldes, categories, ajouterTransactionsLot, fusionnerTransactions } = useBudget();
+  const { comptes, transactions, soldes, categories, ajouterTransactionsLot, fusionnerTransactions, annulerImport } = useBudget();
   const [compteId, setCompteId] = useState(comptes[0]?.id || "");
   const [resultat, setResultat] = useState(null); // { operations } | { erreur }
   const [selection, setSelection] = useState({});
@@ -163,9 +163,14 @@ export default function ImportCSV({ onFermer }) {
       .map((o) => ({ montant: o.montant, categorie: o.categorie, libelle: o.libelle, date: o.date }));
 
   // Étape 2 : appliquer les décisions
+  const [lotId, setLotId] = useState(null);
+
   const appliquer = async (decisions) => {
     setEnCours(true);
     try {
+      const id = `imp-${Date.now().toString(36)}`;
+      const dateImport = new Date().toISOString();
+
       const ajouts = decisions
         .filter((d) => d.choix.action === "ajouter")
         .map((d) => ({
@@ -175,6 +180,8 @@ export default function ImportCSV({ onFermer }) {
           libelle: d.ligne.libelle,
           date: d.ligne.date,
           importe: true,
+          lotImport: id,
+          dateImport,
         }));
 
       const fusions = decisions
@@ -182,12 +189,18 @@ export default function ImportCSV({ onFermer }) {
         .map((d) => ({ id: d.choix.txId, libelle: d.ligne.libelle, date: d.ligne.date }));
 
       if (ajouts.length > 0) await ajouterTransactionsLot(ajouts);
-      if (fusions.length > 0) await fusionnerTransactions(fusions);
+      if (fusions.length > 0) await fusionnerTransactions(fusions, id);
 
+      setLotId(id);
       setTermine({ ajouts: ajouts.length, fusions: fusions.length });
     } finally {
       setEnCours(false);
     }
+  };
+
+  const annuler = async () => {
+    await annulerImport(lotId);
+    onFermer();
   };
 
   const nbSelection = Object.values(selection).filter(Boolean).length;
@@ -204,7 +217,14 @@ export default function ImportCSV({ onFermer }) {
             {termine.ajouts > 0 && termine.fusions > 0 && " · "}
             {termine.fusions > 0 && `${termine.fusions} fusionnée${termine.fusions > 1 ? "s" : ""} (solde inchangé)`}
           </p>
-          <button onClick={onFermer} className="mt-5 w-full rounded-ios bg-encre py-3 font-semibold text-contraste">Fermer</button>
+          <button onClick={onFermer} className="mt-5 w-full rounded-ios bg-encre py-3 font-semibold text-contraste">Parfait, fermer</button>
+          <button onClick={annuler} className="mt-2 w-full rounded-ios bg-corail-pale py-2.5 text-sm font-semibold text-corail-texte">
+            ↩️ Annuler cet import
+          </button>
+          <p className="mt-2 text-[11px] text-sourdine">
+            L&apos;annulation supprime les {termine.ajouts} opération{termine.ajouts > 1 ? "s" : ""} ajoutée{termine.ajouts > 1 ? "s" : ""}
+            {termine.fusions > 0 && ` et rétablit les ${termine.fusions} fusionnée${termine.fusions > 1 ? "s" : ""}`}. Tu peux aussi le faire plus tard depuis Réglages.
+          </p>
         </div>
       ) : etapeRappro ? (
         <Rapprochement
