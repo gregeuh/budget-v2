@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useBudget } from "@/lib/store";
 import { aujourdhui } from "@/lib/format";
 import Sheet from "./Sheet";
+import { nettoyerLibelle } from "@/lib/libelles";
 
 export default function EditTxSheet({ tx, onFermer }) {
-  const { comptes, categories, modifierTransaction, supprimerTransaction, ajouterTransaction } = useBudget();
+  const { comptes, categories, transactions, modifierTransaction, supprimerTransaction, ajouterTransaction } = useBudget();
   const [montant, setMontant] = useState(String(Math.abs(tx.montant)).replace(".", ","));
   const [sens, setSens] = useState(tx.montant < 0 ? "depense" : "revenu");
   const [libelle, setLibelle] = useState(tx.libelle || "");
@@ -31,6 +32,13 @@ export default function EditTxSheet({ tx, onFermer }) {
     onFermer();
   };
 
+  // Jumeaux = même libellé nettoyé (rassemble les occurrences aux dates différentes)
+  const origineNettoyee = nettoyerLibelle((tx.libelleBanque || tx.libelle || "").trim()).toLowerCase();
+  const memesLibelles = origineNettoyee
+    ? transactions.filter((t) => t.id !== tx.id && !t.versId && nettoyerLibelle((t.libelleBanque || t.libelle || "").trim()).toLowerCase() === origineNettoyee)
+    : [];
+  const [propager, setPropager] = useState(false);
+
   const estVirement = Boolean(tx.versId);
   const [versId, setVersId] = useState(tx.versId || "");
   const cats = Object.entries(categories).filter(([, c]) =>
@@ -50,6 +58,13 @@ export default function EditTxSheet({ tx, onFermer }) {
       horsSolde: horsSolde || false,
       lieu: lieu.trim() || null,
     });
+    // Propagation aux opérations de même libellé d'origine
+    const nouveauLibelle = libelle.trim();
+    if (propager && nouveauLibelle && memesLibelles.length > 0) {
+      for (const t of memesLibelles) {
+        await modifierTransaction(t.id, { libelle: nouveauLibelle }, { silencieux: true });
+      }
+    }
     onFermer();
   };
 
@@ -91,6 +106,15 @@ export default function EditTxSheet({ tx, onFermer }) {
           onChange={(e) => setLibelle(e.target.value)}
           className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe"
         />
+
+        {memesLibelles.length > 0 && libelle.trim() && libelle.trim() !== (tx.libelle || "") && (
+          <label className="flex items-center gap-2.5 rounded-ios bg-menthe-pale px-3.5 py-2.5">
+            <input type="checkbox" checked={propager} onChange={(e) => setPropager(e.target.checked)} className="h-4 w-4 accent-menthe" />
+            <span className="text-xs text-menthe-texte">
+              Appliquer aussi aux <strong>{memesLibelles.length}</strong> autre{memesLibelles.length > 1 ? "s" : ""} opération{memesLibelles.length > 1 ? "s" : ""} du même libellé
+            </span>
+          </label>
+        )}
 
         {!estVirement && (
           <div className="flex flex-wrap gap-1.5">
