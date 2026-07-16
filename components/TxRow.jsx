@@ -99,6 +99,7 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
               {estVirement
                 ? ` · ${compte?.nom || "?"} → ${versCompte?.nom || "?"}`
                 : avecCompte && compte ? ` · ${compte.nom}` : ""}
+              {tx.lieu && ` · 📍 ${tx.lieu}`}
             </span>
           </span>
           <span className={`tnum shrink-0 text-sm font-bold ${cat.type === "virement" ? "text-sourdine" : positif ? "text-menthe" : "text-encre"}`}>

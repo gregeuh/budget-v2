@@ -18,6 +18,7 @@ import BilanMensuel from "@/components/BilanMensuel";
 import PremiersPas from "@/components/PremiersPas";
 import BanniereConfig from "@/components/BanniereConfig";
 import Reveler from "@/components/Reveler";
+import CalendrierDepenses from "@/components/CalendrierDepenses";
 import { messageAccueil } from "@/lib/messagesAccueil";
 import { calculerProjection } from "@/lib/projection";
 
@@ -151,6 +152,8 @@ export default function Accueil() {
       <Reveler retard={60}><SpendChart transactions={transactions} /></Reveler>
 
       <Reveler retard={120}><DonutCat transactions={transactions} mois={mois} /></Reveler>
+
+      <Reveler retard={60}><CalendrierDepenses mois={mois} /></Reveler>
 
       <section>
         <div className="mb-2 flex items-center justify-between">

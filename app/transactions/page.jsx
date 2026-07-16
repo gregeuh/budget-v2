@@ -11,6 +11,7 @@ import ImportCSV from "@/components/ImportCSV";
 export default function Transactions() {
   const { transactions, comptes, categories, recurrentes, soldes, profil } = useBudget();
   const [compteId, setCompteId] = useState("tous");
+  const [catFiltre, setCatFiltre] = useState("toutes");
   const [importOuvert, setImportOuvert] = useState(false);
   const [recherche, setRecherche] = useState("");
 
@@ -20,6 +21,7 @@ export default function Transactions() {
     const q = normaliser(recherche.trim());
     const filtrees = transactions.filter((t) => {
       if (compteId !== "tous" && t.compteId !== compteId && t.versId !== compteId) return false;
+      if (catFiltre !== "toutes" && t.categorie !== catFiltre) return false;
       if (!q) return true;
       const cat = categories[t.categorie] || categories.autre;
       return normaliser(t.libelle).includes(q) || normaliser(cat.label).includes(q);
@@ -32,7 +34,12 @@ export default function Transactions() {
     return Object.entries(groupes)
       .sort((a, b) => b[0].localeCompare(a[0]))
       .map(([mois, txs]) => ({ mois, txs: txs.sort((a, b) => b.date.localeCompare(a.date)) }));
-  }, [transactions, compteId, recherche]);
+  }, [transactions, compteId, catFiltre, recherche, categories]);
+
+  const catsPresentes = useMemo(() => {
+    const set = new Set(transactions.map((t) => t.categorie));
+    return Object.entries(categories).filter(([id]) => set.has(id));
+  }, [transactions, categories]);
 
   // Bilan de la recherche
   const bilan = useMemo(() => {
@@ -114,6 +121,27 @@ export default function Transactions() {
           <button onClick={() => setRecherche("")} aria-label="Effacer" className="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-voile text-xs text-sourdine">✕</button>
         )}
       </div>
+
+      {/* Filtre par catégorie */}
+      {catsPresentes.length > 1 && (
+        <div className="no-scrollbar -mx-4 flex gap-1.5 overflow-x-auto px-4">
+          <button
+            onClick={() => setCatFiltre("toutes")}
+            className={`shrink-0 rounded-pill px-3 py-1.5 text-xs font-semibold ${catFiltre === "toutes" ? "bg-encre text-contraste" : "bg-carte text-sourdine ring-1 ring-bordure"}`}
+          >
+            Toutes
+          </button>
+          {catsPresentes.map(([id, c]) => (
+            <button
+              key={id}
+              onClick={() => setCatFiltre(catFiltre === id ? "toutes" : id)}
+              className={`shrink-0 rounded-pill px-3 py-1.5 text-xs font-semibold ${catFiltre === id ? "bg-encre text-contraste" : "bg-carte text-sourdine ring-1 ring-bordure"}`}
+            >
+              {c.icone} {c.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {bilan && bilan.nb > 0 && (
         <div className="tnum rounded-ios bg-ciel-pale px-4 py-2.5 text-sm font-medium text-ciel-texte">

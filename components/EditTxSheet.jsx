@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useBudget } from "@/lib/store";
+import { aujourdhui } from "@/lib/format";
 import Sheet from "./Sheet";
 
 export default function EditTxSheet({ tx, onFermer }) {
-  const { comptes, categories, modifierTransaction, supprimerTransaction } = useBudget();
+  const { comptes, categories, modifierTransaction, supprimerTransaction, ajouterTransaction } = useBudget();
   const [montant, setMontant] = useState(String(Math.abs(tx.montant)).replace(".", ","));
   const [sens, setSens] = useState(tx.montant < 0 ? "depense" : "revenu");
   const [libelle, setLibelle] = useState(tx.libelle || "");
@@ -13,7 +14,22 @@ export default function EditTxSheet({ tx, onFermer }) {
   const [compteId, setCompteId] = useState(tx.compteId);
   const [date, setDate] = useState(tx.date);
   const [horsSolde, setHorsSolde] = useState(Boolean(tx.horsSolde));
+  const [lieu, setLieu] = useState(tx.lieu || "");
   const [confirmeSuppr, setConfirmeSuppr] = useState(false);
+
+  const repeter = async () => {
+    const val = parseFloat(String(montant).replace(",", "."));
+    if (!val || val <= 0) return;
+    await ajouterTransaction({
+      compteId,
+      montant: sens === "depense" ? -val : val,
+      libelle: libelle.trim() || (categories[categorie]?.label ?? "Opération"),
+      categorie,
+      date: aujourdhui(),
+      ...(lieu.trim() ? { lieu: lieu.trim() } : {}),
+    });
+    onFermer();
+  };
 
   const estVirement = Boolean(tx.versId);
   const [versId, setVersId] = useState(tx.versId || "");
@@ -32,6 +48,7 @@ export default function EditTxSheet({ tx, onFermer }) {
       ...(estVirement ? { versId } : {}),
       date,
       horsSolde: horsSolde || false,
+      lieu: lieu.trim() || null,
     });
     onFermer();
   };
@@ -62,6 +79,11 @@ export default function EditTxSheet({ tx, onFermer }) {
           />
           <span className="text-2xl font-semibold text-sourdine">€</span>
         </div>
+
+        {/* Libellé exact de la banque (import), en sous-titre façon Wallet */}
+        {tx.libelleBanque && tx.libelleBanque !== libelle && (
+          <p className="-mt-1 text-center text-xs text-sourdine">{tx.libelleBanque}</p>
+        )}
 
         <input
           placeholder="Libellé"
@@ -121,6 +143,35 @@ export default function EditTxSheet({ tx, onFermer }) {
             <span className={`relative ml-3 h-6 w-11 shrink-0 rounded-full transition-colors ${horsSolde ? "bg-menthe" : "bg-voile"}`}>
               <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${horsSolde ? "translate-x-[22px]" : "translate-x-0.5"}`} />
             </span>
+          </button>
+        )}
+
+        {/* Lieu, façon fiche Apple Wallet — ajoutable à la main, ouvrable dans Plans */}
+        <div className="rounded-ios border border-bordure bg-carte p-3.5">
+          <div className="flex items-center gap-2">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-voile text-sm">📍</span>
+            <input
+              placeholder="Ajouter un lieu (ex : La Cave, Bordeaux)"
+              value={lieu}
+              onChange={(e) => setLieu(e.target.value)}
+              className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+            />
+          </div>
+          {lieu.trim() && (
+            <a
+              href={`https://maps.apple.com/?q=${encodeURIComponent(lieu.trim())}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 flex items-center justify-center gap-1.5 rounded-pill bg-ciel-pale py-2 text-sm font-semibold text-ciel-texte"
+            >
+              🗺️ Voir dans Plans
+            </a>
+          )}
+        </div>
+
+        {!estVirement && (
+          <button onClick={repeter} className="flex w-full items-center justify-center gap-2 rounded-ios bg-menthe-pale py-2.5 text-sm font-semibold text-menthe-texte active:scale-[0.99] transition-transform">
+            🔁 Refaire cette opération aujourd'hui
           </button>
         )}
 

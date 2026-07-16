@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useBudget } from "@/lib/store";
+import FicheCategorie from "@/components/FicheCategorie";
 import { euros, cleMois, aujourdhui } from "@/lib/format";
 import { statsMois } from "@/lib/conseils";
 import Sheet from "@/components/Sheet";
@@ -58,6 +59,7 @@ function FicheBudget({ onFermer }) {
 
 export default function Budgets() {
   const { transactions, budgets, profil, projets, categories, modifierProjet, notifier, celebrer } = useBudget();
+  const [ficheCat, setFicheCat] = useState(null);
 
   const contribuerProjet = (id, montant) => {
     const p = projets.find((x) => x.id === id);
@@ -113,6 +115,8 @@ export default function Budgets() {
         )}
       </section>
 
+      {ficheCat && <FicheCategorie categorieId={ficheCat} onFermer={() => setFicheCat(null)} />}
+
       {/* Budgets par catégorie */}
       <section>
         <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-sourdine">Plafonds par catégorie</h2>
@@ -128,15 +132,17 @@ export default function Budgets() {
               const pct = limite > 0 ? (reel / limite) * 100 : 0;
               const couleur = pct >= 100 ? "#FF6B5E" : pct >= 80 ? "#F5B93E" : "#2BB68C";
               return (
-                <li key={cat} className="rounded-ios bg-carte p-3.5 shadow-carte">
+                <li key={cat}>
+                  <button onClick={() => setFicheCat(cat)} className="w-full rounded-ios bg-carte p-3.5 text-left shadow-carte active:scale-[0.99] transition-transform">
                   <div className="mb-1.5 flex items-center justify-between text-sm">
-                    <span className="font-semibold">{c.icone} {c.label}</span>
+                    <span className="font-semibold">{c.icone} {c.label} <span className="text-sourdine/50">›</span></span>
                     <span className="tnum text-sourdine">{euros(reel)} / {euros(limite)}</span>
                   </div>
                   <div className="h-2.5 overflow-hidden rounded-full bg-voile">
                     <div className="jauge-in h-full rounded-full transition-all" style={{ width: `${Math.min(100, pct)}%`, background: couleur }} />
                   </div>
                   {pct >= 100 && <p className="mt-1.5 text-xs font-medium text-corail">Dépassé de {euros(reel - limite)}</p>}
+                  </button>
                 </li>
               );
             })}

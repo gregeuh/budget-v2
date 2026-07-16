@@ -22,6 +22,52 @@ const REGLES_CAT = [
   ["salaire", /salaire|vir(ement)?\s+.*(paie|salaire)|remuneration/i],
 ];
 
+// Transforme un libellé bancaire brut en nom lisible.
+// "CB  SQ *FRAN'S VERDU 29/05/26" -> "Fran's Verdu" ; "PRLV SEPA Bouygues Telecom" -> "Bouygues Telecom"
+const MARQUES = {
+  "carrefour": "Carrefour", "auchan": "Auchan", "monop": "Monoprix", "monoprix": "Monoprix",
+  "amazon": "Amazon", "amzn": "Amazon", "amz": "Amazon", "apple": "Apple", "paypal": "PayPal",
+  "netflix": "Netflix", "spotify": "Spotify", "deezer": "Deezer", "disney": "Disney+",
+  "bouygues": "Bouygues Telecom", "orange": "Orange", "sfr": "SFR", "free": "Free",
+  "edf": "EDF", "engie": "Engie", "total": "TotalEnergies", "uber": "Uber", "deliveroo": "Deliveroo",
+  "mcdonald": "McDonald's", "starbucks": "Starbucks", "fnac": "Fnac", "decathlon": "Decathlon",
+  "nike": "Nike", "adidas": "Adidas", "zalando": "Zalando", "snipes": "Snipes", "revolut": "Revolut",
+  "sncf": "SNCF", "navigo": "Navigo", "airbnb": "Airbnb", "booking": "Booking", "zara": "Zara",
+  "leclerc": "Leclerc", "lidl": "Lidl", "aldi": "Aldi", "ikea": "Ikea", "fanatics": "Fanatics",
+  "withings": "Withings", "aroma-zone": "Aroma-Zone", "horace": "Horace", "citadium": "Citadium",
+  "sumup": "SumUp", "spliiit": "Spliiit", "klarna": "Klarna", "sagasport": "Sagasport",
+  "mcdo": "McDonald's", "eyeswatch": "Eyeswatch", "planet panda": "Planet Panda", "espace foot": "Espace Foot",
+  "louis pion": "Louis Pion", "europcar": "Europcar", "leetchi": "Leetchi", "delivroo": "Deliveroo",
+  "estanquet": "L'Estanquet", "fran's verdu": "Fran's Verdu", "la cave": "La Cave", "pains etc": "Pains Etc",
+  "pret personnel": "Prêt personnel", "pret immo": "Prêt immobilier", "assurance lcl": "Assurance LCL",
+  "gaz de bordeaux": "Gaz de Bordeaux", "regie eau": "Régie des eaux", "mae assurance": "MAE Assurance",
+  "tenue de compte": "Frais de tenue de compte", "livret a": "Virement Livret A",
+};
+
+function nettoyerLibelle(brut = "") {
+  // 1. Dictionnaire d'abord, sur le libellé BRUT : une marque reconnue l'emporte
+  //    (sinon "MP*CARREFOUR DAC" perdrait "Carrefour" au nettoyage des codes)
+  const basBrut = brut.toLowerCase();
+  for (const [motif, propre] of Object.entries(MARQUES)) {
+    if (basBrut.includes(motif)) return propre;
+  }
+
+  // 2. Sinon, nettoyage générique
+  let s = brut
+    .replace(/\b(CB|PRLV|SEPA|VIR|VIREMENT|PRELEVEMENT|PAIEMENT|ACHAT|FACTURE|ECHEANCE|CARTE|RETRAIT DAB|INST|PERMANENT|SARL|SAS|SA)\b/gi, " ")
+    .replace(/\d{2}[\/.\-]\d{2}([\/.\-]\d{2,4})?/g, " ") // dates
+    .replace(/\*+/g, " ")
+    .replace(/[A-Z]{2,}\d{2,}/g, " ")                       // codes type MONOP4744
+    .replace(/\b\d{4,}\b/g, " ")                            // n° de mandat
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // Garder les 3 premiers mots significatifs, en jolie casse
+  const mots = s.split(" ").filter((m) => m.length > 1 && !/^\d+$/.test(m)).slice(0, 3);
+  const joli = mots.join(" ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+  return joli || brut.trim() || "Opération";
+}
+
 const devinerCategorie = (libelle, montant) => {
   for (const [cat, re] of REGLES_CAT) if (re.test(libelle)) return cat;
   return montant > 0 ? "autresRevenus" : "autre";
@@ -102,7 +148,7 @@ function analyserCSV(texte) {
         }
         if (montant === null || montant === 0) continue;
         const libelle = (iLibelle !== -1 ? ch[iLibelle] : "").replace(/\s+/g, " ").trim() || "Import CSV";
-        operations.push({ date, montant, libelle, categorie: devinerCategorie(libelle, montant) });
+        operations.push({ date, montant, libelle: nettoyerLibelle(libelle), libelleBanque: libelle, categorie: devinerCategorie(libelle, montant) });
       }
       if (operations.length > 0) return { operations };
     }
@@ -174,7 +220,7 @@ function analyserCSV(texte) {
     if (/^\d{5}\s+\d+[A-Z]?$/.test(libelleBrut)) continue;
     if (!libelleBrut) continue; // lignes de solde en tête/pied (aucun libellé réel)
 
-    operations.push({ date, montant, libelle: libelleBrut, categorie: devinerCategorie(libelleBrut, montant) });
+    operations.push({ date, montant, libelle: nettoyerLibelle(libelleBrut), libelleBanque: libelleBrut, categorie: devinerCategorie(libelleBrut, montant) });
   }
 
   if (operations.length === 0) return { erreur: "Aucune opération valide trouvée dans le fichier." };
@@ -234,7 +280,7 @@ export default function ImportCSV({ onFermer }) {
     resultat.operations
       .map((o, i) => ({ ...o, _i: i }))
       .filter((o) => selection[o._i])
-      .map((o) => ({ montant: o.montant, categorie: o.categorie, libelle: o.libelle, date: o.date }));
+      .map((o) => ({ montant: o.montant, categorie: o.categorie, libelle: o.libelle, libelleBanque: o.libelleBanque, date: o.date }));
 
   // Étape 2 : appliquer les décisions
   const [lotId, setLotId] = useState(null);
