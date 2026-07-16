@@ -7,6 +7,7 @@ import Sheet from "@/components/Sheet";
 import CategoriesSheet from "@/components/CategoriesSheet";
 import AssistantConfig from "@/components/AssistantConfig";
 import ImportCSV from "@/components/ImportCSV";
+import RenommerSheet from "@/components/RenommerSheet";
 import { toutesCategories as CATEGORIES, FREQUENCES, euros, dateCourte, isoLocal } from "@/lib/format";
 
 const THEMES = [
@@ -278,6 +279,7 @@ export default function ReglagesContenu() {
         <Rangee icone="🔁" label={`Récurrentes${nbRecurrentes > 0 ? ` (${nbRecurrentes})` : ""}`} onClick={() => setFiche("recurrentes")} />
         <Rangee icone="💼" label="Salaire & charges fixes" onClick={() => setFiche("assistant")} />
         <Rangee icone="📥" label="Importer un relevé bancaire (CSV)" onClick={() => setFiche("import")} />
+        <Rangee icone="✨" label="Nettoyer les libellés" onClick={() => setFiche("renommer")} />
         <Rangee icone="💾" label="Sauvegarde & données" onClick={() => setFiche("donnees")} dernier />
       </nav>
 
@@ -317,6 +319,7 @@ export default function ReglagesContenu() {
       {fiche === "donnees" && <DonneesSheet onFermer={() => setFiche(null)} />}
       {fiche === "assistant" && <AssistantConfig onFermer={() => setFiche(null)} />}
       {fiche === "import" && <ImportCSV onFermer={() => setFiche(null)} />}
+      {fiche === "renommer" && <RenommerSheet onFermer={() => setFiche(null)} />}
     </div>
   );
 }
