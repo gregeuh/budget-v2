@@ -1,4 +1,5 @@
 export const runtime = "nodejs";
+export const maxDuration = 30;
 
 const SYSTEME = `Tu es un coach budgétaire francophone, bienveillant et concret, intégré à une application de gestion de budget personnelle.
 

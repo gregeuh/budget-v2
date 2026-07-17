@@ -18,6 +18,7 @@ import BilanMensuel from "@/components/BilanMensuel";
 import PremiersPas from "@/components/PremiersPas";
 import BanniereConfig from "@/components/BanniereConfig";
 import RechercheSheet from "@/components/RechercheSheet";
+import ProjectionIA from "@/components/ProjectionIA";
 import Reveler from "@/components/Reveler";
 import CalendrierDepenses from "@/components/CalendrierDepenses";
 import { messageAccueil } from "@/lib/messagesAccueil";
@@ -144,6 +145,8 @@ export default function Accueil() {
           )}
         </Link>
       )}
+
+      <ProjectionIA />
 
       {projetPhare && projetPhare.objectif > 0 && (
         <Link href="/budgets" className="block rounded-ios bg-lavande-pale px-4 py-3">

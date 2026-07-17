@@ -39,8 +39,10 @@ export default function Conseils() {
           resume: { ...resumePourCoach(donnees), scoreSante: (({ total, piliers }) => ({ total, piliers: piliers.map((p) => ({ pilier: p.label, points: p.points, sur: 20 })) }))(calculerScore(donnees)) },
         }),
       });
-      const data = await rep.json();
-      setMessages((m) => [...m, { role: "assistant", content: data.reponse || data.erreur || "Réponse vide." }]);
+      let data = {};
+      try { data = await rep.json(); } catch { /* réponse non-JSON */ }
+      const contenu = data.reponse || data.erreur || (rep.ok ? "Réponse vide." : `Erreur ${rep.status}. Réessaie dans un instant.`);
+      setMessages((m) => [...m, { role: "assistant", content: contenu }]);
     } catch {
       setMessages((m) => [...m, { role: "assistant", content: "Le coach est injoignable pour le moment. Vérifie ta connexion et réessaie." }]);
     }
