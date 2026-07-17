@@ -601,9 +601,11 @@ export function DataProvider({ children }) {
   // ------- Soldes calculés -------
   const soldes = useMemo(() => {
     const map = {};
+    const auj = aujourdhui();
     for (const c of comptes) map[c.id] = c.soldeInitial || 0;
     for (const t of transactions) {
       if (t.horsSolde) continue;
+      if (t.date > auj) continue; // opération future : pas encore dans le solde (elle est "à venir")
       if (t.versId) {
         // Virement nouveau format : une seule écriture, deux soldes impactés
         const val = Math.abs(t.montant);

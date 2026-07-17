@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-export default function Sheet({ titre, onFermer, children }) {
+export default function Sheet({ titre, onFermer, children, niveau = 1 }) {
   const [monte, setMonte] = useState(false);
 
   // Rendu hors de la page (portail) : sinon l'animation de transition de page
@@ -21,7 +21,7 @@ export default function Sheet({ titre, onFermer, children }) {
   if (!monte) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] mx-auto max-w-md">
+    <div className="fixed inset-0 mx-auto max-w-md" style={{ zIndex: 100 + niveau * 5 }}>
       <div className="fade-in absolute inset-0 bg-black/40" onClick={onFermer} />
       <div
         className="sheet-in absolute inset-x-0 bottom-0 max-h-[88dvh] overflow-y-auto rounded-t-[22px] bg-fond px-4 pt-3"

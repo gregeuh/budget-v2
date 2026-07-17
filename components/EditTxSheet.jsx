@@ -6,7 +6,7 @@ import { aujourdhui } from "@/lib/format";
 import Sheet from "./Sheet";
 import { nettoyerLibelle } from "@/lib/libelles";
 
-export default function EditTxSheet({ tx, onFermer }) {
+export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
   const { comptes, categories, transactions, modifierTransaction, supprimerTransaction, ajouterTransaction } = useBudget();
   const [montant, setMontant] = useState(String(Math.abs(tx.montant)).replace(".", ","));
   const [sens, setSens] = useState(tx.montant < 0 ? "depense" : "revenu");
@@ -69,7 +69,7 @@ export default function EditTxSheet({ tx, onFermer }) {
   };
 
   return (
-    <Sheet titre="Modifier l'opération" onFermer={onFermer}>
+    <Sheet titre="Modifier l'opération" onFermer={onFermer} niveau={niveau}>
       <div className="space-y-3">
         {!estVirement && (
           <div className="grid grid-cols-2 rounded-pill bg-voile p-1">
