@@ -46,8 +46,31 @@ export function DataProvider({ children }) {
   const [categoriesPerso, setCategoriesPerso] = useState({});
   const [reglagesOuverts, setReglagesOuverts] = useState(false);
   const [celebration, setCelebration] = useState(0);
-
   const celebrer = useCallback(() => setCelebration((n) => n + 1), []);
+
+  // Projection IA : l'état vit dans le store pour survivre à la navigation entre pages.
+  const [projIA, setProjIA] = useState({ chargement: false, resultat: null, erreur: "" });
+  const lancerProjectionIA = useCallback(async (charge) => {
+    setProjIA({ chargement: true, resultat: null, erreur: "" });
+    try {
+      const r = await fetch("/api/projection", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(charge),
+      });
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        const msg = r.status === 503 ? "Active l'IA (clé API) pour la projection." : d.erreur || `Erreur ${r.status}.`;
+        setProjIA({ chargement: false, resultat: null, erreur: msg });
+        return;
+      }
+      const data = await r.json();
+      setProjIA({ chargement: false, resultat: data, erreur: "" });
+    } catch {
+      setProjIA({ chargement: false, resultat: null, erreur: "Connexion impossible." });
+    }
+  }, []);
+  const reinitProjectionIA = useCallback(() => setProjIA({ chargement: false, resultat: null, erreur: "" }), []);
   const notifier = useCallback((message, icone = "✓", action = null) => {
     setToast({ id: Date.now(), message, icone, action });
   }, []);
@@ -623,6 +646,7 @@ export function DataProvider({ children }) {
     categories, categoriesPerso, sauverCategoriesPerso,
     reglagesOuverts, setReglagesOuverts,
     celebration, celebrer,
+    projIA, lancerProjectionIA, reinitProjectionIA,
     comptes, transactions, budgets, profil, soldes, recurrentes, projets, credits,
     ajouterCompte, modifierCompte, supprimerCompte,
     ajouterTransaction, modifierTransaction, supprimerTransaction, ajouterTransactionsLot, fusionnerTransactions,
