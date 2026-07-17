@@ -17,6 +17,7 @@ import MoisSelecteur from "@/components/MoisSelecteur";
 import BilanMensuel from "@/components/BilanMensuel";
 import PremiersPas from "@/components/PremiersPas";
 import BanniereConfig from "@/components/BanniereConfig";
+import RechercheSheet from "@/components/RechercheSheet";
 import Reveler from "@/components/Reveler";
 import CalendrierDepenses from "@/components/CalendrierDepenses";
 import { messageAccueil } from "@/lib/messagesAccueil";
@@ -35,6 +36,7 @@ export default function Accueil() {
   }, []);
 
   const accueil = messageAccueil({ comptes, soldes, profil, transactions });
+  const [rechercheOuverte, setRechercheOuverte] = useState(false);
   const s = statsMois(transactions, mois);
   const totalCredits = credits.reduce((a, c) => a + (c.restant || 0), 0);
   const groupeDe = (c) => (TYPES_COMPTE[c.type] || TYPES_COMPTE.autre).groupe;
@@ -93,6 +95,16 @@ export default function Accueil() {
         </div>
         <button onClick={() => setReglagesOuverts(true)} aria-label="Réglages" className="flex h-9 w-9 items-center justify-center rounded-full bg-carte text-base shadow-carte active:scale-95 transition-transform">⚙️</button>
       </header>
+
+      <button
+        onClick={() => setRechercheOuverte(true)}
+        className="flex w-full items-center gap-2.5 rounded-pill border border-bordure bg-carte px-4 py-2.5 text-left text-sm text-sourdine shadow-carte active:scale-[0.99] transition-transform"
+      >
+        <span>🔍</span>
+        <span>Rechercher une opération, un montant…</span>
+      </button>
+
+      {rechercheOuverte && <RechercheSheet onFermer={() => setRechercheOuverte(false)} />}
 
       <PremiersPas onAjouter={() => document.querySelector("[data-bouton-ajout]")?.click()} />
 
