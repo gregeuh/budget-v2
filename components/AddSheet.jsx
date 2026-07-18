@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { FREQUENCES, aujourdhui, euros } from "@/lib/format";
 import Sheet from "./Sheet";
+import PointsSautillants from "./PointsSautillants";
+import { construireMemoire, devinerDepuisHistorique, lieuxConnus, proposerLibelles } from "@/lib/habitudes";
 
 const MODES = [
   { id: "depense", label: "Dépense" },
@@ -27,8 +29,60 @@ export default function AddSheet({ onFermer }) {
   const [frequence, setFrequence] = useState("unefois");
   const [horsSolde, setHorsSolde] = useState(false);
   const [secousse, setSecousse] = useState(0);
+  // Saisie en langage naturel
+  const [phrase, setPhrase] = useState("");
+  const [analyseEnCours, setAnalyseEnCours] = useState(false);
+  const [noteIA, setNoteIA] = useState("");
+  const [erreurIA, setErreurIA] = useState("");
+  const [lieu, setLieu] = useState("");
+  const [autoApplique, setAutoApplique] = useState(null); // ce que l'app a deviné toute seule
 
   const secouer = () => setSecousse((s) => s + 1);
+
+  // Interprète une phrase ("15€ courses carrefour hier") et pré-remplit le formulaire
+  const interpreter = async () => {
+    if (!phrase.trim() || analyseEnCours) return;
+    setAnalyseEnCours(true);
+    setErreurIA("");
+    setNoteIA("");
+    try {
+      const r = await fetch("/api/saisie", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          phrase: phrase.trim(),
+          categories: Object.fromEntries(Object.entries(categories).map(([k, c]) => [k, c.label])),
+          comptes: comptes.map((c) => c.nom),
+          dateDuJour: aujourdhui(),
+        }),
+      });
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        setErreurIA(r.status === 503 ? "Active l'IA (clé API) pour la saisie intelligente." : d.erreur || "Interprétation impossible.");
+        return;
+      }
+      const d = await r.json();
+      if (d.montant > 0) setMontant(String(d.montant).replace(".", ","));
+      if (d.type) setMode(d.type);
+      if (d.libelle) setLibelle(d.libelle);
+      if (d.categorie && categories[d.categorie]) setCategorie(d.categorie);
+      if (d.date) setDate(d.date);
+      if (d.compte) {
+        const trouve = comptes.find((c) => c.nom.toLowerCase() === String(d.compte).toLowerCase());
+        if (trouve) setCompteId(trouve.id);
+      }
+      if (d.lieu) setLieu(d.lieu);
+      setNoteIA(d.note || "");
+      setPhrase("");
+      // Si le montant est identifié, on saute directement à l'étape de vérification
+      if (d.montant > 0) setEtape(2);
+      else secouer();
+    } catch {
+      setErreurIA("Connexion impossible.");
+    } finally {
+      setAnalyseEnCours(false);
+    }
+  };
 
   const valeur = parseFloat(String(montant).replace(",", ".")) || 0;
   const couleurMontant = mode === "depense" ? "text-corail" : mode === "revenu" ? "text-menthe" : "text-encre";
@@ -52,6 +106,27 @@ export default function AddSheet({ onFermer }) {
   };
 
   // ---- Suggestions (libellés fréquents) ----
+  // Ce que l'app a appris de tes habitudes (catégorie + lieu par commerçant)
+  const memoire = useMemo(() => construireMemoire(transactions), [transactions]);
+  const lieuxFrequents = useMemo(() => lieuxConnus(transactions, 8, lieu), [transactions, lieu]);
+  const propositions = useMemo(() => proposerLibelles(libelle, memoire), [libelle, memoire]);
+
+  // Quand tu tapes un libellé déjà connu : catégorie et lieu proposés automatiquement
+  const appliquerHabitude = (valeurLibelle) => {
+    const trouve = devinerDepuisHistorique(valeurLibelle, memoire);
+    if (!trouve) { setAutoApplique(null); return; }
+    let applique = null;
+    if (trouve.categorie && categories[trouve.categorie]) {
+      setCategorie(trouve.categorie);
+      applique = { categorie: categories[trouve.categorie]?.label };
+    }
+    if (trouve.lieu && !lieu.trim()) {
+      setLieu(trouve.lieu);
+      applique = { ...(applique || {}), lieu: trouve.lieu };
+    }
+    setAutoApplique(applique);
+  };
+
   const suggestions = useMemo(() => {
     if (mode === "virement") return [];
     const map = new Map();
@@ -106,6 +181,7 @@ export default function AddSheet({ onFermer }) {
         montant: mode === "depense" ? -valeur : valeur,
         categorie,
         libelle: libelle.trim() || (categories[categorie]?.label ?? "Opération"),
+        ...(lieu.trim() ? { lieu: lieu.trim() } : {}),
         ...(horsSolde ? { horsSolde: true } : {}),
       };
       if (frequence === "unefois") await ajouterTransaction({ ...base, date });
@@ -121,6 +197,33 @@ export default function AddSheet({ onFermer }) {
     <Sheet titre="Nouvelle opération" onFermer={onFermer}>
       {etape === 1 ? (
         <div key="e1" className="pop-in">
+          {/* Saisie en langage naturel */}
+          <div className="mb-4">
+            <div className="flex gap-2">
+              <input
+                value={phrase}
+                onChange={(e) => setPhrase(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && interpreter()}
+                placeholder="Décris ta dépense : « 15€ courses Carrefour hier »"
+                className="min-w-0 flex-1 rounded-pill border border-bordure bg-carte px-4 py-2.5 text-sm outline-none focus:border-lavande"
+              />
+              <button
+                onClick={interpreter}
+                disabled={!phrase.trim() || analyseEnCours}
+                aria-label="Interpréter"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lavande-pale text-lavande-texte disabled:opacity-40"
+              >
+                {analyseEnCours ? <PointsSautillants taille={4} couleur="var(--lavande-texte)" /> : "✨"}
+              </button>
+            </div>
+            {erreurIA && <p className="mt-1 px-1 text-xs text-corail">{erreurIA}</p>}
+            {!erreurIA && !phrase && (
+              <p className="mt-1 px-1 text-[11px] text-sourdine">
+                Ou dicte-la avec le micro de ton clavier 🎤
+              </p>
+            )}
+          </div>
+
           {/* Mode */}
           <div className="mb-4 grid grid-cols-3 rounded-pill bg-voile p-1">
             {MODES.map((m) => (
@@ -196,9 +299,59 @@ export default function AddSheet({ onFermer }) {
               <input
                 placeholder="Libellé (ex : Carrefour, Loyer…)"
                 value={libelle}
-                onChange={(e) => setLibelle(e.target.value)}
+                onChange={(e) => { setLibelle(e.target.value); setAutoApplique(null); }}
+                onBlur={(e) => appliquerHabitude(e.target.value)}
                 className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe"
               />
+
+              {propositions.length > 0 && (
+                <div className="fade-in -mt-1 flex flex-wrap gap-1.5">
+                  {propositions.map((p) => (
+                    <button
+                      key={p.libelle}
+                      onClick={() => { setLibelle(p.libelle); appliquerHabitude(p.libelle); }}
+                      className="rounded-pill bg-carte px-2.5 py-1 text-[12px] font-medium shadow-carte ring-1 ring-bordure"
+                    >
+                      {p.libelle}
+                      {p.lieu ? <span className="text-sourdine"> · 📍 {p.lieu}</span> : null}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {autoApplique && (
+                <p className="fade-in -mt-1 px-1 text-[11px] text-menthe-texte">
+                  ✨ D&apos;après tes habitudes :
+                  {autoApplique.categorie ? ` ${autoApplique.categorie}` : ""}
+                  {autoApplique.categorie && autoApplique.lieu ? " ·" : ""}
+                  {autoApplique.lieu ? ` 📍 ${autoApplique.lieu}` : ""}
+                </p>
+              )}
+
+              {/* Lieu, avec les lieux déjà utilisés */}
+              <div>
+                <div className="flex items-center gap-2 rounded-ios border border-bordure bg-carte px-3.5 py-2.5">
+                  <span className="shrink-0 text-sm">📍</span>
+                  <input
+                    placeholder="Lieu (optionnel)"
+                    value={lieu}
+                    onChange={(e) => setLieu(e.target.value)}
+                    className="min-w-0 flex-1 bg-transparent text-sm outline-none"
+                  />
+                  {lieu && (
+                    <button onClick={() => setLieu("")} aria-label="Effacer le lieu" className="shrink-0 text-xs text-sourdine">✕</button>
+                  )}
+                </div>
+                {!lieu && lieuxFrequents.length > 0 && (
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    {lieuxFrequents.slice(0, 5).map((l) => (
+                      <button key={l} onClick={() => setLieu(l)} className="rounded-pill bg-voile px-2.5 py-1 text-[12px] font-medium">
+                        📍 {l}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <div className="flex flex-wrap gap-1.5">
                 {cats.map(([id, c]) => (
                   <button key={id} onClick={() => setCategorie(id)}
@@ -266,6 +419,12 @@ export default function AddSheet({ onFermer }) {
                 <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${horsSolde ? "translate-x-[22px]" : "translate-x-0.5"}`} />
               </span>
             </button>
+          )}
+
+          {noteIA && (
+            <div className="fade-in rounded-ios bg-lavande-pale px-3.5 py-2.5 text-xs text-lavande-texte">
+              ✨ {noteIA}
+            </div>
           )}
 
           {doublon && (

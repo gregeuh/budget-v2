@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { aujourdhui } from "@/lib/format";
 import Sheet from "./Sheet";
 import { nettoyerLibelle } from "@/lib/libelles";
+import { construireMemoire, devinerDepuisHistorique, lieuxConnus, proposerLibelles } from "@/lib/habitudes";
 
 export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
   const { comptes, categories, transactions, modifierTransaction, supprimerTransaction, ajouterTransaction } = useBudget();
@@ -38,6 +39,27 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
     ? transactions.filter((t) => t.id !== tx.id && !t.versId && nettoyerLibelle((t.libelleBanque || t.libelle || "").trim()).toLowerCase() === origineNettoyee)
     : [];
   const [propager, setPropager] = useState(false);
+
+  // Ce que l'app a appris : catégorie et lieu habituels par commerçant
+  const memoire = useMemo(() => construireMemoire(transactions), [transactions]);
+  const lieuxFrequents = useMemo(() => lieuxConnus(transactions, 8, lieu), [transactions, lieu]);
+  const propositions = useMemo(() => proposerLibelles(libelle, memoire), [libelle, memoire]);
+  const [habitude, setHabitude] = useState("");
+
+  const appliquerHabitude = (valeur) => {
+    const trouve = devinerDepuisHistorique(valeur, memoire);
+    if (!trouve) return;
+    const applique = [];
+    if (trouve.categorie && categories[trouve.categorie] && trouve.categorie !== categorie) {
+      setCategorie(trouve.categorie);
+      applique.push(categories[trouve.categorie].label);
+    }
+    if (trouve.lieu && !lieu.trim()) {
+      setLieu(trouve.lieu);
+      applique.push(trouve.lieu);
+    }
+    setHabitude(applique.length ? `D'après tes habitudes : ${applique.join(" · ")}` : "");
+  };
 
   const estVirement = Boolean(tx.versId);
   const [versId, setVersId] = useState(tx.versId || "");
@@ -104,8 +126,28 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
           placeholder="Libellé"
           value={libelle}
           onChange={(e) => setLibelle(e.target.value)}
+          onBlur={(e) => appliquerHabitude(e.target.value)}
           className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe"
         />
+
+        {propositions.length > 0 && (
+          <div className="fade-in -mt-1 flex flex-wrap gap-1.5">
+            {propositions.map((p) => (
+              <button
+                key={p.libelle}
+                onClick={() => { setLibelle(p.libelle); appliquerHabitude(p.libelle); }}
+                className="rounded-pill bg-fond px-2.5 py-1 text-[12px] font-medium ring-1 ring-bordure"
+              >
+                {p.libelle}
+                {p.lieu ? <span className="text-sourdine"> · 📍 {p.lieu}</span> : null}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {habitude && (
+          <p className="fade-in -mt-1 px-1 text-[11px] text-menthe-texte">✨ {habitude}</p>
+        )}
 
         {memesLibelles.length > 0 && libelle.trim() && libelle.trim() !== (tx.libelle || "") && (
           <label className="flex items-center gap-2.5 rounded-ios bg-menthe-pale px-3.5 py-2.5">
@@ -181,6 +223,16 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
               className="min-w-0 flex-1 bg-transparent text-sm outline-none"
             />
           </div>
+          {!lieu.trim() && lieuxFrequents.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {lieuxFrequents.slice(0, 5).map((l) => (
+                <button key={l} onClick={() => setLieu(l)} className="rounded-pill bg-voile px-2.5 py-1 text-[11px] font-medium">
+                  {l}
+                </button>
+              ))}
+            </div>
+          )}
+
           {lieu.trim() && (
             <a
               href={`https://maps.apple.com/?q=${encodeURIComponent(lieu.trim())}`}

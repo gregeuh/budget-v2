@@ -5,6 +5,7 @@ import { useBudget } from "@/lib/store";
 import { euros, dateCourte } from "@/lib/format";
 import Sheet from "./Sheet";
 import { nettoyerLibelle } from "@/lib/libelles";
+import { construireMemoire, devinerDepuisHistorique } from "@/lib/habitudes";
 import PointsSautillants from "./PointsSautillants";
 import Rapprochement from "./Rapprochement";
 
@@ -211,6 +212,14 @@ export default function ImportCSV({ onFermer }) {
     lecteur.onload = () => {
       const res = analyserCSV(String(lecteur.result));
       if (res.operations) {
+        // Tes propres habitudes priment sur les règles génériques :
+        // si tu as déjà classé "Carrefour" en Courses, l'import le fait aussi.
+        const memoire = construireMemoire(transactions);
+        for (const o of res.operations) {
+          const appris = devinerDepuisHistorique(o.libelle, memoire);
+          if (appris?.categorie && categories[appris.categorie]) o.categorie = appris.categorie;
+          if (appris?.lieu && !o.lieu) o.lieu = appris.lieu;
+        }
         const sel = {};
         res.operations.forEach((o, i) => {
           const doublon = dejaImportees.has(`${o.date}|${o.montant.toFixed(2)}|${o.libelle.toLowerCase()}`);
