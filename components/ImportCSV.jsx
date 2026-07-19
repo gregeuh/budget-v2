@@ -5,24 +5,13 @@ import { useBudget } from "@/lib/store";
 import { euros, dateCourte } from "@/lib/format";
 import Sheet from "./Sheet";
 import { nettoyerLibelle } from "@/lib/libelles";
+import { devinerCategorie } from "@/lib/categorisation";
 import { construireMemoire, devinerDepuisHistorique } from "@/lib/habitudes";
 import PointsSautillants from "./PointsSautillants";
 import Rapprochement from "./Rapprochement";
 
 // ---- Catégorisation automatique par mots-clés (banques françaises) ----
-const REGLES_CAT = [
-  ["courses", /carrefour|leclerc|lidl|aldi|auchan|intermarche|monoprix|franprix|casino|grand frais|picard|biocoop/i],
-  ["resto", /mcdo|mc donald|burger|kfc|uber\s*eats|deliveroo|resto|restaurant|pizz|sushi|kebab|brasserie|bistro/i],
-  ["transport", /sncf|ratp|navigo|total|esso|bp\s|shell|autoroute|vinci|sanef|uber(?!\s*eats)|blablacar|parking/i],
-  ["abonnements", /netflix|spotify|disney|canal\+?|prime video|deezer|apple\.com|icloud|youtube|psn|playstation|xbox|basic.?fit|onair/i],
-  ["factures", /edf|engie|totalenergies|veolia|free\s|orange|sfr|bouygues|sosh|red by|assurance|mutuelle|maif|maaf|matmut|axa/i],
-  ["logement", /loyer|foncia|nexity|century|orpi|syndic/i],
-  ["sante", /pharmacie|docteur|dr\s|medecin|dentiste|labo|hopital|clinique/i],
-  ["animaux", /veterinaire|veto|maxi\s*zoo|animalis|croquette/i],
-  ["shopping", /amazon|fnac|darty|zalando|vinted|nike|adidas|decathlon|zara|h&m|boulanger|cdiscount|leroy merlin|ikea/i],
-  ["loisirs", /cinema|ugc|pathe|gaumont|steam|nintendo|billetterie|concert|stade|fff|five|urban/i],
-  ["salaire", /salaire|vir(ement)?\s+.*(paie|salaire)|remuneration/i],
-];
+
 
 // Transforme un libellé bancaire brut en nom lisible.
 // "CB  SQ *FRAN'S VERDU 29/05/26" -> "Fran's Verdu" ; "PRLV SEPA Bouygues Telecom" -> "Bouygues Telecom"
@@ -30,10 +19,7 @@ const REGLES_CAT = [
 
 
 
-const devinerCategorie = (libelle, montant) => {
-  for (const [cat, re] of REGLES_CAT) if (re.test(libelle)) return cat;
-  return montant > 0 ? "autresRevenus" : "autre";
-};
+
 
 // ---- Analyse du CSV ----
 const detecterSeparateur = (ligne) => {
