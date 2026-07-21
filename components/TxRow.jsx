@@ -70,7 +70,7 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
         <button
           onClick={() => { supprimerTransaction(tx.id); setDecalage(0); }}
           aria-label="Supprimer l'opération"
-          className="absolute inset-y-0 right-0 flex items-center justify-center bg-corail text-xs font-bold text-white"
+          className="absolute inset-y-0 right-0 flex items-center justify-center bg-corail-bouton text-xs font-bold text-white"
           style={{ width: LARGEUR_ACTION }}
         >
           🗑️ Supprimer

@@ -84,7 +84,7 @@ export default function FicheCredit({ credit, onFermer }) {
               await supprimerCredit(credit.id);
               onFermer();
             }}
-            className={`w-full rounded-ios py-3 text-sm font-semibold ${confirmeSuppr ? "bg-corail text-white" : "text-corail"}`}
+            className={`w-full rounded-ios py-3 text-sm font-semibold ${confirmeSuppr ? "bg-corail-bouton text-white" : "text-corail"}`}
           >
             {confirmeSuppr ? "Confirmer la suppression" : "Supprimer ce crédit"}
           </button>

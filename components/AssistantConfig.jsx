@@ -307,7 +307,7 @@ export default function AssistantConfig({ onFermer }) {
                     <button
                       onClick={() => basculer(p.id)}
                       aria-label={p.coche ? "Décocher" : "Cocher"}
-                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${p.coche ? "bg-menthe text-white" : "bg-voile text-sourdine"}`}
+                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${p.coche ? "bg-menthe-bouton text-white" : "bg-voile text-sourdine"}`}
                     >
                       {p.coche ? "✓" : ""}
                     </button>

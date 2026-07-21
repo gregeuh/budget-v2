@@ -31,12 +31,14 @@
   --menthe: #34c759;                        /* systemGreen */
   --menthe-pale: rgba(52, 199, 89, 0.14);
   --menthe-texte: #1e7a34;
+  --menthe-bouton: #1e7a34;
   --beurre: #ff9500;                        /* systemOrange */
   --beurre-pale: rgba(255, 149, 0, 0.14);
   --beurre-texte: #ac5f00;
   --corail: #ff3b30;                        /* systemRed */
   --corail-pale: rgba(255, 59, 48, 0.12);
   --corail-texte: #d70015;
+  --corail-bouton: #d70015;
 
   /* Alias conservés pour ne rien casser */
   --lavande: var(--marque);
@@ -79,12 +81,14 @@ html.sombre {
   --menthe: #30d158;
   --menthe-pale: rgba(48, 209, 88, 0.20);
   --menthe-texte: #5ce27f;
+  --menthe-bouton: #248a3d;
   --beurre: #ff9f0a;
   --beurre-pale: rgba(255, 159, 10, 0.20);
   --beurre-texte: #ffbe57;
   --corail: #ff453a;
   --corail-pale: rgba(255, 69, 58, 0.20);
   --corail-texte: #ff7d74;
+  --corail-bouton: #d70015;
 
   --lavande: var(--marque);
   --lavande-pale: var(--marque-pale);

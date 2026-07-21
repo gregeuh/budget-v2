@@ -15,9 +15,9 @@ module.exports = {
         marque: { DEFAULT: "var(--marque)", pale: "var(--marque-pale)", texte: "var(--marque-texte)", bouton: "var(--marque-bouton)" },
         surMarque: "var(--sur-marque)",
         // Trois rôles sémantiques
-        menthe: { DEFAULT: "var(--menthe)", pale: "var(--menthe-pale)", texte: "var(--menthe-texte)" },
+        menthe: { DEFAULT: "var(--menthe)", pale: "var(--menthe-pale)", texte: "var(--menthe-texte)", bouton: "var(--menthe-bouton)" },
         beurre: { DEFAULT: "var(--beurre)", pale: "var(--beurre-pale)", texte: "var(--beurre-texte)" },
-        corail: { DEFAULT: "var(--corail)", pale: "var(--corail-pale)", texte: "var(--corail-texte)" },
+        corail: { DEFAULT: "var(--corail)", pale: "var(--corail-pale)", texte: "var(--corail-texte)", bouton: "var(--corail-bouton)" },
         // Alias conservés pour ne rien casser dans l'existant
         lavande: { DEFAULT: "var(--marque)", pale: "var(--marque-pale)", texte: "var(--marque-texte)" },
         ciel: { DEFAULT: "var(--marque)", pale: "var(--marque-pale)", texte: "var(--marque-texte)" },

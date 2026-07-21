@@ -260,7 +260,7 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
             await supprimerTransaction(tx.id);
             onFermer();
           }}
-          className={`w-full rounded-ios py-3 text-sm font-semibold ${confirmeSuppr ? "bg-corail text-white" : "text-corail"}`}
+          className={`w-full rounded-ios py-3 text-sm font-semibold ${confirmeSuppr ? "bg-corail-bouton text-white" : "text-corail"}`}
         >
           {confirmeSuppr ? "Confirmer la suppression" : "Supprimer"}
         </button>

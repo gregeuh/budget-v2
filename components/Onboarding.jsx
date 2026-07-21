@@ -84,7 +84,7 @@ export default function Onboarding() {
                 <div key={type} className={`rounded-ios border p-3.5 transition-colors ${actif ? "border-menthe bg-carte" : "border-bordure bg-carte/50"}`}>
                   <button onClick={() => basculer(type)} className="flex w-full items-center justify-between">
                     <span className="font-semibold">{t.icone} {t.label}</span>
-                    <span className={`flex h-6 w-6 items-center justify-center rounded-full text-sm ${actif ? "bg-menthe text-white" : "bg-voile"}`}>
+                    <span className={`flex h-6 w-6 items-center justify-center rounded-full text-sm ${actif ? "bg-menthe-bouton text-white" : "bg-voile"}`}>
                       {actif ? "✓" : "+"}
                     </span>
                   </button>

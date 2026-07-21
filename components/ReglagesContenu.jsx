@@ -212,7 +212,7 @@ function DonneesSheet({ onFermer }) {
                 notifier(`Import annulé (${r.ajouts} supprimée${r.ajouts > 1 ? "s" : ""})`, "↩️");
                 setAnnulation(false);
               }}
-              className="mt-2 w-full rounded-ios bg-corail py-2.5 text-sm font-semibold text-white"
+              className="mt-2 w-full rounded-ios bg-corail-bouton py-2.5 text-sm font-semibold text-white"
             >
               {annulation ? "Confirmer l'annulation ?" : "↩️ Annuler ce dernier import"}
             </button>

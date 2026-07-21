@@ -68,7 +68,7 @@ function FicheCompte({ compte, onFermer }) {
               <button
                 onClick={reajuster}
                 disabled={diff === null || Math.abs(diff) < 0.005}
-                className="rounded-xl bg-menthe px-4 font-semibold text-white disabled:opacity-40"
+                className="rounded-xl bg-menthe-bouton px-4 font-semibold text-white disabled:opacity-40"
               >
                 Réajuster
               </button>

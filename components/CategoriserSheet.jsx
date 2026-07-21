@@ -137,7 +137,7 @@ export default function CategoriserSheet({ onFermer }) {
                     <button
                       onClick={() => setIgnores((s) => { const n = new Set(s); n.has(g.cle) ? n.delete(g.cle) : n.add(g.cle); return n; })}
                       aria-label={actif ? "Ne pas ranger" : "Ranger"}
-                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${actif ? "bg-menthe text-white" : "bg-voile text-sourdine"}`}
+                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${actif ? "bg-menthe-bouton text-white" : "bg-voile text-sourdine"}`}
                     >
                       {actif ? "✓" : ""}
                     </button>

@@ -162,7 +162,7 @@ export default function FicheCompte({ compte, onFermer }) {
               <button
                 onClick={ajuster}
                 disabled={ecart === null || Math.abs(ecart) < 0.005}
-                className="rounded-xl bg-menthe px-4 text-sm font-semibold text-white disabled:opacity-40"
+                className="rounded-xl bg-menthe-bouton px-4 text-sm font-semibold text-white disabled:opacity-40"
               >
                 Ajuster
               </button>
