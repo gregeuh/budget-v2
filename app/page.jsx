@@ -7,20 +7,14 @@ import { euros, moisLabel, aujourdhui, TYPES_COMPTE } from "@/lib/format";
 import { statsMois } from "@/lib/conseils";
 import { cleMois } from "@/lib/format";
 import CarrouselComptes from "@/components/CarrouselComptes";
-import SpendChart from "@/components/SpendChart";
-import DonutCat from "@/components/DonutCat";
 import TxRow from "@/components/TxRow";
-import PatrimoineChart from "@/components/PatrimoineChart";
 import CountUp from "@/components/CountUp";
 import ChiffresRoulants from "@/components/ChiffresRoulants";
 import MoisSelecteur from "@/components/MoisSelecteur";
-import BilanMensuel from "@/components/BilanMensuel";
 import PremiersPas from "@/components/PremiersPas";
-import BanniereConfig from "@/components/BanniereConfig";
+import Analyses from "@/components/Analyses";
+import Accroches from "@/components/Accroches";
 import RechercheSheet from "@/components/RechercheSheet";
-import ProjectionIA from "@/components/ProjectionIA";
-import Reveler from "@/components/Reveler";
-import CalendrierDepenses from "@/components/CalendrierDepenses";
 import { messageAccueil } from "@/lib/messagesAccueil";
 import { calculerProjection } from "@/lib/projection";
 
@@ -109,8 +103,6 @@ export default function Accueil() {
 
       <PremiersPas onAjouter={() => document.querySelector("[data-bouton-ajout]")?.click()} />
 
-      <BilanMensuel />
-
       <section>
         <div className="mb-2 flex items-center justify-between">
           <h2 className="font-bold">Mes comptes</h2>
@@ -119,23 +111,12 @@ export default function Accueil() {
         <CarrouselComptes onChange={setCompteActif} />
       </section>
 
-      <BanniereConfig />
+      <Accroches />
 
-      <MoisSelecteur mois={mois} onChanger={setMois} />
-
-      <div key={mois} className="pop-in grid grid-cols-2 gap-3">
-        <div className="rounded-ios bg-menthe-pale p-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-menthe-texte">Entrées du mois</p>
-          <p className="chiffres mt-0.5 text-lg font-bold text-menthe-texte">{euros(s.revenus)}</p>
-        </div>
-        <div className="rounded-ios bg-corail-pale p-3">
-          <p className="text-xs font-semibold uppercase tracking-wide text-corail-texte">Sorties du mois</p>
-          <p className="chiffres mt-0.5 text-lg font-bold text-corail-texte">{euros(s.depenses)}</p>
-        </div>
-      </div>
+      <MoisSelecteur mois={mois} onChanger={setMois} revenus={s.revenus} depenses={s.depenses} />
 
       {joursAvantSalaire !== null && (
-        <Link href="/transactions" className={`block rounded-ios px-3.5 py-2.5 text-sm font-medium ${projection.reste < 0 ? "bg-corail-pale text-corail-texte" : "bg-ciel-pale text-ciel-texte"}`}>
+        <Link href="/transactions" className={`block rounded-ios px-3.5 py-2.5 text-sm font-medium shadow-carte ${projection.reste < 0 ? "bg-corail-pale text-corail-texte" : "bg-carte"}`}>
           💼 {joursAvantSalaire === 0 ? "Jour de salaire ! 🎉" : `Salaire dans ${joursAvantSalaire} jour${joursAvantSalaire > 1 ? "s" : ""}`}
           {joursAvantSalaire > 0 && (
             <span className="block text-xs opacity-80">
@@ -146,29 +127,19 @@ export default function Accueil() {
         </Link>
       )}
 
-      <ProjectionIA />
-
       {projetPhare && projetPhare.objectif > 0 && (
-        <Link href="/budgets" className="block rounded-ios bg-lavande-pale px-4 py-3">
-          <div className="flex items-center justify-between text-sm font-medium text-lavande-texte">
+        <Link href="/budgets" className="block rounded-ios bg-carte px-4 py-3 shadow-carte">
+          <div className="flex items-center justify-between text-sm font-medium">
             <span>{projetPhare.icone} {projetPhare.nom}</span>
             <span className="tnum">{Math.min(100, Math.round((projetPhare.montantActuel / projetPhare.objectif) * 100))} %</span>
           </div>
-          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-carte/60">
+          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-voile">
             <div className="jauge-in h-full rounded-full bg-lavande" style={{ width: `${Math.min(100, (projetPhare.montantActuel / projetPhare.objectif) * 100)}%` }} />
           </div>
         </Link>
       )}
 
-      <div className="pt-4">
-        <Reveler><PatrimoineChart comptes={comptesPatrimoine} transactions={transactions} /></Reveler>
-      </div>
-
-      <Reveler retard={60}><SpendChart transactions={transactions} /></Reveler>
-
-      <Reveler retard={120}><DonutCat transactions={transactions} mois={mois} /></Reveler>
-
-      <Reveler retard={60}><CalendrierDepenses mois={mois} /></Reveler>
+      <Analyses comptes={comptesPatrimoine} transactions={transactions} mois={mois} />
 
       <section>
         <div className="mb-2 flex items-center justify-between">
