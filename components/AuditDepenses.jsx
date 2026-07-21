@@ -76,7 +76,7 @@ export default function AuditDepenses({ onFermer }) {
     <Sheet titre="Audit des abonnements" onFermer={onFermer}>
       <div className="space-y-3">
         {/* Total */}
-        <div className="rounded-ios p-4 text-center" style={{ background: "linear-gradient(135deg, #141A2B, #3A34A8)" }}>
+        <div className="rounded-ios p-4 text-center" style={{ background: "linear-gradient(135deg, #1C1C1E, #0A3D91)" }}>
           <p className="text-xs font-semibold uppercase tracking-wide text-white/60">Tes dépenses récurrentes</p>
           <p className="chiffres mt-1 text-3xl font-bold text-white">{euros(audit.totalMensuel)}<span className="text-lg font-medium text-white/60"> /mois</span></p>
           <p className="mt-0.5 text-sm text-white/70">
@@ -118,7 +118,7 @@ export default function AuditDepenses({ onFermer }) {
                     <span className="block truncate text-sm font-semibold">
                       {it.libelle}
                       {it.dormant && <span className="ml-1.5 rounded-pill bg-voile px-1.5 py-0.5 align-middle text-[10px] font-medium text-sourdine">💤 plus prélevé</span>}
-                      {it.famille && <span className="ml-1.5 rounded-pill bg-lavande-pale px-1.5 py-0.5 align-middle text-[10px] font-medium text-lavande-texte">{it.famille.label}</span>}
+                      {it.famille && <span className="ml-1.5 rounded-pill bg-marque-pale px-1.5 py-0.5 align-middle text-[10px] font-medium text-marque-texte">{it.famille.label}</span>}
                     </span>
                     <span className="block text-[11px] text-sourdine">
                       {euros(it.montantMensuel * 12)}/an{it.variable ? " · variable" : ""}
@@ -134,7 +134,7 @@ export default function AuditDepenses({ onFermer }) {
         {/* Recommandations IA */}
         {recos ? (
           <div className="space-y-2">
-            {resume && <p className="rounded-ios bg-ciel-pale px-3.5 py-2.5 text-sm text-ciel-texte">✨ {resume}</p>}
+            {resume && <p className="rounded-ios bg-marque-pale px-3.5 py-2.5 text-sm text-marque-texte">✨ {resume}</p>}
             {recos.map((r, i) => {
               const p = PRIORITE[r.priorite] || PRIORITE.moyenne;
               return (
@@ -155,11 +155,11 @@ export default function AuditDepenses({ onFermer }) {
           <button
             onClick={lancerIA}
             disabled={analyse}
-            className="flex w-full items-center justify-center gap-2 rounded-ios bg-lavande-pale py-3 text-sm font-semibold text-lavande-texte disabled:opacity-60"
+            className="flex w-full items-center justify-center gap-2 rounded-ios bg-marque-pale py-3 text-sm font-semibold text-marque-texte disabled:opacity-60"
           >
             {analyse ? (
               <>
-                <PointsSautillants taille={5} couleur="var(--lavande-texte)" />
+                <PointsSautillants taille={5} couleur="var(--marque-texte)" />
                 <span>Analyse en cours</span>
               </>
             ) : (

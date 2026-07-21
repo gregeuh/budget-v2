@@ -79,7 +79,7 @@ export default function BilanMensuel() {
       <button
         onClick={() => setOuvert(true)}
         className="pop-in relative w-full overflow-hidden rounded-ios p-3.5 text-left shadow-carte"
-        style={{ background: "linear-gradient(135deg, #141A2B, #3A34A8)" }}
+        style={{ background: "linear-gradient(135deg, #1C1C1E, #0A3D91)" }}
       >
         <div className="reflet" />
         <div className="relative flex items-center gap-3">
@@ -143,7 +143,7 @@ export default function BilanMensuel() {
                           <span className="tnum font-semibold">{euros(val)}</span>
                         </div>
                         <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-voile">
-                          <div className="jauge-in h-full rounded-full bg-lavande" style={{ width: `${(val / bilan.maxTop) * 100}%` }} />
+                          <div className="jauge-in h-full rounded-full bg-marque" style={{ width: `${(val / bilan.maxTop) * 100}%` }} />
                         </div>
                       </div>
                     );
@@ -172,7 +172,7 @@ export default function BilanMensuel() {
 
             <button
               onClick={() => { fermerBanniere(); setOuvert(false); }}
-              className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste"
+              className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque"
             >
               C'est noté 👍
             </button>

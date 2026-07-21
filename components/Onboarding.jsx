@@ -122,7 +122,7 @@ export default function Onboarding() {
         <button
           onClick={() => (etape < 2 ? setEtape(etape + 1) : terminer())}
           disabled={enCours}
-          className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40 active:scale-[0.99] transition-transform"
+          className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque disabled:opacity-40 active:scale-[0.99] transition-transform"
         >
           {etape < 2 ? "Continuer" : enCours ? "…" : "Ouvrir mon budget"}
         </button>

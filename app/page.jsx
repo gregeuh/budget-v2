@@ -106,7 +106,7 @@ export default function Accueil() {
       <section>
         <div className="mb-2 flex items-center justify-between">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">Mes comptes</h2>
-          <Link href="/comptes" className="text-sm font-medium text-ciel">Gérer</Link>
+          <Link href="/comptes" className="text-sm font-medium text-marque">Gérer</Link>
         </div>
         <CarrouselComptes onChange={setCompteActif} />
       </section>
@@ -134,7 +134,7 @@ export default function Accueil() {
             <span className="tnum">{Math.min(100, Math.round((projetPhare.montantActuel / projetPhare.objectif) * 100))} %</span>
           </div>
           <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-voile">
-            <div className="jauge-in h-full rounded-full bg-lavande" style={{ width: `${Math.min(100, (projetPhare.montantActuel / projetPhare.objectif) * 100)}%` }} />
+            <div className="jauge-in h-full rounded-full bg-marque" style={{ width: `${Math.min(100, (projetPhare.montantActuel / projetPhare.objectif) * 100)}%` }} />
           </div>
         </Link>
       )}
@@ -147,7 +147,7 @@ export default function Accueil() {
             Dernières opérations
             {compteAffiche && <span className="ml-1.5 text-sm font-medium text-sourdine">· {compteAffiche.nom}</span>}
           </h2>
-          <Link href="/transactions" className="text-sm font-medium text-ciel">Tout voir</Link>
+          <Link href="/transactions" className="text-sm font-medium text-marque">Tout voir</Link>
         </div>
         {recentes.length === 0 ? (
           <p className="rounded-ios bg-carte p-5 text-center text-sm text-sourdine shadow-carte">

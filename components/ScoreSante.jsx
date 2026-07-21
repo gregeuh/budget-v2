@@ -75,7 +75,7 @@ export default function ScoreSante() {
               <p className="mt-0.5 text-xs text-sourdine">{p.detail}</p>
             </div>
           ))}
-          <p className="rounded-2xl bg-ciel-pale px-3 py-2 text-xs text-ciel-texte">
+          <p className="rounded-2xl bg-marque-pale px-3 py-2 text-xs text-marque-texte">
             💡 {score.faible.conseil}
           </p>
         </div>

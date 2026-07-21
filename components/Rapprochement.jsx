@@ -6,7 +6,7 @@ import { euros, dateCourte, toutesCategories } from "@/lib/format";
 import { rapprocher, impactSolde } from "@/lib/rapprochement";
 
 const STATUTS = {
-  probable: { emoji: "🔗", label: "À fusionner", couleur: "bg-ciel-pale text-ciel-texte" },
+  probable: { emoji: "🔗", label: "À fusionner", couleur: "bg-marque-pale text-marque-texte" },
   incertain: { emoji: "⚠️", label: "À vérifier", couleur: "bg-beurre-pale text-beurre-texte" },
   nouvelle: { emoji: "✅", label: "Nouvelle", couleur: "bg-menthe-pale text-menthe-texte" },
   importee: { emoji: "⏭️", label: "Déjà importée", couleur: "bg-voile text-sourdine" },
@@ -37,7 +37,7 @@ export default function Rapprochement({ lignes, compteId, soldeActuel, onValider
         <p className="text-sm font-semibold">Rapprochement avec tes opérations</p>
         <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
           {compte_("nouvelle") > 0 && <span className="rounded-pill bg-menthe-pale px-2 py-1 font-medium text-menthe-texte">✅ {compte_("nouvelle")} nouvelle{compte_("nouvelle") > 1 ? "s" : ""}</span>}
-          {compte_("probable") > 0 && <span className="rounded-pill bg-ciel-pale px-2 py-1 font-medium text-ciel-texte">🔗 {compte_("probable")} à fusionner</span>}
+          {compte_("probable") > 0 && <span className="rounded-pill bg-marque-pale px-2 py-1 font-medium text-marque-texte">🔗 {compte_("probable")} à fusionner</span>}
           {compte_("incertain") > 0 && <span className="rounded-pill bg-beurre-pale px-2 py-1 font-medium text-beurre-texte">⚠️ {compte_("incertain")} à vérifier</span>}
           {compte_("importee") > 0 && <span className="rounded-pill bg-voile px-2 py-1 font-medium text-sourdine">⏭️ {compte_("importee")} déjà là</span>}
         </div>
@@ -107,7 +107,7 @@ export default function Rapprochement({ lignes, compteId, soldeActuel, onValider
 
                   {/* Plusieurs candidats : choisir lequel */}
                   {d.candidats.length > 1 && (
-                    <button onClick={() => setDeplie(ouvert ? null : d.index)} className="mt-1.5 text-[11px] font-semibold text-ciel">
+                    <button onClick={() => setDeplie(ouvert ? null : d.index)} className="mt-1.5 text-[11px] font-semibold text-marque">
                       {ouvert ? "Masquer" : `Voir les ${d.candidats.length} correspondances possibles`}
                     </button>
                   )}
@@ -117,7 +117,7 @@ export default function Rapprochement({ lignes, compteId, soldeActuel, onValider
                         <li key={c.tx.id}>
                           <button
                             onClick={() => choisir(d.index, "fusionner", c.tx.id)}
-                            className={`flex w-full items-center gap-2 rounded-xl px-2 py-1.5 text-left text-xs ${d.choix.txId === c.tx.id ? "bg-ciel-pale text-ciel-texte" : "bg-carte"}`}
+                            className={`flex w-full items-center gap-2 rounded-xl px-2 py-1.5 text-left text-xs ${d.choix.txId === c.tx.id ? "bg-marque-pale text-marque-texte" : "bg-carte"}`}
                           >
                             <span className="min-w-0 flex-1 truncate">{c.tx.libelle} · {dateCourte(c.tx.date)}</span>
                             <span className="tnum shrink-0 font-semibold">{euros(c.tx.montant, { precis: true })}</span>
@@ -146,7 +146,7 @@ export default function Rapprochement({ lignes, compteId, soldeActuel, onValider
                     ))}
                   </div>
                   {d.choix.action === "fusionner" && (
-                    <p className="mt-1.5 text-[11px] text-ciel-texte">
+                    <p className="mt-1.5 text-[11px] text-marque-texte">
                       Ta ligne est conservée (catégorie, budget) et prend le libellé de la banque. Aucun impact sur le solde.
                     </p>
                   )}
@@ -179,7 +179,7 @@ export default function Rapprochement({ lignes, compteId, soldeActuel, onValider
       <button
         onClick={() => onValider(decisions)}
         disabled={enCours || (aAjouter === 0 && aFusionner === 0)}
-        className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40"
+        className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque disabled:opacity-40"
       >
         {enCours ? "Import en cours…" : `Importer (${aAjouter} ajout${aAjouter > 1 ? "s" : ""}, ${aFusionner} fusion${aFusionner > 1 ? "s" : ""})`}
       </button>

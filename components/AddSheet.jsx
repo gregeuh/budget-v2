@@ -204,24 +204,19 @@ export default function AddSheet({ onFermer }) {
                 value={phrase}
                 onChange={(e) => setPhrase(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && interpreter()}
-                placeholder="Décris ta dépense : « 15€ courses Carrefour hier »"
-                className="min-w-0 flex-1 rounded-pill border border-bordure bg-carte px-4 py-2.5 text-sm outline-none focus:border-lavande"
+                placeholder="« 15€ courses Carrefour hier » — ou dicte au micro 🎤"
+                className="min-w-0 flex-1 rounded-pill border border-bordure bg-carte px-4 py-2.5 text-sm outline-none focus:border-marque"
               />
               <button
                 onClick={interpreter}
                 disabled={!phrase.trim() || analyseEnCours}
                 aria-label="Interpréter"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-lavande-pale text-lavande-texte disabled:opacity-40"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-marque-pale text-marque-texte disabled:opacity-40"
               >
-                {analyseEnCours ? <PointsSautillants taille={4} couleur="var(--lavande-texte)" /> : "✨"}
+                {analyseEnCours ? <PointsSautillants taille={4} couleur="var(--marque-texte)" /> : "✨"}
               </button>
             </div>
             {erreurIA && <p className="mt-1 px-1 text-xs text-corail">{erreurIA}</p>}
-            {!erreurIA && !phrase && (
-              <p className="mt-1 px-1 text-[11px] text-sourdine">
-                Ou dicte-la avec le micro de ton clavier 🎤
-              </p>
-            )}
           </div>
 
           {/* Mode */}
@@ -241,7 +236,7 @@ export default function AddSheet({ onFermer }) {
           <div key={`sec-${secousse}`} className={`flex h-[76px] items-center justify-center ${secousse ? "secousse" : ""}`}>
             <span key={impulsion} className={`rebond chiffres font-bold leading-none ${tailleMontant} ${montant ? couleurMontant : "text-sourdine/40"}`}>
               {montant || "0"}
-              <span className="ml-1 text-[0.55em] font-semibold text-sourdine">€</span>
+              <span className="unite ml-1 text-[0.5em]">€</span>
             </span>
           </div>
 
@@ -264,8 +259,8 @@ export default function AddSheet({ onFermer }) {
                 key={t}
                 onClick={() => taper(t)}
                 style={{ animationDelay: `${i * 22}ms` }}
-                className={`pop-in chiffres h-14 rounded-2xl text-2xl font-semibold transition-transform duration-100 active:scale-90 ${
-                  t === "⌫" ? "bg-voile text-sourdine" : "bg-carte shadow-carte active:bg-voile"
+                className={`pop-in chiffres h-14 rounded-2xl text-[26px] transition-all duration-100 active:scale-90 active:bg-voile ${
+                  t === "⌫" ? "text-sourdine" : ""
                 }`}
                 aria-label={t === "⌫" ? "Effacer" : t}
               >
@@ -279,7 +274,7 @@ export default function AddSheet({ onFermer }) {
           ) : (
             <button
               onClick={() => (valeur > 0 ? setEtape(2) : secouer())}
-              className={`mt-3 w-full rounded-ios bg-encre py-3 font-semibold text-contraste active:scale-[0.99] transition-transform ${valeur <= 0 ? "opacity-40" : ""}`}
+              className={`mt-3 w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque active:scale-[0.99] transition-transform ${valeur <= 0 ? "opacity-40" : ""}`}
             >
               Continuer
             </button>
@@ -422,7 +417,7 @@ export default function AddSheet({ onFermer }) {
           )}
 
           {noteIA && (
-            <div className="fade-in rounded-ios bg-lavande-pale px-3.5 py-2.5 text-xs text-lavande-texte">
+            <div className="fade-in rounded-ios bg-marque-pale px-3.5 py-2.5 text-xs text-marque-texte">
               ✨ {noteIA}
             </div>
           )}
@@ -440,7 +435,7 @@ export default function AddSheet({ onFermer }) {
               if (invalide) return secouer();
               valider();
             }}
-            className={`w-full rounded-ios bg-encre py-3 font-semibold text-contraste active:scale-[0.99] transition-transform ${
+            className={`w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque active:scale-[0.99] transition-transform ${
               !valeur || !compteId || (mode === "virement" && (!versId || versId === compteId)) ? "opacity-40" : ""
             } ${secousse ? "secousse" : ""}`}
           >

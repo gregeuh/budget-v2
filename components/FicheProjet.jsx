@@ -47,8 +47,8 @@ export default function FicheProjet({ projet, onFermer }) {
     <Sheet titre={edition ? projet.nom : "Nouveau projet"} onFermer={onFermer}>
       <div className="space-y-3">
         {edition && (
-          <div className="rounded-ios bg-lavande-pale p-4">
-            <p className="text-sm font-medium text-lavande-texte">
+          <div className="rounded-ios bg-marque-pale p-4">
+            <p className="text-sm font-medium text-marque-texte">
               {euros(projet.montantActuel || 0)} épargnés sur {euros(projet.objectif)}
               {rythme && ` — il reste ${euros(projet.objectif - projet.montantActuel)}, soit ~${euros(rythme.parMois)} / mois pendant ${rythme.mois} mois`}
             </p>
@@ -92,7 +92,7 @@ export default function FicheProjet({ projet, onFermer }) {
               className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none" />
           </label>
         </div>
-        <button onClick={valider} disabled={!objectif} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40">
+        <button onClick={valider} disabled={!objectif} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque disabled:opacity-40">
           {edition ? "Enregistrer" : "Créer le projet"}
         </button>
         {edition && (

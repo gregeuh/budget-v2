@@ -12,7 +12,8 @@ module.exports = {
         bordure: "var(--c-bordure)",
         voile: "var(--c-voile)",
         // Couleur de marque : tout ce qui est interactif
-        marque: { DEFAULT: "var(--marque)", pale: "var(--marque-pale)", texte: "var(--marque-texte)" },
+        marque: { DEFAULT: "var(--marque)", pale: "var(--marque-pale)", texte: "var(--marque-texte)", bouton: "var(--marque-bouton)" },
+        surMarque: "var(--sur-marque)",
         // Trois rôles sémantiques
         menthe: { DEFAULT: "var(--menthe)", pale: "var(--menthe-pale)", texte: "var(--menthe-texte)" },
         beurre: { DEFAULT: "var(--beurre)", pale: "var(--beurre-pale)", texte: "var(--beurre-texte)" },

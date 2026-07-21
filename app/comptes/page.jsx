@@ -109,7 +109,7 @@ function FicheCompte({ compte, onFermer }) {
             className="tnum w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe"
           />
         </label>
-        <button onClick={valider} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste active:scale-[0.99] transition-transform">
+        <button onClick={valider} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque active:scale-[0.99] transition-transform">
           {edition ? "Enregistrer" : "Créer le compte"}
         </button>
         {edition && (
@@ -215,7 +215,7 @@ export default function Comptes() {
       <section>
         <div className="mb-2 flex items-center justify-between">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">Crédits en cours</h2>
-          <button onClick={() => setFicheCredit("nouveau")} className="text-sm font-medium text-ciel">+ Crédit</button>
+          <button onClick={() => setFicheCredit("nouveau")} className="text-sm font-medium text-marque">+ Crédit</button>
         </div>
         {credits.length === 0 ? (
           <p className="rounded-ios border-2 border-dashed border-bordure p-4 text-center text-sm text-sourdine">

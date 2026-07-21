@@ -79,7 +79,7 @@ export default function Login() {
         <button
           onClick={valider}
           disabled={chargement}
-          className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40 active:scale-[0.99] transition-transform"
+          className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque disabled:opacity-40 active:scale-[0.99] transition-transform"
         >
           {chargement ? "…" : mode === "connexion" ? "Se connecter" : "Créer mon compte"}
         </button>

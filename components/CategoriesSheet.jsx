@@ -70,7 +70,7 @@ export default function CategoriesSheet({ onFermer }) {
           <p className="text-xs text-sourdine">Le type sert à l'analyse 50/30/20 (Besoins / Envies / Épargne).</p>
           <div className="flex gap-2">
             <button onClick={ajouter} disabled={!nom.trim()}
-              className="flex-1 rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40">
+              className="flex-1 rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque disabled:opacity-40">
               {enEdition ? "Enregistrer" : "Créer"}
             </button>
             {enEdition && (

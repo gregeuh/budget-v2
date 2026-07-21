@@ -80,7 +80,7 @@ function ProfilSheet({ onFermer }) {
           </label>
         </div>
         <p className="text-xs text-sourdine">Le jour du salaire alimente le compte à rebours de l'accueil et le budget restant par jour.</p>
-        <button onClick={enregistrer} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste">Enregistrer</button>
+        <button onClick={enregistrer} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque">Enregistrer</button>
       </div>
     </Sheet>
   );
@@ -224,7 +224,7 @@ function DonneesSheet({ onFermer }) {
           </div>
         )}
 
-        <button onClick={exporter} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste">
+        <button onClick={exporter} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque">
           ⬇︎ Exporter mes données
         </button>
         <label className="block w-full cursor-pointer rounded-ios bg-voile py-3 text-center font-semibold">

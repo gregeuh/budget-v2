@@ -9,33 +9,36 @@
   /* Thème clair */
   /* Fond très proche de la carte : la hiérarchie vient de l'espace et des filets,
      plus du contraste entre un fond gris et des boîtes blanches. */
-  --c-fond: #fafafb;
+  /* Fond groupé iOS : gris clair, cartes blanches, comme dans Wallet */
+  --c-fond: #f2f2f7;
   --c-carte: #ffffff;
-  --c-encre: #141a2b;
-  --c-sourdine: #767d94;
-  --c-bordure: rgba(20, 26, 43, 0.09);
-  --c-voile: rgba(20, 26, 43, 0.045);
+  --c-encre: #000000;
+  --c-sourdine: #6e6e73;          /* secondaryLabel, assombri pour rester lisible */
+  --c-bordure: rgba(60, 60, 67, 0.13);   /* separator */
+  --c-voile: rgba(120, 120, 128, 0.12);  /* tertiarySystemFill */
   --c-contraste: #ffffff;
-  /* Filet fin + ombre quasi nulle, au lieu d'une ombre diffuse */
-  --ombre-carte: 0 0 0 1px rgba(20, 26, 43, 0.07), 0 1px 2px rgba(20, 26, 43, 0.04);
+  /* Wallet ne pose ni ombre ni bordure : le contraste fond/carte suffit */
+  --ombre-carte: 0 0 0 1px rgba(60, 60, 67, 0.05);
 
-  /* --- Couleur de marque : signe tout ce qui est interactif --- */
-  --marque: #4f46e5;
-  --marque-pale: #eeeffe;
-  --marque-texte: #4338ca;
+  /* --- Teinte de l'app : le bleu système, comme les liens de Wallet --- */
+  --marque: #007aff;
+  --marque-pale: rgba(0, 122, 255, 0.12);
+  --marque-texte: #0062cc;
+  --marque-bouton: #007aff;
+  --sur-marque: #ffffff;
 
-  /* --- Trois rôles sémantiques, et rien de plus --- */
-  --menthe: #16a97f;          /* positif */
-  --menthe-pale: #e4f6ef;
-  --menthe-texte: #12805f;
-  --beurre: #e0a020;          /* attention */
-  --beurre-pale: #fdf3de;
-  --beurre-texte: #96700f;
-  --corail: #f0563f;          /* négatif */
-  --corail-pale: #ffeae7;
-  --corail-texte: #c93f33;
+  /* --- Trois rôles sémantiques, en couleurs système --- */
+  --menthe: #34c759;                        /* systemGreen */
+  --menthe-pale: rgba(52, 199, 89, 0.14);
+  --menthe-texte: #1e7a34;
+  --beurre: #ff9500;                        /* systemOrange */
+  --beurre-pale: rgba(255, 149, 0, 0.14);
+  --beurre-texte: #ac5f00;
+  --corail: #ff3b30;                        /* systemRed */
+  --corail-pale: rgba(255, 59, 48, 0.12);
+  --corail-texte: #d70015;
 
-  /* Anciennes familles conservées comme alias, pour ne rien casser */
+  /* Alias conservés pour ne rien casser */
   --lavande: var(--marque);
   --lavande-pale: var(--marque-pale);
   --lavande-texte: var(--marque-texte);
@@ -45,32 +48,43 @@
   --peche: var(--beurre);
   --peche-pale: var(--beurre-pale);
   --peche-texte: var(--beurre-texte);
+
+  /* --- Palette d'identité : couleurs système iOS, pour DISTINGUER --- */
+  --id-indigo-pale: rgba(88, 86, 214, 0.13);   --id-indigo-texte: #4442b8;
+  --id-bleu-pale:   rgba(0, 122, 255, 0.12);   --id-bleu-texte:   #0062cc;
+  --id-vert-pale:   rgba(52, 199, 89, 0.14);   --id-vert-texte:   #1e7a34;
+  --id-ambre-pale:  rgba(255, 204, 0, 0.18);   --id-ambre-texte:  #8a6800;
+  --id-orange-pale: rgba(255, 149, 0, 0.14);   --id-orange-texte: #ac5f00;
+  --id-rouge-pale:  rgba(255, 45, 85, 0.12);   --id-rouge-texte:  #d4004a;
+
 }
 
 html.sombre {
-  --c-fond: #0d1017;
-  --c-carte: #151a26;
-  --c-encre: #eef0f7;
-  --c-sourdine: #8b93ac;
-  --c-bordure: rgba(238, 240, 247, 0.11);
-  --c-voile: rgba(238, 240, 247, 0.06);
-  --c-contraste: #0d1017;
-  /* Même principe qu'en clair : un filet, pas une ombre diffuse */
-  --ombre-carte: 0 0 0 1px rgba(238, 240, 247, 0.08);
+  /* Wallet en sombre : noir profond, cartes gris très foncé */
+  --c-fond: #000000;
+  --c-carte: #1c1c1e;
+  --c-encre: #ffffff;
+  --c-sourdine: #8e8e93;
+  --c-bordure: rgba(84, 84, 88, 0.5);
+  --c-voile: rgba(118, 118, 128, 0.24);
+  --c-contraste: #000000;
+  --ombre-carte: 0 0 0 1px rgba(255, 255, 255, 0.05);
 
-  --marque: #8b8bf0;
-  --marque-pale: #23244a;
-  --marque-texte: #a9a8ff;
+  --marque: #0a84ff;
+  --marque-pale: rgba(10, 132, 255, 0.20);
+  --marque-texte: #64b5ff;
+  --marque-bouton: #0a84ff;
+  --sur-marque: #ffffff;
 
-  --menthe: #3fc79b;
-  --menthe-pale: #12332a;
-  --menthe-texte: #5fd6b0;
-  --beurre: #e8b64a;
-  --beurre-pale: #38301a;
-  --beurre-texte: #f0c869;
-  --corail: #ff7a68;
-  --corail-pale: #3c211f;
-  --corail-texte: #ff9187;
+  --menthe: #30d158;
+  --menthe-pale: rgba(48, 209, 88, 0.20);
+  --menthe-texte: #5ce27f;
+  --beurre: #ff9f0a;
+  --beurre-pale: rgba(255, 159, 10, 0.20);
+  --beurre-texte: #ffbe57;
+  --corail: #ff453a;
+  --corail-pale: rgba(255, 69, 58, 0.20);
+  --corail-texte: #ff7d74;
 
   --lavande: var(--marque);
   --lavande-pale: var(--marque-pale);
@@ -81,6 +95,14 @@ html.sombre {
   --peche: var(--beurre);
   --peche-pale: var(--beurre-pale);
   --peche-texte: var(--beurre-texte);
+
+  --id-indigo-pale: rgba(94, 92, 230, 0.22);   --id-indigo-texte: #9d9bff;
+  --id-bleu-pale:   rgba(10, 132, 255, 0.20);  --id-bleu-texte:   #64b5ff;
+  --id-vert-pale:   rgba(48, 209, 88, 0.20);   --id-vert-texte:   #5ce27f;
+  --id-ambre-pale:  rgba(255, 214, 10, 0.20);  --id-ambre-texte:  #ffd426;
+  --id-orange-pale: rgba(255, 159, 10, 0.20);  --id-orange-texte: #ffbe57;
+  --id-rouge-pale:  rgba(255, 55, 95, 0.20);   --id-rouge-texte:  #ff6482;
+
 
   color-scheme: dark;
 }

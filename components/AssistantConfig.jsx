@@ -285,7 +285,7 @@ export default function AssistantConfig({ onFermer }) {
             </label>
           </div>
 
-          <button onClick={() => setEtape(2)} disabled={valeurSalaire <= 0} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40">
+          <button onClick={() => setEtape(2)} disabled={valeurSalaire <= 0} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque disabled:opacity-40">
             Continuer
           </button>
           <button onClick={onFermer} className="w-full py-2 text-sm font-medium text-sourdine">Plus tard</button>
@@ -340,11 +340,11 @@ export default function AssistantConfig({ onFermer }) {
               <button
                 onClick={lancerIA}
                 disabled={analyseIA}
-                className="flex w-full items-center justify-center gap-2 rounded-ios bg-lavande-pale py-2.5 text-sm font-semibold text-lavande-texte disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-2 rounded-ios bg-marque-pale py-2.5 text-sm font-semibold text-marque-texte disabled:opacity-60"
               >
                 {analyseIA ? (
                   <>
-                    <PointsSautillants taille={5} couleur="var(--lavande-texte)" />
+                    <PointsSautillants taille={5} couleur="var(--marque-texte)" />
                     <span>Analyse en cours</span>
                   </>
                 ) : (
@@ -352,7 +352,7 @@ export default function AssistantConfig({ onFermer }) {
                 )}
               </button>
               {erreurIA && <p className="mt-1 text-xs text-corail">{erreurIA}</p>}
-              {observation && <p className="mt-1.5 rounded-ios bg-ciel-pale px-3 py-2 text-xs text-ciel-texte">💡 {observation}</p>}
+              {observation && <p className="mt-1.5 rounded-ios bg-marque-pale px-3 py-2 text-xs text-marque-texte">💡 {observation}</p>}
             </div>
           )}
 
@@ -401,7 +401,7 @@ export default function AssistantConfig({ onFermer }) {
             </div>
           )}
 
-          <button onClick={terminer} disabled={enCours} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-50">
+          <button onClick={terminer} disabled={enCours} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque disabled:opacity-50">
             {enCours ? "Enregistrement…" : "Terminer la configuration"}
           </button>
           <button onClick={() => setEtape(1)} className="w-full py-2 text-sm font-medium text-sourdine">‹ Retour</button>

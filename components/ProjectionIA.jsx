@@ -44,7 +44,7 @@ export default function ProjectionIA() {
     <div className="rounded-ios bg-carte p-3.5 shadow-carte">
       {!resultat ? (
         <button onClick={lancer} disabled={chargement} className="flex w-full items-center gap-3 text-left disabled:opacity-60">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-lavande-pale text-xl">🔮</span>
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-marque-pale text-xl">🔮</span>
           <span className="min-w-0 flex-1">
             <span className="block font-bold">Projection intelligente</span>
             <span className="block text-xs text-sourdine">
@@ -86,7 +86,7 @@ export default function ProjectionIA() {
           {resultat.projets?.length > 0 && (
             <div className="space-y-1.5">
               {resultat.projets.map((p, i) => (
-                <div key={i} className="rounded-2xl bg-lavande-pale px-3 py-2 text-xs text-lavande-texte">
+                <div key={i} className="rounded-2xl bg-marque-pale px-3 py-2 text-xs text-marque-texte">
                   🎯 <strong>{p.nom}</strong> — {p.phrase}
                 </div>
               ))}
@@ -94,7 +94,7 @@ export default function ProjectionIA() {
           )}
 
           {resultat.conseil && (
-            <p className="rounded-2xl bg-ciel-pale px-3 py-2 text-xs text-ciel-texte">💡 {resultat.conseil}</p>
+            <p className="rounded-2xl bg-marque-pale px-3 py-2 text-xs text-marque-texte">💡 {resultat.conseil}</p>
           )}
 
           <button onClick={() => { reinitProjectionIA(); lancer(); }} className="w-full text-xs font-medium text-sourdine">

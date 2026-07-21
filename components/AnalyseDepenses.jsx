@@ -120,11 +120,11 @@ export default function AnalyseDepenses() {
             <button
               onClick={lancerAudit}
               disabled={chargeIA}
-              className="flex w-full items-center justify-center gap-2 rounded-ios bg-lavande-pale py-2.5 text-sm font-semibold text-lavande-texte disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-ios bg-marque-pale py-2.5 text-sm font-semibold text-marque-texte disabled:opacity-60"
             >
               {chargeIA ? (
                 <>
-                  <PointsSautillants taille={5} couleur="var(--lavande-texte)" />
+                  <PointsSautillants taille={5} couleur="var(--marque-texte)" />
                   <span>Audit en cours</span>
                 </>
               ) : (
@@ -134,7 +134,7 @@ export default function AnalyseDepenses() {
             {erreurIA && <p className="mt-1 text-xs text-corail">{erreurIA}</p>}
             {auditIA && (
               <div className="mt-2 space-y-2">
-                {auditIA.resume && <p className="rounded-2xl bg-ciel-pale px-3 py-2 text-xs text-ciel-texte">💡 {auditIA.resume}</p>}
+                {auditIA.resume && <p className="rounded-2xl bg-marque-pale px-3 py-2 text-xs text-marque-texte">💡 {auditIA.resume}</p>}
                 {(auditIA.suggestions || []).map((s, i) => (
                   <div key={i} className="rounded-2xl bg-fond p-3">
                     <div className="flex items-baseline justify-between gap-2">

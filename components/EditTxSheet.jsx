@@ -238,7 +238,7 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
               href={`https://maps.apple.com/?q=${encodeURIComponent(lieu.trim())}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 flex items-center justify-center gap-1.5 rounded-pill bg-ciel-pale py-2 text-sm font-semibold text-ciel-texte"
+              className="mt-2 flex items-center justify-center gap-1.5 rounded-pill bg-marque-pale py-2 text-sm font-semibold text-marque-texte"
             >
               🗺️ Voir dans Plans
             </a>
@@ -251,7 +251,7 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
           </button>
         )}
 
-        <button onClick={valider} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste active:scale-[0.99] transition-transform">
+        <button onClick={valider} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque active:scale-[0.99] transition-transform">
           Enregistrer
         </button>
         <button

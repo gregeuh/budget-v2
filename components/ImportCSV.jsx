@@ -293,7 +293,7 @@ export default function ImportCSV({ onFermer }) {
             {termine.ajouts > 0 && termine.fusions > 0 && " · "}
             {termine.fusions > 0 && `${termine.fusions} fusionnée${termine.fusions > 1 ? "s" : ""} (solde inchangé)`}
           </p>
-          <button onClick={onFermer} className="mt-5 w-full rounded-ios bg-encre py-3 font-semibold text-contraste">Parfait, fermer</button>
+          <button onClick={onFermer} className="mt-5 w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque">Parfait, fermer</button>
           <button onClick={annuler} className="mt-2 w-full rounded-ios bg-corail-pale py-2.5 text-sm font-semibold text-corail-texte">
             ↩️ Annuler cet import
           </button>
@@ -324,7 +324,7 @@ export default function ImportCSV({ onFermer }) {
           </label>
           {resultat?.erreur && <p className="rounded-2xl bg-corail-pale px-3 py-2 text-sm text-corail-texte">{resultat.erreur}</p>}
           <input ref={fichierRef} type="file" accept=".csv,text/csv,text/plain" onChange={chargerFichier} className="hidden" />
-          <button onClick={() => fichierRef.current?.click()} disabled={!compteId} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40">
+          <button onClick={() => fichierRef.current?.click()} disabled={!compteId} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque disabled:opacity-40">
             Choisir le fichier CSV
           </button>
         </div>
@@ -357,7 +357,7 @@ export default function ImportCSV({ onFermer }) {
               </li>
             ))}
           </ul>
-          <button onClick={versRapprochement} disabled={nbSelection === 0} className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40">
+          <button onClick={versRapprochement} disabled={nbSelection === 0} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque disabled:opacity-40">
             Vérifier {nbSelection} opération{nbSelection > 1 ? "s" : ""} →
           </button>
         </div>

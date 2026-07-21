@@ -12,7 +12,7 @@ import AnalyseDepenses from "@/components/AnalyseDepenses";
 // Le ton reste lisible grâce à la pastille colorée autour de l'icône.
 const TONS = {
   alerte: { carte: "bg-corail-pale", pastille: "bg-corail/15" },
-  info: { carte: "bg-carte shadow-carte", pastille: "bg-ciel-pale" },
+  info: { carte: "bg-carte shadow-carte", pastille: "bg-marque-pale" },
   bravo: { carte: "bg-carte shadow-carte", pastille: "bg-menthe-pale" },
 };
 

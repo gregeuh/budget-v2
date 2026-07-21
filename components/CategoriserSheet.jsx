@@ -113,7 +113,7 @@ export default function CategoriserSheet({ onFermer }) {
         <div className="py-8 text-center">
           <div className="text-4xl">🏷️</div>
           <p className="mt-2 font-semibold">{termine} opération{termine > 1 ? "s" : ""} rangée{termine > 1 ? "s" : ""}</p>
-          <button onClick={onFermer} className="mt-5 w-full rounded-ios bg-encre py-3 font-semibold text-contraste">Fermer</button>
+          <button onClick={onFermer} className="mt-5 w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque">Fermer</button>
         </div>
       ) : groupes.length === 0 ? (
         <div className="py-8 text-center">
@@ -173,11 +173,11 @@ export default function CategoriserSheet({ onFermer }) {
               <button
                 onClick={rangerAvecIA}
                 disabled={iaEnCours}
-                className="flex w-full items-center justify-center gap-2 rounded-ios bg-lavande-pale py-2.5 text-sm font-semibold text-lavande-texte disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-2 rounded-ios bg-marque-pale py-2.5 text-sm font-semibold text-marque-texte disabled:opacity-60"
               >
                 {iaEnCours ? (
                   <>
-                    <PointsSautillants taille={5} couleur="var(--lavande-texte)" />
+                    <PointsSautillants taille={5} couleur="var(--marque-texte)" />
                     <span>L&apos;IA cherche…</span>
                   </>
                 ) : (
@@ -194,7 +194,7 @@ export default function CategoriserSheet({ onFermer }) {
           <button
             onClick={appliquer}
             disabled={enCours || nbAActiver === 0}
-            className="w-full rounded-ios bg-encre py-3 font-semibold text-contraste disabled:opacity-40"
+            className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque disabled:opacity-40"
           >
             {enCours ? "Rangement…" : `Ranger ${nbAActiver} opération${nbAActiver > 1 ? "s" : ""}`}
           </button>

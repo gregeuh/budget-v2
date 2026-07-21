@@ -51,7 +51,7 @@ function FicheBudget({ onFermer }) {
           </label>
         ))}
       </div>
-      <button onClick={valider} className="mt-3 w-full rounded-ios bg-encre py-3 font-semibold text-contraste">
+      <button onClick={valider} className="mt-3 w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque">
         Enregistrer
       </button>
     </Sheet>
@@ -153,7 +153,7 @@ export default function Budgets() {
       <section>
         <div className="mb-2 flex items-center justify-between">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">Projets d'épargne</h2>
-          <button onClick={() => setFicheProjet("nouveau")} className="text-sm font-medium text-ciel">+ Projet</button>
+          <button onClick={() => setFicheProjet("nouveau")} className="text-sm font-medium text-marque">+ Projet</button>
         </div>
         {projets.length === 0 ? (
           <button onClick={() => setFicheProjet("nouveau")} className="w-full rounded-ios border-2 border-dashed border-bordure p-5 text-center text-sm text-sourdine">
@@ -195,7 +195,7 @@ export default function Budgets() {
                         <button
                           key={v}
                           onClick={() => contribuerProjet(p.id, v)}
-                          className="flex-1 rounded-pill bg-lavande-pale py-1.5 text-xs font-semibold text-lavande-texte active:scale-95 transition-transform"
+                          className="flex-1 rounded-pill bg-marque-pale py-1.5 text-xs font-semibold text-marque-texte active:scale-95 transition-transform"
                         >
                           +{v} €
                         </button>

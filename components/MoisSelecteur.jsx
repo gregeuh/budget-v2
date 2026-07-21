@@ -21,7 +21,7 @@ export default function MoisSelecteur({ mois, onChanger, revenus, depenses }) {
       <button onClick={() => onChanger(decaler(mois, -1))} aria-label="Mois précédent"
         className="flex h-7 w-7 items-center justify-center rounded-full text-base text-sourdine active:bg-voile">‹</button>
       <button onClick={() => mois !== actuel && onChanger(actuel)} className="text-sm font-semibold capitalize">
-        {label}{mois !== actuel && <span className="ml-1.5 text-xs font-medium text-ciel">· aujourd'hui</span>}
+        {label}{mois !== actuel && <span className="ml-1.5 text-xs font-medium text-marque">· aujourd'hui</span>}
       </button>
       <button onClick={() => !auFutur && onChanger(decaler(mois, 1))} aria-label="Mois suivant" disabled={auFutur}
         className={`flex h-7 w-7 items-center justify-center rounded-full text-base ${auFutur ? "text-sourdine/30" : "text-sourdine active:bg-voile"}`}>›</button>
