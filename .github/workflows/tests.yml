@@ -1,0 +1,25 @@
+name: Tests
+
+# Tourne automatiquement à chaque push : aucune commande à lancer à la main.
+# En cas d'échec, GitHub envoie un e-mail et affiche une croix rouge sur le commit.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Tests de non-régression
+        run: npm test
+      - name: Vérification du build
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1

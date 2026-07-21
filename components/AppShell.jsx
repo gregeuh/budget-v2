@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useBudget } from "@/lib/store";
+import { brancherJournal } from "@/lib/journal";
 import TabBar from "./TabBar";
 import AddSheet from "./AddSheet";
 import Login from "./Login";
@@ -15,6 +16,9 @@ import Confettis from "./Confettis";
 export default function AppShell({ children }) {
   const { pret, user, modeLocal, profil, comptes, erreurInit, reglagesOuverts, celebration } = useBudget();
   const [fete, setFete] = useState(false);
+
+  // Capte les erreurs dès le démarrage, pour qu'aucune ne passe inaperçue
+  useEffect(() => { brancherJournal(); }, []);
 
   useEffect(() => {
     if (celebration > 0) setFete(true);

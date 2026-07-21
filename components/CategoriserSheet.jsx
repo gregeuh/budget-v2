@@ -1,5 +1,6 @@
 "use client";
 
+import { fetchSuivi } from "@/lib/journal";
 import { useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { euros } from "@/lib/format";
@@ -58,7 +59,7 @@ export default function CategoriserSheet({ onFermer }) {
     setIaEnCours(true);
     setErreurIA("");
     try {
-      const r = await fetch("/api/categoriser", {
+      const r = await fetchSuivi("/api/categoriser", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

@@ -9,6 +9,7 @@ import AssistantConfig from "@/components/AssistantConfig";
 import ImportCSV from "@/components/ImportCSV";
 import RenommerSheet from "@/components/RenommerSheet";
 import CategoriserSheet from "@/components/CategoriserSheet";
+import JournalSheet from "@/components/JournalSheet";
 import { toutesCategories as CATEGORIES, FREQUENCES, euros, dateCourte, isoLocal } from "@/lib/format";
 
 const THEMES = [
@@ -282,7 +283,8 @@ export default function ReglagesContenu() {
         <Rangee icone="📥" label="Importer un relevé bancaire (CSV)" onClick={() => setFiche("import")} />
         <Rangee icone="✨" label="Nettoyer les libellés" onClick={() => setFiche("renommer")} />
         <Rangee icone="🏷️" label="Ranger mes opérations" onClick={() => setFiche("categoriser")} />
-        <Rangee icone="💾" label="Sauvegarde & données" onClick={() => setFiche("donnees")} dernier />
+        <Rangee icone="💾" label="Sauvegarde & données" onClick={() => setFiche("donnees")} />
+        <Rangee icone="🩺" label="Journal technique" onClick={() => setFiche("journal")} dernier />
       </nav>
 
       {/* Zone de sortie, séparée par une bande */}
@@ -323,6 +325,7 @@ export default function ReglagesContenu() {
       {fiche === "import" && <ImportCSV onFermer={() => setFiche(null)} />}
       {fiche === "renommer" && <RenommerSheet onFermer={() => setFiche(null)} />}
       {fiche === "categoriser" && <CategoriserSheet onFermer={() => setFiche(null)} />}
+      {fiche === "journal" && <JournalSheet onFermer={() => setFiche(null)} />}
     </div>
   );
 }

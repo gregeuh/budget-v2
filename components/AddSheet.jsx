@@ -1,5 +1,6 @@
 "use client";
 
+import { fetchSuivi } from "@/lib/journal";
 import { useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { FREQUENCES, aujourdhui, euros } from "@/lib/format";
@@ -46,7 +47,7 @@ export default function AddSheet({ onFermer }) {
     setErreurIA("");
     setNoteIA("");
     try {
-      const r = await fetch("/api/saisie", {
+      const r = await fetchSuivi("/api/saisie", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

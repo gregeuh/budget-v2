@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { firebaseActif, auth, db } from "./firebase";
 import { aujourdhui, prochaineOccurrence, CATEGORIES, definirCategoriesPerso } from "./format";
+import { calculerSoldes } from "./soldes";
 
 const Ctx = createContext(null);
 export const useBudget = () => useContext(Ctx);
@@ -622,24 +623,7 @@ export function DataProvider({ children }) {
   }, [modeLocal, fs, notifier]);
 
   // ------- Soldes calculés -------
-  const soldes = useMemo(() => {
-    const map = {};
-    const auj = aujourdhui();
-    for (const c of comptes) map[c.id] = c.soldeInitial || 0;
-    for (const t of transactions) {
-      if (t.horsSolde) continue;
-      if (t.date > auj) continue; // opération future : pas encore dans le solde (elle est "à venir")
-      if (t.versId) {
-        // Virement nouveau format : une seule écriture, deux soldes impactés
-        const val = Math.abs(t.montant);
-        if (map[t.compteId] !== undefined) map[t.compteId] -= val;
-        if (map[t.versId] !== undefined) map[t.versId] += val;
-      } else if (map[t.compteId] !== undefined) {
-        map[t.compteId] += t.montant;
-      }
-    }
-    return map;
-  }, [comptes, transactions]);
+  const soldes = useMemo(() => calculerSoldes(comptes, transactions, aujourdhui()), [comptes, transactions]);
 
   const valeur = {
     pret, user, modeLocal, erreurInit, toast, notifier,

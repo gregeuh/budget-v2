@@ -1,5 +1,6 @@
 "use client";
 
+import { fetchSuivi } from "@/lib/journal";
 import { useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { euros, toutesCategories } from "@/lib/format";
@@ -26,7 +27,7 @@ export default function AnalyseDepenses() {
     setChargeIA(true);
     setErreurIA("");
     try {
-      const r = await fetch("/api/audit-depenses", {
+      const r = await fetchSuivi("/api/audit-depenses", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

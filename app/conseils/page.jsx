@@ -1,5 +1,6 @@
 "use client";
 
+import { fetchSuivi } from "@/lib/journal";
 import { useMemo, useRef, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { genererConseils, resumePourCoach } from "@/lib/conseils";
@@ -34,7 +35,7 @@ export default function Conseils() {
     setSaisie("");
     setEnCours(true);
     try {
-      const rep = await fetch("/api/coach", {
+      const rep = await fetchSuivi("/api/coach", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
