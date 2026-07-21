@@ -79,7 +79,7 @@ export default function BilanMensuel() {
       <button
         onClick={() => setOuvert(true)}
         className="pop-in relative w-full overflow-hidden rounded-ios p-3.5 text-left shadow-carte"
-        style={{ background: "linear-gradient(135deg, #17203A, #2C3A6E)" }}
+        style={{ background: "linear-gradient(135deg, #141A2B, #3A34A8)" }}
       >
         <div className="reflet" />
         <div className="relative flex items-center gap-3">

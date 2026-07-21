@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { statsMois } from "@/lib/conseils";
 import { toutesCategories as CATEGORIES, euros } from "@/lib/format";
 
-const PALETTE = ["#2BB68C", "#8B7CF6", "#3E9BFF", "#FF9D5C", "#F5B93E", "#FF6B5E", "#7A8199"];
+const PALETTE = ["var(--menthe)", "var(--marque)", "var(--marque)", "var(--beurre)", "var(--beurre)", "var(--corail)", "var(--c-sourdine)"];
 
 export default function DonutCat({ transactions, mois }) {
   const { parts, total } = useMemo(() => {

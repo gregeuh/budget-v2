@@ -76,7 +76,7 @@ export default function AuditDepenses({ onFermer }) {
     <Sheet titre="Audit des abonnements" onFermer={onFermer}>
       <div className="space-y-3">
         {/* Total */}
-        <div className="rounded-ios p-4 text-center" style={{ background: "linear-gradient(135deg, #17203A, #2C3A6E)" }}>
+        <div className="rounded-ios p-4 text-center" style={{ background: "linear-gradient(135deg, #141A2B, #3A34A8)" }}>
           <p className="text-xs font-semibold uppercase tracking-wide text-white/60">Tes dépenses récurrentes</p>
           <p className="chiffres mt-1 text-3xl font-bold text-white">{euros(audit.totalMensuel)}<span className="text-lg font-medium text-white/60"> /mois</span></p>
           <p className="mt-0.5 text-sm text-white/70">

@@ -69,7 +69,7 @@ export default function ScoreSante() {
               <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-voile">
                 <div
                   className="jauge-in h-full rounded-full"
-                  style={{ width: `${(p.points / 20) * 100}%`, background: p.points >= 14 ? "#2BB68C" : p.points >= 8 ? "#F5B93E" : "#FF6B5E" }}
+                  style={{ width: `${(p.points / 20) * 100}%`, background: p.points >= 14 ? "var(--menthe)" : p.points >= 8 ? "var(--beurre)" : "var(--corail)" }}
                 />
               </div>
               <p className="mt-0.5 text-xs text-sourdine">{p.detail}</p>

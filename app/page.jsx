@@ -53,7 +53,7 @@ export default function Accueil() {
   const joursAvantSalaire = projection.salaireISO ? projection.jours : null;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* En-tête compact au défilement */}
       <div
         className={`fixed inset-x-0 top-0 z-30 mx-auto max-w-md transition-all duration-300 ${

@@ -511,7 +511,7 @@ export function DataProvider({ children }) {
       document.documentElement.classList.toggle("sombre", sombre);
       try { localStorage.setItem("budget-theme", pref); } catch {}
       const meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute("content", sombre ? "#10131F" : "#F6F6FA");
+      if (meta) meta.setAttribute("content", sombre ? "#0D1017" : "#FAFAFB");
     };
     appliquer();
     media.addEventListener("change", appliquer);

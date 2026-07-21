@@ -61,7 +61,7 @@ export default function Conseils() {
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <h1 className="text-xl font-bold">Conseils</h1>
 
       {/* Coach IA : c'est ce qu'on vient chercher, donc en premier */}

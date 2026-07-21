@@ -53,7 +53,7 @@ export default function FicheCategorie({ categorieId, onFermer }) {
               <span className={`tnum font-semibold ${depasse ? "text-corail" : ""}`}>{euros(stats.ce)} / {euros(budget)}</span>
             </div>
             <div className="mt-2 h-2 overflow-hidden rounded-full bg-voile">
-              <div className="jauge-in h-full rounded-full transition-all" style={{ width: `${pct}%`, background: depasse ? "#E5766B" : "#2BB68C" }} />
+              <div className="jauge-in h-full rounded-full transition-all" style={{ width: `${pct}%`, background: depasse ? "var(--corail)" : "var(--menthe)" }} />
             </div>
             <p className="mt-1 text-xs text-sourdine">
               {depasse ? `Dépassé de ${euros(stats.ce - budget)}` : `Reste ${euros(budget - stats.ce)}`}

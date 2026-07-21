@@ -11,9 +11,9 @@ import MoisSelecteur from "@/components/MoisSelecteur";
 import Repliable from "@/components/Repliable";
 
 const REGLE = [
-  { id: "besoin", label: "Besoins", cible: 50, couleur: "#3E9BFF" },
-  { id: "envie", label: "Envies", cible: 30, couleur: "#FF9D5C" },
-  { id: "epargne", label: "Épargne", cible: 20, couleur: "#2BB68C" },
+  { id: "besoin", label: "Besoins", cible: 50, couleur: "var(--marque)" },
+  { id: "envie", label: "Envies", cible: 30, couleur: "var(--beurre)" },
+  { id: "epargne", label: "Épargne", cible: 20, couleur: "var(--menthe)" },
 ];
 
 function FicheBudget({ onFermer }) {
@@ -78,7 +78,7 @@ export default function Budgets() {
   const revenu = s.revenus || profil.revenuMensuel || 0;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <header className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Budgets</h1>
         <button onClick={() => setEdition(true)} className="rounded-pill bg-encre px-4 py-2 text-sm font-semibold text-contraste">
@@ -129,7 +129,7 @@ export default function Budgets() {
               const c = categories[cat] || categories.autre;
               const reel = s.parCategorie[cat] || 0;
               const pct = limite > 0 ? (reel / limite) * 100 : 0;
-              const couleur = pct >= 100 ? "#FF6B5E" : pct >= 80 ? "#F5B93E" : "#2BB68C";
+              const couleur = pct >= 100 ? "var(--corail)" : pct >= 80 ? "var(--beurre)" : "var(--menthe)";
               return (
                 <li key={cat}>
                   <button onClick={() => setFicheCat(cat)} className="w-full rounded-ios bg-carte p-3.5 text-left shadow-carte active:scale-[0.99] transition-transform">
@@ -179,7 +179,7 @@ export default function Budgets() {
                       <span className="tnum shrink-0 text-sm text-sourdine">{euros(p.montantActuel)} / {euros(p.objectif)}</span>
                     </div>
                     <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-voile">
-                      <div className="jauge-in h-full rounded-full transition-all" style={{ width: `${pct}%`, background: atteint ? "#2BB68C" : "#8B7CF6" }} />
+                      <div className="jauge-in h-full rounded-full transition-all" style={{ width: `${pct}%`, background: atteint ? "var(--menthe)" : "var(--marque)" }} />
                     </div>
                     {p.echeance && !atteint && (
                       <p className="mt-1.5 text-xs text-sourdine">

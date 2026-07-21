@@ -141,7 +141,7 @@ export default function Comptes() {
     .reduce((a, c) => a + (soldes[c.id] || 0), 0);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold">Comptes</h1>

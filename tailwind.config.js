@@ -11,16 +11,22 @@ module.exports = {
         contraste: "var(--c-contraste)",
         bordure: "var(--c-bordure)",
         voile: "var(--c-voile)",
-        menthe: { DEFAULT: "#2BB68C", pale: "var(--menthe-pale)", texte: "var(--menthe-texte)" },
-        corail: { DEFAULT: "#FF6B5E", pale: "var(--corail-pale)", texte: "var(--corail-texte)" },
-        lavande: { DEFAULT: "#8B7CF6", pale: "var(--lavande-pale)", texte: "var(--lavande-texte)" },
-        ciel: { DEFAULT: "#3E9BFF", pale: "var(--ciel-pale)", texte: "var(--ciel-texte)" },
-        peche: { DEFAULT: "#FF9D5C", pale: "var(--peche-pale)", texte: "var(--peche-texte)" },
-        beurre: { DEFAULT: "#F5B93E", pale: "var(--beurre-pale)", texte: "var(--beurre-texte)" },
+        // Couleur de marque : tout ce qui est interactif
+        marque: { DEFAULT: "var(--marque)", pale: "var(--marque-pale)", texte: "var(--marque-texte)" },
+        // Trois rôles sémantiques
+        menthe: { DEFAULT: "var(--menthe)", pale: "var(--menthe-pale)", texte: "var(--menthe-texte)" },
+        beurre: { DEFAULT: "var(--beurre)", pale: "var(--beurre-pale)", texte: "var(--beurre-texte)" },
+        corail: { DEFAULT: "var(--corail)", pale: "var(--corail-pale)", texte: "var(--corail-texte)" },
+        // Alias conservés pour ne rien casser dans l'existant
+        lavande: { DEFAULT: "var(--marque)", pale: "var(--marque-pale)", texte: "var(--marque-texte)" },
+        ciel: { DEFAULT: "var(--marque)", pale: "var(--marque-pale)", texte: "var(--marque-texte)" },
+        peche: { DEFAULT: "var(--beurre)", pale: "var(--beurre-pale)", texte: "var(--beurre-texte)" },
       },
       borderRadius: { ios: "18px", pill: "999px" },
       boxShadow: {
         carte: "var(--ombre-carte)",
+        // Élévation réservée à ce qui flotte réellement (feuilles, menus)
+        eleve: "0 0 0 1px var(--c-bordure), 0 12px 32px rgba(0,0,0,0.14)",
         flottant: "0 8px 30px rgba(0,0,0,0.25)",
       },
       fontFamily: {

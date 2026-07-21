@@ -1,6 +1,6 @@
 "use client";
 
-export default function CocheAnimee({ taille = 56, couleur = "#2BB68C" }) {
+export default function CocheAnimee({ taille = 56, couleur = "var(--menthe)" }) {
   return (
     <span className="coche-halo inline-flex items-center justify-center rounded-full" style={{ width: taille, height: taille, background: couleur + "22" }}>
       <svg viewBox="0 0 24 24" width={taille * 0.6} height={taille * 0.6} fill="none" aria-hidden="true">

@@ -50,9 +50,9 @@ export default function SpendChart({ transactions }) {
           const hD = (d.depenses / max) * (H - 10);
           return (
             <g key={i}>
-              <rect x={x - barre - 1.5} y={H - hR} width={barre} height={Math.max(hR, 2)} rx={4} fill="#2BB68C" opacity={d.revenus ? 1 : 0.15} />
-              <rect x={x + 1.5} y={H - hD} width={barre} height={Math.max(hD, 2)} rx={4} fill="#FF6B5E" opacity={d.depenses ? 1 : 0.15} />
-              <text x={x} y={H + 14} textAnchor="middle" fontSize="11" fill="#7A8199">{d.label}</text>
+              <rect x={x - barre - 1.5} y={H - hR} width={barre} height={Math.max(hR, 2)} rx={4} fill="var(--menthe)" opacity={d.revenus ? 1 : 0.15} />
+              <rect x={x + 1.5} y={H - hD} width={barre} height={Math.max(hD, 2)} rx={4} fill="var(--corail)" opacity={d.depenses ? 1 : 0.15} />
+              <text x={x} y={H + 14} textAnchor="middle" fontSize="11" fill="var(--c-sourdine)">{d.label}</text>
             </g>
           );
         })}

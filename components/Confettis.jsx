@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-const COULEURS = ["#35C79A", "#8B7CF6", "#3E9BFF", "#F5B93E", "#FF8A7A", "#FFD9A0"];
+const COULEURS = ["var(--menthe)", "var(--marque)", "var(--marque)", "var(--beurre)", "var(--corail-texte)", "var(--beurre-pale)"];
 
 // Confettis légers en canvas (aucune bibliothèque). Se nettoie tout seul.
 export default function Confettis({ actif, onFini }) {

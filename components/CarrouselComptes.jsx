@@ -59,7 +59,7 @@ export default function CarrouselComptes({ onChange }) {
               className={`relative w-[82%] shrink-0 snap-center overflow-hidden rounded-ios p-3.5 shadow-carte transition-[transform,opacity] duration-300 ${!estTous && i === actif ? "cursor-pointer" : ""}`}
               style={{
                 ...(estTous
-                  ? { background: "linear-gradient(135deg, #17203A, #1F8A6A)" }
+                  ? { background: "linear-gradient(135deg, #141A2B, #12805F)" }
                   : {
                       background: `linear-gradient(135deg, ${coul.fond}, transparent 70%)`,
                       backgroundColor: "var(--c-carte)",

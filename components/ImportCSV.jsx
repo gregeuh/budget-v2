@@ -338,7 +338,7 @@ export default function ImportCSV({ onFermer }) {
             {resultat.operations.map((o, i) => (
               <li key={i} className={`rounded-2xl bg-carte p-3 shadow-carte ${selection[i] ? "" : "opacity-45"}`}>
                 <div className="flex items-center gap-2.5">
-                  <input type="checkbox" checked={!!selection[i]} onChange={(e) => setSelection({ ...selection, [i]: e.target.checked })} className="h-5 w-5 shrink-0 accent-[#2BB68C]" />
+                  <input type="checkbox" checked={!!selection[i]} onChange={(e) => setSelection({ ...selection, [i]: e.target.checked })} className="h-5 w-5 shrink-0 accent-[var(--menthe)]" />
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm font-semibold">{o.libelle}{o.doublon ? " · déjà présente ?" : ""}</div>
                     <div className="text-xs text-sourdine">{dateCourte(o.date)}</div>
