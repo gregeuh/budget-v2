@@ -105,7 +105,7 @@ export default function Accueil() {
 
       <section>
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="font-bold">Mes comptes</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">Mes comptes</h2>
           <Link href="/comptes" className="text-sm font-medium text-ciel">Gérer</Link>
         </div>
         <CarrouselComptes onChange={setCompteActif} />
@@ -143,7 +143,7 @@ export default function Accueil() {
 
       <section>
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="font-bold">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">
             Dernières opérations
             {compteAffiche && <span className="ml-1.5 text-sm font-medium text-sourdine">· {compteAffiche.nom}</span>}
           </h2>

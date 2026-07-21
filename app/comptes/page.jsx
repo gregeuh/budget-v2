@@ -51,8 +51,8 @@ function FicheCompte({ compte, onFermer }) {
     <Sheet titre={edition ? "Modifier le compte" : "Nouveau compte"} onFermer={onFermer}>
       <div className="space-y-3">
         {edition && (
-          <div className="rounded-ios bg-menthe-pale p-4">
-            <p className="text-sm font-semibold text-menthe-texte">Réajuster le solde</p>
+          <div className="rounded-ios bg-carte p-4 shadow-carte ring-1 ring-menthe/30">
+            <p className="text-sm font-semibold">⚖️ Réajuster le solde</p>
             <p className="mt-0.5 text-xs text-sourdine">
               Solde calculé par l'app : <span className="tnum font-semibold">{euros(soldeCalcule, { precis: true })}</span>.
               Saisis le solde réel de ta banque, l'écart sera enregistré comme un ajustement (sans fausser tes statistiques).

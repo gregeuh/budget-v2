@@ -8,6 +8,7 @@ import { statsMois } from "@/lib/conseils";
 import Sheet from "@/components/Sheet";
 import FicheProjet from "@/components/FicheProjet";
 import MoisSelecteur from "@/components/MoisSelecteur";
+import Repliable from "@/components/Repliable";
 
 const REGLE = [
   { id: "besoin", label: "Besoins", cible: 50, couleur: "#3E9BFF" },
@@ -85,12 +86,10 @@ export default function Budgets() {
         </button>
       </header>
 
-      <MoisSelecteur mois={mois} onChanger={setMois} />
+      <MoisSelecteur mois={mois} onChanger={setMois} revenus={s.revenus} depenses={s.depenses} />
 
       {/* Règle 50/30/20 */}
-      <section className="rounded-ios bg-carte p-3.5 shadow-carte">
-        <h2 className="font-semibold">Règle 50 / 30 / 20</h2>
-        <p className="mb-3 text-xs text-sourdine">Part des revenus du mois consacrée à chaque poste.</p>
+      <Repliable icone="⚖️" titre="Règle 50 / 30 / 20" sousTitre="Part des revenus consacrée à chaque poste">
         {revenu === 0 ? (
           <p className="text-sm text-sourdine">Ajoute un revenu ce mois-ci (ou renseigne ton revenu mensuel dans les réglages) pour activer l'analyse.</p>
         ) : (
@@ -113,7 +112,7 @@ export default function Budgets() {
             })}
           </div>
         )}
-      </section>
+      </Repliable>
 
       {ficheCat && <FicheCategorie categorieId={ficheCat} onFermer={() => setFicheCat(null)} />}
 

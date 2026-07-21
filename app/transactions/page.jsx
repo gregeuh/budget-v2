@@ -144,10 +144,10 @@ export default function Transactions() {
       )}
 
       {bilan && bilan.nb > 0 && (
-        <div className="tnum rounded-ios bg-ciel-pale px-4 py-2.5 text-sm font-medium text-ciel-texte">
-          {bilan.nb} opération{bilan.nb > 1 ? "s" : ""}
-          {bilan.depense > 0 && ` · ${euros(bilan.depense)} dépensés`}
-          {bilan.recu > 0 && ` · ${euros(bilan.recu)} reçus`}
+        <div className="tnum rounded-ios bg-carte px-4 py-2.5 text-sm shadow-carte">
+          <span className="font-semibold">{bilan.nb} opération{bilan.nb > 1 ? "s" : ""}</span>
+          {bilan.depense > 0 && <span className="text-sourdine"> · <span className="font-semibold text-corail">{euros(bilan.depense)}</span> dépensés</span>}
+          {bilan.recu > 0 && <span className="text-sourdine"> · <span className="font-semibold text-menthe">{euros(bilan.recu)}</span> reçus</span>}
         </div>
       )}
 
@@ -155,7 +155,7 @@ export default function Transactions() {
       {!recherche && (
         <div className="rounded-ios bg-carte p-3.5 shadow-carte">
           <div className="flex items-baseline justify-between">
-            <h2 className="text-sm font-semibold">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">
               💼 Reste à vivre
               <span className="ml-1.5 font-medium text-sourdine">
                 {salaireISO ? `jusqu'au salaire (${dateCourte(salaireISO)})` : "sur 30 jours"}

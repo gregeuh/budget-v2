@@ -8,10 +8,12 @@ import PointsSautillants from "@/components/PointsSautillants";
 import ScoreSante from "@/components/ScoreSante";
 import AnalyseDepenses from "@/components/AnalyseDepenses";
 
+// Carte neutre par défaut : la couleur est réservée aux vraies alertes.
+// Le ton reste lisible grâce à la pastille colorée autour de l'icône.
 const TONS = {
-  alerte: "bg-corail-pale",
-  info: "bg-ciel-pale",
-  bravo: "bg-menthe-pale",
+  alerte: { carte: "bg-corail-pale", pastille: "bg-corail/15" },
+  info: { carte: "bg-carte shadow-carte", pastille: "bg-ciel-pale" },
+  bravo: { carte: "bg-carte shadow-carte", pastille: "bg-menthe-pale" },
 };
 
 export default function Conseils() {
@@ -73,9 +75,9 @@ export default function Conseils() {
           </p>
         )}
         {conseils.map((c, i) => (
-          <div key={i} className={`pop-in rounded-ios p-4 ${TONS[c.ton]}`} style={{ animationDelay: `${i * 60}ms` }}>
+          <div key={i} className={`pop-in rounded-ios p-4 ${(TONS[c.ton] || TONS.info).carte}`} style={{ animationDelay: `${i * 60}ms` }}>
             <div className="flex gap-3">
-              <span className="text-xl">{c.icone}</span>
+              <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-lg ${(TONS[c.ton] || TONS.info).pastille}`}>{c.icone}</span>
               <div>
                 <h3 className="font-semibold leading-tight">{c.titre}</h3>
                 <p className="mt-0.5 text-sm text-encre opacity-75">{c.texte}</p>
@@ -87,7 +89,7 @@ export default function Conseils() {
 
       {/* Coach IA */}
       <section className="rounded-ios bg-carte p-3.5 shadow-carte">
-        <h2 className="font-semibold">Coach budgétaire ✨</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">Coach budgétaire ✨</h2>
         <p className="mb-3 text-xs text-sourdine">
           Le coach reçoit tes chiffres via ta propre clé API : soldes, 6 mois d'historique, opérations récentes (avec libellés), récurrences, projets et score. Informations générales à visée pédagogique, pas un conseil financier personnalisé.
         </p>
