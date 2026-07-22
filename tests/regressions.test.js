@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { calculerSoldes } from "@/lib/soldes";
+import { arrondir } from "@/lib/format";
 import { detecterRecurrences } from "@/lib/detection";
 import { nettoyerLibelle } from "@/lib/libelles";
 import { construireMemoire, devinerDepuisHistorique, proposerLibelles, lieuxConnus } from "@/lib/habitudes";
@@ -28,6 +29,22 @@ describe("Soldes", () => {
   it("ignore les opérations marquées hors solde", () => {
     const txs = [{ compteId: "cc", montant: -100, date: "2026-07-10", horsSolde: true }];
     expect(calculerSoldes(comptes, txs, "2026-07-21").cc).toBe(1000);
+  });
+
+  it("ne laisse pas traîner de décimales flottantes", () => {
+    // A déjà produit "603,8899999999994" dans le champ d'ajustement.
+    const c = [{ id: "cc", soldeInitial: 0 }];
+    const txs = [
+      { compteId: "cc", montant: 0.1, date: "2026-07-01" },
+      { compteId: "cc", montant: 0.2, date: "2026-07-02" },
+    ];
+    expect(calculerSoldes(c, txs, "2026-07-21").cc).toBe(0.3);
+
+    const centimes = Array.from({ length: 30 }, (_, i) => ({
+      compteId: "cc", montant: -7.21 - i * 0.03, date: "2026-07-01",
+    }));
+    const solde = calculerSoldes(c, centimes, "2026-07-21").cc;
+    expect(String(solde)).toMatch(/^-?\d+(\.\d{1,2})?$/);
   });
 
   it("applique un virement aux deux comptes", () => {
@@ -220,5 +237,21 @@ describe("Import CSV au format LCL", () => {
   it("ne plante pas sur un fichier vide ou illisible", () => {
     expect(analyserCSV("").erreur).toBeTruthy();
     expect(analyserCSV("nawak\nnawak").erreur).toBeTruthy();
+  });
+});
+
+describe("Arrondi monétaire", () => {
+  it("corrige les artefacts de virgule flottante", () => {
+    expect(arrondir(0.1 + 0.2)).toBe(0.3);
+    expect(arrondir(603.8899999999994)).toBe(603.89);
+    expect(arrondir(1.005)).toBe(1.01);
+    expect(arrondir(-1.005)).toBe(-1.01);
+    expect(arrondir(2.675)).toBe(2.68);
+  });
+
+  it("tolère les valeurs invalides", () => {
+    expect(arrondir(null)).toBe(0);
+    expect(arrondir(undefined)).toBe(0);
+    expect(arrondir("12,5")).toBe(0);
   });
 });

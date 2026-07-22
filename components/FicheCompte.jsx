@@ -135,7 +135,7 @@ export default function FicheCompte({ compte, onFermer }) {
           </div>
         ) : !ajustOuvert ? (
           <button
-            onClick={() => { setAjustOuvert(true); setSoldeReel(String(solde).replace(".", ",")); }}
+            onClick={() => { setAjustOuvert(true); setSoldeReel(arrondir(solde).toFixed(2).replace(".", ",")); }}
             className="flex w-full items-center justify-between rounded-ios bg-carte px-3.5 py-3 shadow-carte active:bg-voile"
           >
             <span className="flex items-center gap-2 text-sm font-semibold">
