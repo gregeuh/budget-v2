@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
-import { euros, isoLocal, toutesCategories } from "@/lib/format";
+import { euros, isoLocal, toutesCategories, prochaineDateSalaire } from "@/lib/format";
+import { MODES_SALAIRE } from "@/lib/joursOuvres";
 import { detecterRecurrences, normaliserLibelle } from "@/lib/detection";
 import Sheet from "./Sheet";
 import PointsSautillants from "./PointsSautillants";
@@ -16,14 +17,10 @@ const CHARGES_MANUELLES = [
   { cle: "transport", icone: "🚇", label: "Transport", categorie: "transport" },
 ];
 
-function prochaineDuJour(jour) {
-  const auj = new Date();
-  const dernier = (a, m) => new Date(a, m + 1, 0).getDate();
-  let d = new Date(auj.getFullYear(), auj.getMonth(), Math.min(jour, dernier(auj.getFullYear(), auj.getMonth())));
-  if (d < new Date(auj.getFullYear(), auj.getMonth(), auj.getDate())) {
-    d = new Date(auj.getFullYear(), auj.getMonth() + 1, Math.min(jour, dernier(auj.getFullYear(), auj.getMonth() + 1)));
-  }
-  return isoLocal(d);
+// Relais vers le moteur commun (gère aussi « dernier jour ouvré » etc.).
+// Ne renvoie jamais null : une récurrente a toujours besoin d'une date de départ.
+function prochaineDuJour(jour, mode = "jour") {
+  return prochaineDateSalaire(jour, mode) || prochaineDateSalaire(1, "jour");
 }
 
 // Nettoyage local du libellé (repli quand l'IA n'est pas utilisée)
@@ -63,6 +60,8 @@ export default function AssistantConfig({ onFermer }) {
   const [etape, setEtape] = useState(1);
   const [montantSalaire, setMontantSalaire] = useState(profil.revenuMensuel ? String(profil.revenuMensuel) : "");
   const [jourSalaire, setJourSalaire] = useState(profil.jourSalaire || 2);
+  const [modeSalaire, setModeSalaire] = useState(profil.modeSalaire || "jour");
+  const modeAvecJour = MODES_SALAIRE.find((m) => m.id === modeSalaire)?.avecJour;
   const [compteSalaire, setCompteSalaire] = useState(compteParDefaut);
 
   const [propositions, setPropositions] = useState([]);
@@ -186,6 +185,7 @@ export default function AssistantConfig({ onFermer }) {
         ...profil,
         revenuMensuel: valeurSalaire || profil.revenuMensuel || 0,
         jourSalaire: Number(jourSalaire) || profil.jourSalaire || 0,
+        modeSalaire,
       });
 
       if (valeurSalaire > 0 && !salaireExistant && compteSalaire) {
@@ -196,7 +196,8 @@ export default function AssistantConfig({ onFermer }) {
             categorie: "salaire",
             libelle: "Salaire",
             frequence: "mensuelle",
-            prochaine: prochaineDuJour(Number(jourSalaire)),
+            prochaine: prochaineDuJour(Number(jourSalaire), modeSalaire),
+            modeSalaire,
           },
           { silencieux: true }
         );
@@ -269,14 +270,23 @@ export default function AssistantConfig({ onFermer }) {
           </label>
 
           <div className="grid grid-cols-2 gap-3">
-            <label className="block min-w-0">
-              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Versé le</span>
-              <select value={jourSalaire} onChange={(e) => setJourSalaire(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
-                {Array.from({ length: 28 }, (_, i) => i + 1).map((j) => (
-                  <option key={j} value={j}>{j} du mois</option>
-                ))}
+            <label className="col-span-2 block min-w-0">
+              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Versé</span>
+              <select value={modeSalaire} onChange={(e) => setModeSalaire(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+                {MODES_SALAIRE.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
               </select>
             </label>
+
+            {modeAvecJour && (
+              <label className="block min-w-0">
+                <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Le</span>
+                <select value={jourSalaire} onChange={(e) => setJourSalaire(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+                  {Array.from({ length: 28 }, (_, i) => i + 1).map((j) => (
+                    <option key={j} value={j}>{j} du mois</option>
+                  ))}
+                </select>
+              </label>
+            )}
             <label className="block min-w-0">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Sur</span>
               <select value={compteSalaire} onChange={(e) => setCompteSalaire(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">

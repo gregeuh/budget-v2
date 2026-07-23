@@ -17,6 +17,8 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - name: Analyse du code
+        run: npm run lint
       - name: Tests de non-régression
         run: npm test
       - name: Vérification du build

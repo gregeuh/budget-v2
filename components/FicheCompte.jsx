@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useBudget } from "@/lib/store";
-import { TYPES_COMPTE, COULEURS, PLAFONDS, euros, cleMois, aujourdhui, dateCourte } from "@/lib/format";
+import { TYPES_COMPTE, COULEURS, PLAFONDS, arrondir, euros, cleMois, aujourdhui, dateCourte } from "@/lib/format";
 import Sheet from "./Sheet";
 import CocheAnimee from "./CocheAnimee";
 import TxRow from "./TxRow";

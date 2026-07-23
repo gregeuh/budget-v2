@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useBudget } from "@/lib/store";
+import { salaireConfigure } from "@/lib/format";
 
 export default function PremiersPas({ onAjouter }) {
   const { comptes, transactions, budgets, profil } = useBudget();
@@ -25,7 +26,7 @@ export default function PremiersPas({ onAjouter }) {
     },
     {
       id: "profil",
-      fait: Boolean(profil.jourSalaire),
+      fait: salaireConfigure(profil),
       icone: "💼",
       titre: "Renseigne ton salaire",
       detail: "Pour le reste à vivre et les projections jusqu'à ta paie",

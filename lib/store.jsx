@@ -31,7 +31,7 @@ const donneesDemo = () => {
       { id: "t7", compteId: "c4", montant: 200, categorie: "virement", libelle: "Depuis compte courant", date: `${m}-06` },
     ],
     budgets: { courses: 350, resto: 150, shopping: 100 },
-    profil: { prenom: "", revenuMensuel: 2350, jourSalaire: 2, theme: "auto" },
+    profil: { prenom: "", revenuMensuel: 2350, jourSalaire: 2, modeSalaire: "jour", theme: "auto" },
     recurrentes: [],
     projets: [
       { id: "p1", nom: "Vacances", icone: "🏖️", objectif: 2000, montantActuel: 650, echeance: "" },
@@ -79,7 +79,7 @@ export function DataProvider({ children }) {
   const [comptes, setComptes] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [budgets, setBudgets] = useState({});
-  const [profil, setProfil] = useState({ prenom: "", revenuMensuel: 0, jourSalaire: 0, theme: "auto" });
+  const [profil, setProfil] = useState({ prenom: "", revenuMensuel: 0, jourSalaire: 0, modeSalaire: "jour", theme: "auto" });
   const [recurrentes, setRecurrentes] = useState([]);
   const [projets, setProjets] = useState([]);
   const [credits, setCredits] = useState([]);
@@ -172,7 +172,7 @@ export function DataProvider({ children }) {
           onSnapshot(doc(db, `${base}/parametres/app`), (s) => {
             const d = s.data() || {};
             setBudgets(d.budgets || {});
-            setProfil({ theme: "auto", jourSalaire: 0, ...(d.profil || {}) });
+            setProfil({ theme: "auto", jourSalaire: 0, modeSalaire: "jour", ...(d.profil || {}) });
             setCategoriesPerso(d.categoriesPerso || {});
           }, surErreur)
         );
@@ -375,7 +375,9 @@ export function DataProvider({ children }) {
     const auj = aujourdhui();
     while (date <= auj && n < 60) {
       await ajouterTransaction({ compteId: r.compteId, montant: r.montant, categorie: r.categorie, libelle: r.libelle, date, recurrenteId: r.id || "nouvelle" }, { silencieux: true });
-      date = prochaineOccurrence(date, r.frequence);
+      // Une récurrente peut suivre une règle (dernier jour ouvré…) plutôt qu'un
+      // numéro de jour figé : on la transmet au moteur.
+      date = prochaineOccurrence(date, r.frequence, { mode: r.modeSalaire || "jour" });
       n++;
     }
     return date;

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useBudget } from "@/lib/store";
+import { MODES_SALAIRE } from "@/lib/joursOuvres";
 import { auth } from "@/lib/firebase";
 import Sheet from "@/components/Sheet";
 import CategoriesSheet from "@/components/CategoriesSheet";
@@ -10,7 +11,7 @@ import ImportCSV from "@/components/ImportCSV";
 import RenommerSheet from "@/components/RenommerSheet";
 import CategoriserSheet from "@/components/CategoriserSheet";
 import JournalSheet from "@/components/JournalSheet";
-import { toutesCategories as CATEGORIES, FREQUENCES, euros, dateCourte, isoLocal } from "@/lib/format";
+import { toutesCategories as CATEGORIES, FREQUENCES, euros, dateCourte, isoLocal, prochaineDateSalaire } from "@/lib/format";
 
 const THEMES = [
   { id: "auto", label: "Automatique", detail: "Suit le réglage de l'iPhone", icone: "🌗" },
@@ -43,6 +44,10 @@ function ProfilSheet({ onFermer }) {
   const [prenom, setPrenom] = useState(profil.prenom || "");
   const [revenu, setRevenu] = useState(profil.revenuMensuel ? String(profil.revenuMensuel) : "");
   const [jourSalaire, setJourSalaire] = useState(profil.jourSalaire || 0);
+  const [modeSalaire, setModeSalaire] = useState(profil.modeSalaire || "jour");
+  const modeAvecJour = MODES_SALAIRE.find((m) => m.id === modeSalaire)?.avecJour;
+  const apercuISO = prochaineDateSalaire(Number(jourSalaire) || 0, modeSalaire);
+  const apercuSalaire = apercuISO ? dateCourte(apercuISO) : null;
 
   const enregistrer = async () => {
     await sauverApp(undefined, {
@@ -50,6 +55,7 @@ function ProfilSheet({ onFermer }) {
       prenom: prenom.trim(),
       revenuMensuel: parseFloat(String(revenu).replace(",", ".")) || 0,
       jourSalaire: Number(jourSalaire) || 0,
+      modeSalaire,
     });
     onFermer();
   };
@@ -69,16 +75,34 @@ function ProfilSheet({ onFermer }) {
               className="tnum w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe" />
           </label>
           <label className="block min-w-0">
-            <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Jour du salaire</span>
-            <select value={jourSalaire} onChange={(e) => setJourSalaire(e.target.value)}
+            <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Quand tombe ton salaire</span>
+            <select value={modeSalaire} onChange={(e) => setModeSalaire(e.target.value)}
               className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
-              <option value={0}>—</option>
-              {Array.from({ length: 28 }, (_, i) => i + 1).map((j) => (
-                <option key={j} value={j}>Le {j} du mois</option>
+              {MODES_SALAIRE.map((m) => (
+                <option key={m.id} value={m.id}>{m.label}</option>
               ))}
-              <option value={31}>Fin de mois</option>
             </select>
           </label>
+
+          {modeAvecJour && (
+            <label className="block min-w-0">
+              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Jour du mois</span>
+              <select value={jourSalaire} onChange={(e) => setJourSalaire(e.target.value)}
+                className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+                <option value={0}>—</option>
+                {Array.from({ length: 28 }, (_, i) => i + 1).map((j) => (
+                  <option key={j} value={j}>Le {j} du mois</option>
+                ))}
+                <option value={31}>Fin de mois</option>
+              </select>
+            </label>
+          )}
+
+          {apercuSalaire && (
+            <p className="rounded-ios bg-marque-pale px-3 py-2 text-xs text-marque-texte">
+              Prochaine paie prévue le <strong>{apercuSalaire}</strong>
+            </p>
+          )}
         </div>
         <p className="text-xs text-sourdine">Le jour du salaire alimente le compte à rebours de l'accueil et le budget restant par jour.</p>
         <button onClick={enregistrer} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque">Enregistrer</button>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useBudget } from "@/lib/store";
 import { TYPES_COMPTE } from "@/lib/format";
+import { MODES_SALAIRE } from "@/lib/joursOuvres";
 
 const SUGGESTIONS = ["courant", "revolut", "swile", "livretA"];
 
@@ -12,6 +13,8 @@ export default function Onboarding() {
   const [prenom, setPrenom] = useState("");
   const [revenu, setRevenu] = useState("");
   const [jourSalaire, setJourSalaire] = useState(0);
+  const [modeSalaire, setModeSalaire] = useState("jour");
+  const modeAvecJour = MODES_SALAIRE.find((m) => m.id === modeSalaire)?.avecJour;
   const [choix, setChoix] = useState({ courant: { actif: true, solde: "" } });
   const [enCours, setEnCours] = useState(false);
 
@@ -34,6 +37,7 @@ export default function Onboarding() {
       prenom: prenom.trim(),
       revenuMensuel: num(revenu),
       jourSalaire: Number(jourSalaire) || 0,
+      modeSalaire,
       onboarde: true,
     });
   };
@@ -58,15 +62,25 @@ export default function Onboarding() {
             <input inputMode="decimal" placeholder="Revenu mensuel net (€)" value={revenu} onChange={(e) => setRevenu(e.target.value)}
               className="tnum w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe" />
             <label className="block">
-              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Jour d'arrivée du salaire</span>
-              <select value={jourSalaire} onChange={(e) => setJourSalaire(e.target.value)}
+              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Quand arrive ton salaire</span>
+              <select value={modeSalaire} onChange={(e) => setModeSalaire(e.target.value)}
                 className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none">
-                <option value={0}>Non renseigné</option>
-                {Array.from({ length: 28 }, (_, i) => i + 1).map((j) => (
-                  <option key={j} value={j}>Le {j} du mois</option>
-                ))}
+                {MODES_SALAIRE.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
               </select>
             </label>
+
+            {modeAvecJour && (
+              <label className="block">
+                <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Jour du mois</span>
+                <select value={jourSalaire} onChange={(e) => setJourSalaire(e.target.value)}
+                  className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none">
+                  <option value={0}>Non renseigné</option>
+                  {Array.from({ length: 28 }, (_, i) => i + 1).map((j) => (
+                    <option key={j} value={j}>Le {j} du mois</option>
+                  ))}
+                </select>
+              </label>
+            )}
           </div>
         </div>
       )}

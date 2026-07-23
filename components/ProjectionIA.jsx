@@ -1,7 +1,7 @@
 "use client";
 
 import { useBudget } from "@/lib/store";
-import { euros } from "@/lib/format";
+import { euros, salaireConfigure } from "@/lib/format";
 import { resumePourCoach } from "@/lib/conseils";
 import { calculerProjection } from "@/lib/projection";
 import PointsSautillants from "./PointsSautillants";
@@ -19,7 +19,7 @@ export default function ProjectionIA() {
   const { projIA, lancerProjectionIA, reinitProjectionIA } = budget;
   const { chargement, resultat, erreur } = projIA;
 
-  const pretPourProjection = profil?.jourSalaire >= 1 && transactions.length >= 5;
+  const pretPourProjection = salaireConfigure(profil || {}) && transactions.length >= 5;
 
   const lancer = () => {
     const resume = resumePourCoach({ comptes, transactions, soldes, budgets, profil, credits, projets, recurrentes, categories });

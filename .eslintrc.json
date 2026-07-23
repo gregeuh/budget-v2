@@ -1,0 +1,32 @@
+{
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "ignorePatterns": [
+    "node_modules/",
+    ".next/",
+    "public/"
+  ],
+  "rules": {
+    "no-undef": "error",
+    "no-dupe-keys": "error",
+    "no-unreachable": "error",
+    "no-const-assign": "error",
+    "no-dupe-args": "error",
+    "use-isnan": "error",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "off"
+  },
+  "plugins": [
+    "react-hooks"
+  ]
+}
