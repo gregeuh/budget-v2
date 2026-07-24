@@ -186,6 +186,32 @@ html.sombre .reflet {
 }
 .page-in { animation: page-in 0.25s ease both; }
 
+/* Respiration du squelette de chargement : plus calme qu'un clignotement */
+@keyframes pulse-doux {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+.pulse-doux { animation: pulse-doux 1.4s ease-in-out infinite; }
+
+/* Cercle qui tourne pendant le rafraîchissement */
+@keyframes tourne {
+  to { transform: rotate(360deg); }
+}
+.tourne { animation: tourne 0.9s linear infinite; transform-origin: center; }
+
+/* Transitions de page directionnelles : la nouvelle page entre du côté
+   vers lequel on navigue, comme dans les apps natives. */
+@keyframes page-droite {
+  from { opacity: 0; transform: translateX(14px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes page-gauche {
+  from { opacity: 0; transform: translateX(-14px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.page-droite { animation: page-droite 0.28s cubic-bezier(0.32, 0.72, 0, 1) both; }
+.page-gauche { animation: page-gauche 0.28s cubic-bezier(0.32, 0.72, 0, 1) both; }
+
 /* Jauge qui se remplit de gauche à droite */
 @keyframes jauge-in {
   from { transform: scaleX(0); }
@@ -327,7 +353,7 @@ html.sombre .reflet {
 .pop-in { animation: pop-in 0.3s cubic-bezier(0.32, 0.72, 0, 1) both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .sheet-in, .fade-in, .pop-in, .drawer-in, .page-in, .jauge-in, .trace-in, .apparait-tard, .donut-in, .point-saut { animation: none; }
+  .sheet-in, .fade-in, .pop-in, .drawer-in, .page-in, .page-droite, .page-gauche, .pulse-doux, .tourne, .jauge-in, .trace-in, .apparait-tard, .donut-in, .point-saut { animation: none; }
   .trace-in { stroke-dasharray: none; }
 }
 

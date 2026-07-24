@@ -426,6 +426,23 @@ export function DataProvider({ children }) {
     })();
   }, [pret, recurrentes, comptes, posterOccurrencesDues, modifierRecurrente]);
 
+  // Rejoue le moteur à la demande. Utile car une PWA reste souvent ouverte
+  // plusieurs jours : sans cela, les échéances du jour n'arrivent qu'au
+  // prochain démarrage complet.
+  const rafraichir = useCallback(async () => {
+    let postees = 0;
+    for (const r of recurrentes) {
+      if (r.actif === false || !r.prochaine) continue;
+      if (!comptes.some((c) => c.id === r.compteId)) continue;
+      if (r.prochaine <= aujourdhui()) {
+        const prochaine = await posterOccurrencesDues(r);
+        await modifierRecurrente(r.id, { prochaine });
+        postees++;
+      }
+    }
+    return postees;
+  }, [recurrentes, comptes, posterOccurrencesDues, modifierRecurrente]);
+
   // ------- Projets d'épargne -------
   const ajouterProjet = useCallback(async (p) => {
     const donnees = { montantActuel: 0, icone: "🎯", ...p };
@@ -633,6 +650,7 @@ export function DataProvider({ children }) {
     reglagesOuverts, setReglagesOuverts,
     celebration, celebrer,
     projIA, lancerProjectionIA, reinitProjectionIA,
+    rafraichir,
     comptes, transactions, budgets, profil, soldes, recurrentes, projets, credits,
     ajouterCompte, modifierCompte, supprimerCompte,
     ajouterTransaction, modifierTransaction, supprimerTransaction, ajouterTransactionsLot, fusionnerTransactions,

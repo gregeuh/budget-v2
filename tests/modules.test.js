@@ -3,6 +3,8 @@ import { rapprocher, impactSolde } from "@/lib/rapprochement";
 import { statsMois, detecterAbonnements } from "@/lib/conseils";
 import { analyserDepenses } from "@/lib/depenses";
 import { calculerScore } from "@/lib/score";
+import { tendances } from "@/lib/tendances";
+import { cleMoisLocal, moisDecaleLocal } from "@/lib/format";
 
 /*
  * Modules qui n'avaient aucune couverture.
@@ -190,5 +192,56 @@ describe("Détection d'abonnements", () => {
       { montant: -19.99, libelle: "Netflix", categorie: "abonnements", date: "2026-07-06" },
     ];
     expect(detecterAbonnements(txs).length).toBeGreaterThan(0);
+  });
+});
+
+describe("Tendances sur plusieurs mois", () => {
+  const m0 = cleMoisLocal();
+  const m1 = moisDecaleLocal(-1);
+  const m2 = moisDecaleLocal(-2);
+
+  const txs = [
+    { montant: -380, categorie: "courses", date: `${m2}-08` },
+    { montant: -420, categorie: "courses", date: `${m1}-08` },
+    { montant: -350, categorie: "courses", date: `${m0}-08` },
+    { montant: -60, categorie: "resto", date: `${m2}-10` },
+    { montant: -65, categorie: "resto", date: `${m1}-10` },
+    { montant: -190, categorie: "resto", date: `${m0}-10` },
+    { montant: 2253, categorie: "salaire", date: `${m0}-02` },
+    { montant: -100, categorie: "epargne", date: `${m0}-05`, versId: "la" },
+    { montant: -40, categorie: "courses", date: "2020-01-05" }, // hors fenêtre
+  ];
+
+  const t = tendances(txs, 3);
+
+  it("couvre exactement la fenêtre demandée", () => {
+    expect(t.mois).toEqual([m2, m1, m0]);
+  });
+
+  it("écarte revenus, virements et mois hors fenêtre", () => {
+    expect(t.lignes.some((l) => l.id === "salaire")).toBe(false);
+    expect(t.lignes.some((l) => l.id === "epargne")).toBe(false);
+    expect(t.lignes.find((l) => l.id === "courses").total).toBe(1150);
+  });
+
+  it("signale une vraie dérive", () => {
+    // 60 → 65 → 190 : hausse nette
+    expect(t.lignes.find((l) => l.id === "resto").sens).toBe("hausse");
+  });
+
+  it("ne crie pas au loup sur une variation ordinaire", () => {
+    // 380 → 420 → 350 : fluctuation normale, pas une tendance
+    expect(t.lignes.find((l) => l.id === "courses").sens).toBe("stable");
+  });
+
+  it("classe du poste le plus lourd au plus léger", () => {
+    const totaux = t.lignes.map((l) => l.total);
+    expect([...totaux].sort((a, b) => b - a)).toEqual(totaux);
+  });
+
+  it("ne plante pas sans aucune donnée", () => {
+    const vide = tendances([], 3);
+    expect(vide.lignes).toEqual([]);
+    expect(vide.mois.length).toBe(3);
   });
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useBudget } from "@/lib/store";
 import { brancherJournal } from "@/lib/journal";
@@ -10,7 +10,8 @@ import Login from "./Login";
 import Onboarding from "./Onboarding";
 import Toast from "./Toast";
 import DrawerReglages from "./DrawerReglages";
-import PointsSautillants from "./PointsSautillants";
+import SqueletteAccueil from "./SqueletteAccueil";
+import TirerPourRafraichir from "./TirerPourRafraichir";
 import Confettis from "./Confettis";
 
 export default function AppShell({ children }) {
@@ -26,13 +27,17 @@ export default function AppShell({ children }) {
   const [ajoutOuvert, setAjoutOuvert] = useState(false);
   const chemin = usePathname();
 
-  if (!pret) {
-    return (
-      <div className="flex h-dvh items-center justify-center bg-fond">
-        <PointsSautillants taille={12} />
-      </div>
-    );
-  }
+  // La page entre du côté vers lequel on navigue, comme dans les apps natives.
+  const ORDRE = ["/", "/comptes", "/budgets", "/conseils"];
+  const cheminPrecedent = useRef(chemin);
+  const rang = (c) => {
+    const i = ORDRE.indexOf(c);
+    return i === -1 ? ORDRE.length : i;
+  };
+  const sens = rang(chemin) >= rang(cheminPrecedent.current) ? "page-droite" : "page-gauche";
+  useEffect(() => { cheminPrecedent.current = chemin; }, [chemin]);
+
+  if (!pret) return <SqueletteAccueil />;
 
   if (!modeLocal && erreurInit && !user) {
     return (
@@ -51,13 +56,14 @@ export default function AppShell({ children }) {
 
   return (
     <div className="mx-auto min-h-dvh max-w-md" style={{ paddingTop: "var(--safe-top)" }}>
+      <TirerPourRafraichir />
       <Toast />
       {erreurInit && (
         <div className="mx-4 mt-3 rounded-ios bg-corail-pale px-3.5 py-2 text-xs font-medium text-corail-texte">
           ⚠️ {erreurInit}
         </div>
       )}
-      <main key={chemin} className="page-in px-4 pb-40 pt-3">{children}</main>
+      <main key={chemin} className={`${sens} px-4 pb-40 pt-3`}>{children}</main>
       <TabBar onAjouter={() => setAjoutOuvert(true)} ajoutOuvert={ajoutOuvert} />
       {ajoutOuvert && <AddSheet onFermer={() => setAjoutOuvert(false)} />}
       {reglagesOuverts && <DrawerReglages />}

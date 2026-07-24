@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Tendances from "./Tendances";
 import PatrimoineChart from "./PatrimoineChart";
 import SpendChart from "./SpendChart";
 import DonutCat from "./DonutCat";
@@ -23,13 +24,14 @@ export default function Analyses({ comptes, transactions, mois }) {
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-voile text-base">📊</span>
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-semibold">Analyses</span>
-          <span className="block text-xs text-sourdine">Patrimoine, dépenses, catégories, calendrier</span>
+          <span className="block text-xs text-sourdine">Tendances, patrimoine, catégories, calendrier</span>
         </span>
         <span className={`text-sourdine/50 transition-transform ${ouvert ? "rotate-90" : ""}`}>›</span>
       </button>
 
       {ouvert && (
         <div className="fade-in mt-3 space-y-4 border-t border-bordure pt-3">
+          <Tendances />
           <PatrimoineChart comptes={comptes} transactions={transactions} />
           <SpendChart transactions={transactions} />
           <DonutCat transactions={transactions} mois={mois} />
