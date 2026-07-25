@@ -44,24 +44,24 @@ export default function FicheCredit({ credit, onFermer }) {
           placeholder="Nom (ex : Prêt auto, Crédit conso…)"
           value={nom}
           onChange={(e) => setNom(e.target.value)}
-          className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe"
+          className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-marque"
         />
         <div className="grid grid-cols-2 gap-3">
           <label className="block min-w-0">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Restant dû (€)</span>
             <input inputMode="decimal" placeholder="8500" value={restant} onChange={(e) => setRestant(e.target.value)}
-              className="tnum w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none focus:border-menthe" />
+              className="tnum w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none focus:border-marque" />
           </label>
           <label className="block min-w-0">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Mensualité (€)</span>
             <input inputMode="decimal" placeholder="220" value={mensualite} onChange={(e) => setMensualite(e.target.value)}
-              className="tnum w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none focus:border-menthe" />
+              className="tnum w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none focus:border-marque" />
           </label>
         </div>
         <label className="block min-w-0">
           <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Taux annuel % (option, pour affiner la durée)</span>
           <input inputMode="decimal" placeholder="4,5" value={taux} onChange={(e) => setTaux(e.target.value)}
-            className="tnum w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none focus:border-menthe" />
+            className="tnum w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none focus:border-marque" />
         </label>
         {apercu !== null && num(restant) > 0 && (
           <p className="rounded-2xl bg-marque-pale px-3 py-2 text-sm text-marque-texte">

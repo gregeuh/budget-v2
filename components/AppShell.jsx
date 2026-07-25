@@ -45,7 +45,7 @@ export default function AppShell({ children }) {
         <div className="text-4xl">🔌</div>
         <h1 className="mt-3 text-xl font-bold">Problème de configuration</h1>
         <p className="mt-2 text-sm text-sourdine">{erreurInit}</p>
-        <button onClick={() => location.reload()} className="mt-5 rounded-ios bg-encre px-6 py-3 font-semibold text-contraste">
+        <button onClick={() => location.reload()} className="mt-5 rounded-ios bg-marque-bouton px-6 py-3 font-semibold text-surMarque">
           Réessayer
         </button>
       </div>

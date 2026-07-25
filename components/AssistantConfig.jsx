@@ -265,7 +265,7 @@ export default function AssistantConfig({ onFermer }) {
               value={montantSalaire}
               onChange={(e) => setMontantSalaire(e.target.value)}
               placeholder="ex : 1840"
-              className="chiffres w-full min-w-0 rounded-ios border border-bordure bg-carte px-4 py-3 text-2xl font-bold outline-none focus:border-menthe"
+              className="chiffres w-full min-w-0 rounded-ios border border-bordure bg-carte px-4 py-3 text-2xl font-bold outline-none focus:border-marque"
             />
           </label>
 
@@ -332,7 +332,7 @@ export default function AssistantConfig({ onFermer }) {
                       inputMode="decimal"
                       value={Math.abs(p.montant)}
                       onChange={(e) => majMontant(p.id, e.target.value)}
-                      className="tnum w-16 shrink-0 rounded-lg border border-bordure bg-fond px-1.5 py-1 text-right text-sm outline-none focus:border-menthe"
+                      className="tnum w-16 shrink-0 rounded-lg border border-bordure bg-fond px-1.5 py-1 text-right text-sm outline-none focus:border-marque"
                     />
                     <span className="shrink-0 text-xs text-sourdine">€</span>
                   </li>
@@ -378,7 +378,7 @@ export default function AssistantConfig({ onFermer }) {
                     value={manuelles[c.cle] || ""}
                     onChange={(e) => setManuelles({ ...manuelles, [c.cle]: e.target.value })}
                     placeholder="—"
-                    className="tnum w-16 shrink-0 rounded-lg border border-bordure bg-fond px-1.5 py-1 text-right text-sm outline-none focus:border-menthe"
+                    className="tnum w-16 shrink-0 rounded-lg border border-bordure bg-fond px-1.5 py-1 text-right text-sm outline-none focus:border-marque"
                   />
                   <span className="shrink-0 text-xs text-sourdine">€</span>
                 </label>

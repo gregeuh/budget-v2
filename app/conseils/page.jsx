@@ -95,7 +95,7 @@ export default function Conseils() {
             onChange={(e) => setSaisie(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && envoyer()}
             placeholder="Pose ta question…"
-            className="min-w-0 flex-1 rounded-pill border border-bordure bg-fond px-4 py-2.5 text-sm outline-none focus:border-menthe"
+            className="min-w-0 flex-1 rounded-pill border border-bordure bg-fond px-4 py-2.5 text-sm outline-none focus:border-marque"
           />
           <button
             onClick={envoyer}

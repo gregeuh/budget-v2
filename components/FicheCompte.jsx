@@ -157,7 +157,7 @@ export default function FicheCompte({ compte, onFermer }) {
                 value={soldeReel}
                 onChange={(e) => setSoldeReel(e.target.value)}
                 placeholder="ex : 612,40"
-                className="tnum min-w-0 flex-1 rounded-xl border border-bordure bg-carte px-3 py-2.5 outline-none focus:border-menthe"
+                className="tnum min-w-0 flex-1 rounded-xl border border-bordure bg-carte px-3 py-2.5 outline-none focus:border-marque"
               />
               <button
                 onClick={ajuster}

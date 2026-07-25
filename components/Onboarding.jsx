@@ -58,9 +58,9 @@ export default function Onboarding() {
           <p className="mt-1 text-sourdine">Quelques infos pour personnaliser tes analyses — modifiable à tout moment dans le Profil.</p>
           <div className="mt-6 space-y-3">
             <input placeholder="Ton prénom" value={prenom} onChange={(e) => setPrenom(e.target.value)}
-              className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe" />
+              className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-marque" />
             <input inputMode="decimal" placeholder="Revenu mensuel net (€)" value={revenu} onChange={(e) => setRevenu(e.target.value)}
-              className="tnum w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe" />
+              className="tnum w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-marque" />
             <label className="block">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Quand arrive ton salaire</span>
               <select value={modeSalaire} onChange={(e) => setModeSalaire(e.target.value)}
@@ -108,7 +108,7 @@ export default function Onboarding() {
                       placeholder="Solde actuel (€)"
                       value={choix[type]?.solde || ""}
                       onChange={(e) => setChoix((c) => ({ ...c, [type]: { ...c[type], solde: e.target.value } }))}
-                      className="tnum mt-2.5 w-full rounded-xl border border-bordure bg-fond px-3 py-2.5 outline-none focus:border-menthe"
+                      className="tnum mt-2.5 w-full rounded-xl border border-bordure bg-fond px-3 py-2.5 outline-none focus:border-marque"
                     />
                   )}
                 </div>

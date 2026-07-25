@@ -63,7 +63,7 @@ function FicheCompte({ compte, onFermer }) {
                 placeholder="Solde réel"
                 value={soldeReel}
                 onChange={(e) => setSoldeReel(e.target.value)}
-                className="tnum min-w-0 flex-1 rounded-xl border border-bordure bg-carte px-3 py-2.5 outline-none focus:border-menthe"
+                className="tnum min-w-0 flex-1 rounded-xl border border-bordure bg-carte px-3 py-2.5 outline-none focus:border-marque"
               />
               <button
                 onClick={reajuster}
@@ -95,7 +95,7 @@ function FicheCompte({ compte, onFermer }) {
           placeholder={`Nom (ex : ${TYPES_COMPTE[type].label})`}
           value={nom}
           onChange={(e) => setNom(e.target.value)}
-          className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe"
+          className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-marque"
         />
         <label className="block">
           <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">
@@ -106,7 +106,7 @@ function FicheCompte({ compte, onFermer }) {
             placeholder="0"
             value={solde}
             onChange={(e) => setSolde(e.target.value)}
-            className="tnum w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe"
+            className="tnum w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-marque"
           />
         </label>
         <button onClick={valider} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque active:scale-[0.99] transition-transform">
@@ -149,7 +149,7 @@ export default function Comptes() {
             Total : {euros(total)}{avantages > 0 && ` · hors titres-resto : ${euros(total - avantages)}`}
           </p>
         </div>
-        <button onClick={() => setFiche("nouveau")} className="rounded-pill bg-encre px-4 py-2 text-sm font-semibold text-contraste">
+        <button onClick={() => setFiche("nouveau")} className="rounded-pill bg-marque-bouton px-4 py-2 text-sm font-semibold text-surMarque">
           + Ajouter
         </button>
       </header>

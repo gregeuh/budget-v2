@@ -66,13 +66,13 @@ function ProfilSheet({ onFermer }) {
         <label className="block min-w-0">
           <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Prénom</span>
           <input value={prenom} onChange={(e) => setPrenom(e.target.value)} placeholder="Ton prénom"
-            className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe" />
+            className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-marque" />
         </label>
         <div className="grid grid-cols-2 gap-3">
           <label className="block min-w-0">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Revenu mensuel net</span>
             <input inputMode="decimal" value={revenu} onChange={(e) => setRevenu(e.target.value)} placeholder="ex : 2300"
-              className="tnum w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe" />
+              className="tnum w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-marque" />
           </label>
           <label className="block min-w-0">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Quand tombe ton salaire</span>

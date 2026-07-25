@@ -83,11 +83,11 @@ export default function PremiersPas({ onAjouter }) {
               </span>
               {active && (
                 e.action.type === "lien" ? (
-                  <Link href={e.action.href} className="shrink-0 rounded-pill bg-encre px-3 py-1.5 text-xs font-semibold text-contraste">
+                  <Link href={e.action.href} className="shrink-0 rounded-pill bg-marque-bouton px-3 py-1.5 text-xs font-semibold text-surMarque">
                     Go →
                   </Link>
                 ) : (
-                  <button onClick={onAjouter} className="shrink-0 rounded-pill bg-encre px-3 py-1.5 text-xs font-semibold text-contraste">
+                  <button onClick={onAjouter} className="shrink-0 rounded-pill bg-marque-bouton px-3 py-1.5 text-xs font-semibold text-surMarque">
                     Go →
                   </button>
                 )

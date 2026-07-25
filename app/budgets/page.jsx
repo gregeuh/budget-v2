@@ -44,7 +44,7 @@ function FicheBudget({ onFermer }) {
                 placeholder="—"
                 value={locaux[id] ?? ""}
                 onChange={(e) => setLocaux({ ...locaux, [id]: e.target.value })}
-                className="tnum w-20 rounded-xl border border-bordure px-2 py-1.5 text-right outline-none focus:border-menthe"
+                className="tnum w-20 rounded-xl border border-bordure px-2 py-1.5 text-right outline-none focus:border-marque"
               />
               <span className="text-sm text-sourdine">€</span>
             </span>
@@ -81,7 +81,7 @@ export default function Budgets() {
     <div className="space-y-6">
       <header className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Budgets</h1>
-        <button onClick={() => setEdition(true)} className="rounded-pill bg-encre px-4 py-2 text-sm font-semibold text-contraste">
+        <button onClick={() => setEdition(true)} className="rounded-pill bg-marque-bouton px-4 py-2 text-sm font-semibold text-surMarque">
           Modifier
         </button>
       </header>

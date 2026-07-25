@@ -45,7 +45,7 @@ export default function BanniereConfig() {
             </p>
             <button
               onClick={() => setOuvert(true)}
-              className="mt-2.5 rounded-pill bg-encre px-3.5 py-1.5 text-xs font-semibold text-contraste active:scale-95 transition-transform"
+              className="mt-2.5 rounded-pill bg-marque-bouton px-3.5 py-1.5 text-xs font-semibold text-surMarque active:scale-95 transition-transform"
             >
               Configurer maintenant →
             </button>

@@ -297,7 +297,7 @@ export default function AddSheet({ onFermer }) {
                 value={libelle}
                 onChange={(e) => { setLibelle(e.target.value); setAutoApplique(null); }}
                 onBlur={(e) => appliquerHabitude(e.target.value)}
-                className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-menthe"
+                className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-marque"
               />
 
               {propositions.length > 0 && (

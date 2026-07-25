@@ -111,7 +111,7 @@ export default function RenommerSheet({ onFermer }) {
                         value={nomFinal(g)}
                         onChange={(e) => setEdits((ed) => ({ ...ed, [g.cle]: e.target.value }))}
                         disabled={!actif}
-                        className="mt-0.5 w-full rounded-lg border border-bordure bg-fond px-2 py-1.5 text-sm font-semibold outline-none focus:border-menthe disabled:opacity-50"
+                        className="mt-0.5 w-full rounded-lg border border-bordure bg-fond px-2 py-1.5 text-sm font-semibold outline-none focus:border-marque disabled:opacity-50"
                       />
                     </span>
                     <span className="tnum shrink-0 self-start text-[11px] text-sourdine">{dateCourte(g.dernierDate)}</span>
