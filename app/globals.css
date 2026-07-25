@@ -143,17 +143,38 @@ body {
   opacity: 0.55;
 }
 
-/* Reflet diagonal des cartes Wallet */
+/* Reflets des cartes Wallet : un trait diagonal fin + un halo doux en coin,
+   pour donner l'impression d'une surface qui accroche la lumière. */
 .reflet {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.35) 46%, transparent 58%);
   pointer-events: none;
+  background:
+    linear-gradient(115deg, transparent 34%, rgba(255,255,255,0.22) 47%, transparent 56%),
+    radial-gradient(120% 80% at 82% -10%, rgba(255,255,255,0.20), transparent 60%);
 }
 html.sombre .reflet {
-  background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.07) 46%, transparent 58%);
+  background:
+    linear-gradient(115deg, transparent 34%, rgba(255,255,255,0.06) 47%, transparent 56%),
+    radial-gradient(120% 80% at 82% -10%, rgba(255,255,255,0.08), transparent 60%);
 }
+
+/* Carte de compte : enfoncement au toucher, pour qu'elle réagisse sous le doigt */
+.carte-compte { transition: transform 0.18s cubic-bezier(0.32, 0.72, 0, 1); }
+.carte-compte:active { transform: scale(0.975) !important; }
+
+/* Enfoncement générique des éléments tappables (rangées, tuiles).
+   Un retour tactile discret qui fait « réactif » sans être visible. */
+.tappable { transition: transform 0.14s ease, background-color 0.14s ease; }
+.tappable:active { transform: scale(0.985); }
+
+/* Apparition en cascade d'une liste : chaque ligne entre juste après la précédente */
+@keyframes ligne-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ligne-in { animation: ligne-in 0.34s cubic-bezier(0.32, 0.72, 0, 1) both; }
 
 /* Feuille montante (bottom sheet) */
 @keyframes sheet-up {
@@ -353,7 +374,7 @@ html.sombre .reflet {
 .pop-in { animation: pop-in 0.3s cubic-bezier(0.32, 0.72, 0, 1) both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .sheet-in, .fade-in, .pop-in, .drawer-in, .page-in, .page-droite, .page-gauche, .pulse-doux, .tourne, .jauge-in, .trace-in, .apparait-tard, .donut-in, .point-saut { animation: none; }
+  .sheet-in, .fade-in, .pop-in, .drawer-in, .page-in, .page-droite, .page-gauche, .pulse-doux, .tourne, .ligne-in, .jauge-in, .trace-in, .apparait-tard, .donut-in, .point-saut { animation: none; }
   .trace-in { stroke-dasharray: none; }
 }
 

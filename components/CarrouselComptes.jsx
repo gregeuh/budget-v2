@@ -6,6 +6,7 @@ import { transitionPartagee } from "@/lib/transition";
 import Link from "next/link";
 import { useBudget } from "@/lib/store";
 import { TYPES_COMPTE, COULEURS, euros, PLAFONDS } from "@/lib/format";
+import Montant from "./Montant";
 
 export default function CarrouselComptes({ onChange }) {
   const { comptes, soldes } = useBudget();
@@ -56,7 +57,7 @@ export default function CarrouselComptes({ onChange }) {
               key={c.id ?? "tous"}
               onClick={() => { if (!estTous && i === actif) transitionPartagee(() => setFiche(c)); }}
               role={estTous ? undefined : "button"}
-              className={`relative w-[82%] shrink-0 snap-center overflow-hidden rounded-ios p-3.5 shadow-carte transition-[transform,opacity] duration-300 ${!estTous && i === actif ? "cursor-pointer" : ""}`}
+              className={`carte-compte relative w-[82%] shrink-0 snap-center overflow-hidden rounded-ios p-4 shadow-carte transition-[transform,opacity] duration-300 ${!estTous && i === actif ? "cursor-pointer" : ""}`}
               style={{
                 ...(estTous
                   ? { background: "linear-gradient(135deg, #1C1C1E, #248A3D)" }
@@ -85,10 +86,26 @@ export default function CarrouselComptes({ onChange }) {
                     {estTous ? `${comptes.length} comptes` : t.label}
                   </span>
                 </div>
+                {/* Puce dorée façon carte bancaire, discrète */}
+                <div className="mt-4 flex items-center gap-1.5">
+                  <span
+                    className="h-4 w-5 rounded-[3px]"
+                    style={{
+                      background: estTous
+                        ? "linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0.2))"
+                        : "linear-gradient(135deg, rgba(200,160,50,0.55), rgba(200,160,50,0.25))",
+                    }}
+                  />
+                  <span
+                    className="h-2 w-2 rounded-full"
+                    style={{ background: estTous ? "rgba(255,255,255,0.25)" : "var(--c-voile)" }}
+                  />
+                </div>
                 <div className="mt-3">
-                  <div className={`chiffres font-bold leading-none ${Math.abs(solde) >= 100000 ? "text-[22px]" : Math.abs(solde) >= 10000 ? "text-[26px]" : "text-[30px]"} ${estTous ? "text-white" : solde < 0 ? "text-corail" : ""}`}>
-                    {euros(solde, { precis: true })}
-                  </div>
+                  <Montant
+                    valeur={solde}
+                    className={`block font-bold leading-none ${Math.abs(solde) >= 100000 ? "text-[22px]" : Math.abs(solde) >= 10000 ? "text-[26px]" : "text-[30px]"} ${estTous ? "text-white" : solde < 0 ? "text-corail" : ""}`}
+                  />
                   <div className={`mt-0.5 flex items-center gap-1 text-[13px] ${estTous ? "text-white/70" : "text-sourdine"}`}>
                     {estTous ? "Tous les comptes" : c.nom}
                     {!estTous && i === actif && <span className="text-sourdine/50">›</span>}

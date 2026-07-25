@@ -4,13 +4,13 @@ import AppShell from "@/components/AppShell";
 import SWRegister from "@/components/SWRegister";
 
 export const metadata = {
-  title: "Budget",
-  description: "Gestion de budget multi-comptes avec conseils intelligents",
+  title: "Pécule",
+  description: "Ton budget, au calme.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Budget",
+    title: "Pécule",
     startupImage: [
       { url: "/icons/splash-1179x2556.png", media: "(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" },
       { url: "/icons/splash-1290x2796.png", media: "(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" },

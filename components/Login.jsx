@@ -51,9 +51,9 @@ export default function Login() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-6">
       <div className="pop-in">
-        <div className="mb-2 text-5xl">💶</div>
-        <h1 className="text-3xl font-bold tracking-tight">Budget</h1>
-        <p className="mt-1 text-sourdine">Tes comptes, tes budgets, tes conseils.</p>
+        <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-[18px] text-3xl font-bold text-surMarque shadow-carte" style={{ background: "linear-gradient(135deg, #007AFF, #005AC8)" }}>P</div>
+        <h1 className="text-3xl font-bold tracking-tight">Pécule</h1>
+        <p className="mt-1 text-sourdine">Ton budget, au calme.</p>
       </div>
 
       <div className="mt-8 space-y-3">

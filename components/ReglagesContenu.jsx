@@ -337,7 +337,7 @@ export default function ReglagesContenu() {
         <p className="mt-2 text-xs text-sourdine">
           📲 Astuce : Safari → Partager → « Sur l'écran d'accueil » pour installer l'app.
         </p>
-        <p className="mt-2 text-xs font-semibold text-sourdine/60">Budget v2</p>
+        <p className="mt-2 text-xs font-semibold text-sourdine/60">Pécule · v2</p>
       </div>
 
       {fiche === "profil" && <ProfilSheet onFermer={() => setFiche(null)} />}

@@ -82,7 +82,7 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
           onTouchMove={surMouvement}
           onTouchEnd={surFin}
           onClick={ouvrirEdition}
-          className="relative flex cursor-pointer items-center gap-3 rounded-2xl bg-carte px-3 py-2 shadow-carte"
+          className="tappable relative flex cursor-pointer items-center gap-3 rounded-2xl bg-carte px-3 py-2 shadow-carte"
           style={{
             transform: `translateX(${decalage}px)`,
             transition: glisse ? "none" : "transform 0.28s cubic-bezier(0.32, 0.72, 0, 1)",

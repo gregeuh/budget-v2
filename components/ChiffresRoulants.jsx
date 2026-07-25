@@ -29,6 +29,8 @@ export default function ChiffresRoulants({ valeur }) {
   }, [valeur]);
 
   const texte = euros(affiche);
+  // Les décimales et le symbole € reculent d'un cran, comme dans Montant.
+  const posUnite = texte.search(/,|\s*€/);
   let indexChiffre = 0;
   return (
     <span className="tnum leading-none" aria-label={euros(valeur)}>
@@ -36,7 +38,7 @@ export default function ChiffresRoulants({ valeur }) {
         /\d/.test(c) ? (
           <Roulette key={`d${i}`} chiffre={Number(c)} delai={indexChiffre++ * 60} />
         ) : (
-          <span key={`s${i}`}>{c}</span>
+          <span key={`s${i}`} className={posUnite !== -1 && i >= posUnite ? "unite" : ""}>{c}</span>
         )
       )}
     </span>
