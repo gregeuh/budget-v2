@@ -6,6 +6,7 @@ import { aujourdhui } from "@/lib/format";
 import Sheet from "./Sheet";
 import { nettoyerLibelle } from "@/lib/libelles";
 import { construireMemoire, devinerDepuisHistorique, lieuxConnus, proposerLibelles } from "@/lib/habitudes";
+import { urlCarteEmbed, lienCarte } from "@/lib/lieux";
 
 export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
   const { comptes, categories, transactions, modifierTransaction, supprimerTransaction, ajouterTransaction } = useBudget();
@@ -28,7 +29,9 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
       libelle: libelle.trim() || (categories[categorie]?.label ?? "Opération"),
       categorie,
       date: aujourdhui(),
-      ...(lieu.trim() ? { lieu: lieu.trim() } : {}),
+      ...(lieu.trim() ? { lieu: lieu.trim() } : { lieu: null }),
+      // Si le lieu a été réécrit à la main, les anciennes coordonnées ne valent plus.
+      ...(lieu.trim() === (tx.lieu || "").trim() ? {} : { lieuLat: null, lieuLon: null }),
     });
     onFermer();
   };
@@ -233,16 +236,33 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
             </div>
           )}
 
-          {lieu.trim() && (
+          {tx.lieuLat && tx.lieuLon ? (
+            <div className="mt-2 overflow-hidden rounded-ios border border-bordure">
+              <iframe
+                title="Carte du lieu"
+                src={urlCarteEmbed(tx.lieuLat, tx.lieuLon)}
+                className="h-32 w-full border-0"
+                loading="lazy"
+              />
+              <a
+                href={lienCarte(tx.lieuLat, tx.lieuLon, lieu)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1.5 bg-marque-pale py-2 text-sm font-semibold text-marque-texte"
+              >
+                🗺️ Ouvrir en grand
+              </a>
+            </div>
+          ) : lieu.trim() ? (
             <a
-              href={`https://maps.apple.com/?q=${encodeURIComponent(lieu.trim())}`}
+              href={lienCarte(null, null, lieu.trim())}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-2 flex items-center justify-center gap-1.5 rounded-pill bg-marque-pale py-2 text-sm font-semibold text-marque-texte"
             >
-              🗺️ Voir dans Plans
+              🗺️ Chercher sur la carte
             </a>
-          )}
+          ) : null}
         </div>
 
         {!estVirement && (

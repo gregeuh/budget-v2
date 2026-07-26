@@ -1,12 +1,13 @@
 "use client";
 
 import { fetchSuivi } from "@/lib/journal";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useBudget } from "@/lib/store";
 import { FREQUENCES, aujourdhui, euros } from "@/lib/format";
 import Sheet from "./Sheet";
 import PointsSautillants from "./PointsSautillants";
 import { construireMemoire, devinerDepuisHistorique, lieuxConnus, proposerLibelles } from "@/lib/habitudes";
+import { chercherLieux } from "@/lib/lieux";
 
 const MODES = [
   { id: "depense", label: "Dépense" },
@@ -36,6 +37,10 @@ export default function AddSheet({ onFermer }) {
   const [noteIA, setNoteIA] = useState("");
   const [erreurIA, setErreurIA] = useState("");
   const [lieu, setLieu] = useState("");
+  const [lieuCoords, setLieuCoords] = useState(null);
+  const [suggestionsLieu, setSuggestionsLieu] = useState([]);
+  const [chercheLieu, setChercheLieu] = useState(false);
+  const rechercheLieuRef = useRef(null);
   const [autoApplique, setAutoApplique] = useState(null); // ce que l'app a deviné toute seule
 
   const secouer = () => setSecousse((s) => s + 1);
@@ -110,6 +115,33 @@ export default function AddSheet({ onFermer }) {
   // Ce que l'app a appris de tes habitudes (catégorie + lieu par commerçant)
   const memoire = useMemo(() => construireMemoire(transactions), [transactions]);
   const lieuxFrequents = useMemo(() => lieuxConnus(transactions, 8, lieu), [transactions, lieu]);
+
+  // Recherche d'un lieu réel (OpenStreetMap) après une courte pause de frappe.
+  // Anti-rebond de 450 ms pour ne pas marteler le service gratuit.
+  useEffect(() => {
+    if (rechercheLieuRef.current) clearTimeout(rechercheLieuRef.current);
+    const q = lieu.trim();
+    // Si le lieu correspond exactement à une coordonnée déjà choisie, on ne recherche pas
+    if (q.length < 3 || (lieuCoords && lieuCoords.nom === q)) {
+      setSuggestionsLieu([]);
+      setChercheLieu(false);
+      return;
+    }
+    setChercheLieu(true);
+    const ctrl = new AbortController();
+    rechercheLieuRef.current = setTimeout(async () => {
+      const res = await chercherLieux(q, { signal: ctrl.signal });
+      setSuggestionsLieu(res);
+      setChercheLieu(false);
+    }, 450);
+    return () => { clearTimeout(rechercheLieuRef.current); ctrl.abort(); };
+  }, [lieu]);
+
+  const choisirLieu = (s) => {
+    setLieu(s.nom);
+    setLieuCoords({ nom: s.nom, lat: s.lat, lon: s.lon, adresse: s.adresse });
+    setSuggestionsLieu([]);
+  };
   const propositions = useMemo(() => proposerLibelles(libelle, memoire), [libelle, memoire]);
 
   // Quand tu tapes un libellé déjà connu : catégorie et lieu proposés automatiquement
@@ -183,6 +215,7 @@ export default function AddSheet({ onFermer }) {
         categorie,
         libelle: libelle.trim() || (categories[categorie]?.label ?? "Opération"),
         ...(lieu.trim() ? { lieu: lieu.trim() } : {}),
+        ...(lieuCoords && lieuCoords.nom === lieu.trim() ? { lieuLat: lieuCoords.lat, lieuLon: lieuCoords.lon } : {}),
         ...(horsSolde ? { horsSolde: true } : {}),
       };
       if (frequence === "unefois") await ajouterTransaction({ ...base, date });
@@ -331,17 +364,42 @@ export default function AddSheet({ onFermer }) {
                   <input
                     placeholder="Lieu (optionnel)"
                     value={lieu}
-                    onChange={(e) => setLieu(e.target.value)}
+                    onChange={(e) => { setLieu(e.target.value); setLieuCoords(null); }}
                     className="min-w-0 flex-1 bg-transparent text-sm outline-none"
                   />
+                  {chercheLieu && <PointsSautillants taille={4} couleur="var(--c-sourdine)" />}
+                  {lieuCoords && !chercheLieu && (
+                    <span className="shrink-0 text-xs text-menthe" title="Lieu confirmé">✓</span>
+                  )}
                   {lieu && (
-                    <button onClick={() => setLieu("")} aria-label="Effacer le lieu" className="shrink-0 text-xs text-sourdine">✕</button>
+                    <button onClick={() => { setLieu(""); setLieuCoords(null); }} aria-label="Effacer le lieu" className="shrink-0 text-xs text-sourdine">✕</button>
                   )}
                 </div>
+
+                {/* Lieux réels trouvés (OpenStreetMap) */}
+                {suggestionsLieu.length > 0 && (
+                  <div className="fade-in mt-1.5 overflow-hidden rounded-ios border border-bordure bg-carte">
+                    {suggestionsLieu.map((s, i) => (
+                      <button
+                        key={i}
+                        onClick={() => choisirLieu(s)}
+                        className="tappable flex w-full items-start gap-2 border-b border-bordure px-3 py-2 text-left last:border-0 active:bg-voile"
+                      >
+                        <span className="mt-0.5 shrink-0 text-sm">📍</span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-medium">{s.nom}</span>
+                          {s.adresse && <span className="block truncate text-xs text-sourdine">{s.adresse}</span>}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Lieux déjà utilisés (instantané, depuis l'historique) */}
                 {!lieu && lieuxFrequents.length > 0 && (
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {lieuxFrequents.slice(0, 5).map((l) => (
-                      <button key={l} onClick={() => setLieu(l)} className="rounded-pill bg-voile px-2.5 py-1 text-[12px] font-medium">
+                      <button key={l} onClick={() => setLieu(l)} className="tappable rounded-pill bg-voile px-2.5 py-1 text-[12px] font-medium">
                         📍 {l}
                       </button>
                     ))}

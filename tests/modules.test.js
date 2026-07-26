@@ -5,6 +5,7 @@ import { analyserDepenses } from "@/lib/depenses";
 import { calculerScore } from "@/lib/score";
 import { tendances } from "@/lib/tendances";
 import { euros, definirFormatAffichage } from "@/lib/format";
+import { urlCarteEmbed, lienCarte } from "@/lib/lieux";
 import { afterEach } from "vitest";
 import { cleMoisLocal, moisDecaleLocal } from "@/lib/format";
 
@@ -306,5 +307,28 @@ describe("Préférences de format d'affichage", () => {
     definirFormatAffichage({ centimes: true, arrondiGrandsNombres: true });
     expect(norm(euros(1234.56))).toBe("1 235 €");
     expect(norm(euros(42.5))).toBe("42,50 €");
+  });
+});
+
+describe("Cartes de lieu (OpenStreetMap)", () => {
+  it("génère une URL de mini-carte valide", () => {
+    const url = urlCarteEmbed(44.8012, -0.5486);
+    expect(url).toContain("openstreetmap.org/export/embed");
+    expect(url).toContain("marker=44.8012,-0.5486");
+  });
+
+  it("refuse des coordonnées invalides", () => {
+    expect(urlCarteEmbed(NaN, 2)).toBeNull();
+    expect(urlCarteEmbed(undefined, undefined)).toBeNull();
+  });
+
+  it("crée un lien carte avec coordonnées", () => {
+    expect(lienCarte(48.85, 2.35)).toContain("mlat=48.85");
+  });
+
+  it("retombe sur une recherche texte sans coordonnées", () => {
+    const l = lienCarte(null, null, "Carrefour Bègles");
+    expect(l).toContain("search?query=");
+    expect(l).toContain("Carrefour");
   });
 });
