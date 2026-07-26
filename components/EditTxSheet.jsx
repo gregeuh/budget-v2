@@ -6,7 +6,8 @@ import { aujourdhui } from "@/lib/format";
 import Sheet from "./Sheet";
 import { nettoyerLibelle } from "@/lib/libelles";
 import { construireMemoire, devinerDepuisHistorique, lieuxConnus, proposerLibelles } from "@/lib/habitudes";
-import { urlCarteEmbed, lienCarte } from "@/lib/lieux";
+import { lienCarte } from "@/lib/lieux";
+import MiniCarte from "./MiniCarte";
 
 export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
   const { comptes, categories, transactions, modifierTransaction, supprimerTransaction, ajouterTransaction } = useBudget();
@@ -237,22 +238,7 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
           )}
 
           {tx.lieuLat && tx.lieuLon ? (
-            <div className="mt-2 overflow-hidden rounded-ios border border-bordure">
-              <iframe
-                title="Carte du lieu"
-                src={urlCarteEmbed(tx.lieuLat, tx.lieuLon)}
-                className="h-32 w-full border-0"
-                loading="lazy"
-              />
-              <a
-                href={lienCarte(tx.lieuLat, tx.lieuLon, lieu)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-1.5 bg-marque-pale py-2 text-sm font-semibold text-marque-texte"
-              >
-                🗺️ Ouvrir en grand
-              </a>
-            </div>
+            <MiniCarte lat={tx.lieuLat} lon={tx.lieuLon} nom={lieu} adresse={tx.lieuAdresse || ""} />
           ) : lieu.trim() ? (
             <a
               href={lienCarte(null, null, lieu.trim())}

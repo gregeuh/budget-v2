@@ -6,6 +6,7 @@ import { calculerScore } from "@/lib/score";
 import { tendances } from "@/lib/tendances";
 import { euros, definirFormatAffichage } from "@/lib/format";
 import { urlCarteEmbed, lienCarte } from "@/lib/lieux";
+import { lieuPersoProche, enregistrerLieuPerso, supprimerLieuPerso } from "@/lib/lieuxPerso";
 import { afterEach } from "vitest";
 import { cleMoisLocal, moisDecaleLocal } from "@/lib/format";
 
@@ -330,5 +331,42 @@ describe("Cartes de lieu (OpenStreetMap)", () => {
     const l = lienCarte(null, null, "Carrefour Bègles");
     expect(l).toContain("search?query=");
     expect(l).toContain("Carrefour");
+  });
+});
+
+describe("Carnet de lieux personnalisés", () => {
+  it("reconnaît un lieu renommé à quelques mètres près", () => {
+    let carnet = enregistrerLieuPerso([], { nom: "Coiffeur", lat: 44.8534, lon: -0.5680, adresse: "86 Quai des Chartrons" });
+    // Retour au même endroit, position légèrement différente (~15 m)
+    expect(lieuPersoProche(carnet, 44.8535, -0.5681)?.nom).toBe("Coiffeur");
+  });
+
+  it("ne confond pas deux lieux éloignés", () => {
+    const carnet = enregistrerLieuPerso([], { nom: "Coiffeur", lat: 44.8534, lon: -0.5680 });
+    expect(lieuPersoProche(carnet, 44.87, -0.57)).toBeNull();
+  });
+
+  it("remplace le nom au lieu de créer un doublon", () => {
+    let carnet = enregistrerLieuPerso([], { nom: "Coiffeur", lat: 44.8534, lon: -0.5680 });
+    carnet = enregistrerLieuPerso(carnet, { nom: "Mon coiffeur", lat: 44.8534, lon: -0.5680 });
+    expect(carnet.length).toBe(1);
+    expect(carnet[0].nom).toBe("Mon coiffeur");
+  });
+
+  it("garde plusieurs lieux distincts", () => {
+    let carnet = enregistrerLieuPerso([], { nom: "Coiffeur", lat: 44.8534, lon: -0.5680 });
+    carnet = enregistrerLieuPerso(carnet, { nom: "Boulangerie", lat: 44.8400, lon: -0.5700 });
+    expect(carnet.length).toBe(2);
+  });
+
+  it("supprime par nom", () => {
+    let carnet = enregistrerLieuPerso([], { nom: "Coiffeur", lat: 44.8534, lon: -0.5680 });
+    carnet = supprimerLieuPerso(carnet, "Coiffeur");
+    expect(carnet.length).toBe(0);
+  });
+
+  it("ignore une entrée sans nom ou coordonnées", () => {
+    expect(enregistrerLieuPerso([], { nom: "", lat: 44, lon: -0.5 }).length).toBe(0);
+    expect(enregistrerLieuPerso([], { nom: "X", lat: NaN, lon: -0.5 }).length).toBe(0);
   });
 });

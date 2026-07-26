@@ -8,6 +8,7 @@ import Sheet from "./Sheet";
 import PointsSautillants from "./PointsSautillants";
 import { construireMemoire, devinerDepuisHistorique, lieuxConnus, proposerLibelles } from "@/lib/habitudes";
 import { chercherLieux } from "@/lib/lieux";
+import { lieuPersoProche, enregistrerLieuPerso } from "@/lib/lieuxPerso";
 
 const MODES = [
   { id: "depense", label: "Dépense" },
@@ -18,7 +19,7 @@ const MODES = [
 const TOUCHES = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "⌫"];
 
 export default function AddSheet({ onFermer }) {
-  const { comptes, transactions, categories, ajouterTransaction, ajouterRecurrente, virement } = useBudget();
+  const { comptes, transactions, categories, profil, sauverApp, ajouterTransaction, ajouterRecurrente, virement } = useBudget();
   const [etape, setEtape] = useState(1);
   const [mode, setMode] = useState("depense");
   const [montant, setMontant] = useState("");
@@ -38,6 +39,8 @@ export default function AddSheet({ onFermer }) {
   const [erreurIA, setErreurIA] = useState("");
   const [lieu, setLieu] = useState("");
   const [lieuCoords, setLieuCoords] = useState(null);
+  const [renommer, setRenommer] = useState(false);
+  const [nomPerso, setNomPerso] = useState("");
   const [suggestionsLieu, setSuggestionsLieu] = useState([]);
   const [chercheLieu, setChercheLieu] = useState(false);
   const rechercheLieuRef = useRef(null);
@@ -114,7 +117,14 @@ export default function AddSheet({ onFermer }) {
   // ---- Suggestions (libellés fréquents) ----
   // Ce que l'app a appris de tes habitudes (catégorie + lieu par commerçant)
   const memoire = useMemo(() => construireMemoire(transactions), [transactions]);
-  const lieuxFrequents = useMemo(() => lieuxConnus(transactions, 8, lieu), [transactions, lieu]);
+  const lieuxFrequents = useMemo(() => {
+    const histo = lieuxConnus(transactions, 8, lieu);
+    // Les lieux que tu as renommés apparaissent en premier
+    const persos = (profil.lieuxPerso || []).map((l) => l.nom).filter((n) => !histo.includes(n));
+    const q = lieu.trim().toLowerCase();
+    const filtres = q ? [...persos, ...histo].filter((n) => n.toLowerCase().includes(q)) : [...persos, ...histo];
+    return [...new Set(filtres)];
+  }, [transactions, lieu, profil.lieuxPerso]);
 
   // Recherche d'un lieu réel (OpenStreetMap) après une courte pause de frappe.
   // Anti-rebond de 450 ms pour ne pas marteler le service gratuit.
@@ -138,9 +148,28 @@ export default function AddSheet({ onFermer }) {
   }, [lieu]);
 
   const choisirLieu = (s) => {
-    setLieu(s.nom);
-    setLieuCoords({ nom: s.nom, lat: s.lat, lon: s.lon, adresse: s.adresse });
+    // Ce lieu a-t-il déjà été renommé par toi ? (ex : "Coiffeur")
+    const perso = lieuPersoProche(profil.lieuxPerso || [], s.lat, s.lon);
+    const nomFinal = perso ? perso.nom : s.nom;
+    setLieu(nomFinal);
+    setLieuCoords({ nom: nomFinal, lat: s.lat, lon: s.lon, adresse: perso ? perso.adresse : s.adresse, adresseReelle: s.nom });
     setSuggestionsLieu([]);
+    setRenommer(false);
+    setNomPerso("");
+  };
+
+  // Enregistre un nom personnalisé pour l'adresse choisie
+  const validerRenommage = async () => {
+    const nom = nomPerso.trim();
+    if (!nom || !lieuCoords) return;
+    const carnet = enregistrerLieuPerso(profil.lieuxPerso || [], {
+      nom, lat: lieuCoords.lat, lon: lieuCoords.lon, adresse: lieuCoords.adresseReelle || lieuCoords.adresse || "",
+    });
+    await sauverApp(undefined, { ...profil, lieuxPerso: carnet });
+    setLieu(nom);
+    setLieuCoords({ ...lieuCoords, nom });
+    setRenommer(false);
+    setNomPerso("");
   };
   const propositions = useMemo(() => proposerLibelles(libelle, memoire), [libelle, memoire]);
 
@@ -215,7 +244,7 @@ export default function AddSheet({ onFermer }) {
         categorie,
         libelle: libelle.trim() || (categories[categorie]?.label ?? "Opération"),
         ...(lieu.trim() ? { lieu: lieu.trim() } : {}),
-        ...(lieuCoords && lieuCoords.nom === lieu.trim() ? { lieuLat: lieuCoords.lat, lieuLon: lieuCoords.lon } : {}),
+        ...(lieuCoords && lieuCoords.nom === lieu.trim() ? { lieuLat: lieuCoords.lat, lieuLon: lieuCoords.lon, lieuAdresse: lieuCoords.adresse || "" } : {}),
         ...(horsSolde ? { horsSolde: true } : {}),
       };
       if (frequence === "unefois") await ajouterTransaction({ ...base, date });
@@ -372,9 +401,44 @@ export default function AddSheet({ onFermer }) {
                     <span className="shrink-0 text-xs text-menthe" title="Lieu confirmé">✓</span>
                   )}
                   {lieu && (
-                    <button onClick={() => { setLieu(""); setLieuCoords(null); }} aria-label="Effacer le lieu" className="shrink-0 text-xs text-sourdine">✕</button>
+                    <button onClick={() => { setLieu(""); setLieuCoords(null); setRenommer(false); }} aria-label="Effacer le lieu" className="shrink-0 text-xs text-sourdine">✕</button>
                   )}
                 </div>
+
+                {/* Renommer l'adresse confirmée (ex : "86 Quai des Chartrons" → "Coiffeur") */}
+                {lieuCoords && lieuCoords.adresseReelle && lieuCoords.nom === lieuCoords.adresseReelle && !renommer && (
+                  <button
+                    onClick={() => { setRenommer(true); setNomPerso(""); }}
+                    className="mt-1.5 text-xs font-medium text-marque"
+                  >
+                    ✏️ Donner un nom à ce lieu
+                  </button>
+                )}
+                {lieuCoords && lieuCoords.nom !== lieuCoords.adresseReelle && lieuCoords.adresseReelle && !renommer && (
+                  <p className="mt-1.5 text-[11px] text-sourdine">
+                    « {lieuCoords.nom} » · {lieuCoords.adresseReelle}
+                    <button onClick={() => { setRenommer(true); setNomPerso(lieuCoords.nom); }} className="ml-1.5 font-medium text-marque">Modifier</button>
+                  </p>
+                )}
+                {renommer && (
+                  <div className="fade-in mt-1.5 flex gap-2">
+                    <input
+                      autoFocus
+                      value={nomPerso}
+                      onChange={(e) => setNomPerso(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && validerRenommage()}
+                      placeholder="Ex : Coiffeur, Mon resto…"
+                      className="min-w-0 flex-1 rounded-ios border border-bordure bg-carte px-3 py-2 text-sm outline-none focus:border-marque"
+                    />
+                    <button
+                      onClick={validerRenommage}
+                      disabled={!nomPerso.trim()}
+                      className="shrink-0 rounded-ios bg-marque-bouton px-3 text-sm font-semibold text-surMarque disabled:opacity-40"
+                    >
+                      OK
+                    </button>
+                  </div>
+                )}
 
                 {/* Lieux réels trouvés (OpenStreetMap) */}
                 {suggestionsLieu.length > 0 && (
@@ -399,7 +463,11 @@ export default function AddSheet({ onFermer }) {
                 {!lieu && lieuxFrequents.length > 0 && (
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {lieuxFrequents.slice(0, 5).map((l) => (
-                      <button key={l} onClick={() => setLieu(l)} className="tappable rounded-pill bg-voile px-2.5 py-1 text-[12px] font-medium">
+                      <button key={l} onClick={() => {
+                        const perso = (profil.lieuxPerso || []).find((p) => p.nom === l);
+                        setLieu(l);
+                        if (perso) setLieuCoords({ nom: perso.nom, lat: perso.lat, lon: perso.lon, adresse: perso.adresse, adresseReelle: perso.adresse });
+                      }} className="tappable rounded-pill bg-voile px-2.5 py-1 text-[12px] font-medium">
                         📍 {l}
                       </button>
                     ))}
