@@ -323,14 +323,17 @@ describe("Cartes de lieu (OpenStreetMap)", () => {
     expect(urlCarteEmbed(undefined, undefined)).toBeNull();
   });
 
-  it("crée un lien carte avec coordonnées", () => {
-    expect(lienCarte(48.85, 2.35)).toContain("mlat=48.85");
+  it("ouvre Apple Plans avec les coordonnées", () => {
+    const l = lienCarte(48.85, 2.35, "Chez moi");
+    expect(l).toContain("maps.apple.com");
+    expect(l).toContain("ll=48.85,2.35");
+    expect(l).toContain("q=Chez");
   });
 
   it("retombe sur une recherche texte sans coordonnées", () => {
     const l = lienCarte(null, null, "Carrefour Bègles");
-    expect(l).toContain("search?query=");
-    expect(l).toContain("Carrefour");
+    expect(l).toContain("maps.apple.com");
+    expect(l).toContain("q=Carrefour");
   });
 });
 
