@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { rapprocher, impactSolde } from "@/lib/rapprochement";
-import { statsMois, detecterAbonnements } from "@/lib/conseils";
+import { statsMois, detecterAbonnements, genererConseils } from "@/lib/conseils";
 import { analyserDepenses } from "@/lib/depenses";
 import { calculerScore } from "@/lib/score";
 import { tendances } from "@/lib/tendances";
@@ -243,5 +243,37 @@ describe("Tendances sur plusieurs mois", () => {
     const vide = tendances([], 3);
     expect(vide.lignes).toEqual([]);
     expect(vide.mois.length).toBe(3);
+  });
+});
+
+describe("Conseils : clé de masquage stable", () => {
+  const donnees = {
+    comptes: [{ id: "cc", type: "courant", nom: "Compte courant" }],
+    transactions: [
+      { montant: 2253.94, categorie: "salaire", date: "2026-07-02", compteId: "cc" },
+      { montant: -400, categorie: "courses", date: "2026-07-08", compteId: "cc" },
+    ],
+    soldes: { cc: 800 },
+    budgets: {},
+    profil: { revenuMensuel: 2253.94 },
+    credits: [],
+    projets: [],
+  };
+
+  it("attribue une clé à chaque conseil", () => {
+    for (const c of genererConseils(donnees)) {
+      expect(typeof c.cle).toBe("string");
+      expect(c.cle.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("garde la même clé même quand les chiffres changent", () => {
+    // Un conseil « Taux d'épargne : 32 % » et « : 28 % » doivent partager la clé,
+    // sinon masquer en janvier ne masquerait pas en février.
+    const a = genererConseils(donnees).find((c) => c.titre.includes("épargne"));
+    const donnees2 = { ...donnees, soldes: { cc: 500 },
+      transactions: [...donnees.transactions, { montant: -100, categorie: "courses", date: "2026-07-09", compteId: "cc" }] };
+    const b = genererConseils(donnees2).find((c) => c.titre.includes("épargne"));
+    if (a && b) expect(a.cle).toBe(b.cle);
   });
 });

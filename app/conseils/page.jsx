@@ -1,26 +1,17 @@
 "use client";
 
 import { fetchSuivi } from "@/lib/journal";
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useBudget } from "@/lib/store";
-import { genererConseils, resumePourCoach } from "@/lib/conseils";
+import { resumePourCoach } from "@/lib/conseils";
 import { calculerScore } from "@/lib/score";
 import PointsSautillants from "@/components/PointsSautillants";
 import ScoreSante from "@/components/ScoreSante";
 import AnalyseDepenses from "@/components/AnalyseDepenses";
-
-// Carte neutre par défaut : la couleur est réservée aux vraies alertes.
-// Le ton reste lisible grâce à la pastille colorée autour de l'icône.
-const TONS = {
-  alerte: { carte: "bg-corail-pale", pastille: "bg-corail/15" },
-  info: { carte: "bg-carte shadow-carte", pastille: "bg-marque-pale" },
-  bravo: { carte: "bg-carte shadow-carte", pastille: "bg-menthe-pale" },
-};
+import ConseilsList from "@/components/ConseilsList";
 
 export default function Conseils() {
   const donnees = useBudget();
-  const [tousConseils, setTousConseils] = useState(false);
-  const conseils = useMemo(() => genererConseils(donnees), [donnees.transactions, donnees.comptes, donnees.budgets, donnees.soldes, donnees.profil]);
 
   const [messages, setMessages] = useState([]);
   const [saisie, setSaisie] = useState("");
@@ -116,33 +107,7 @@ export default function Conseils() {
         </details>
       </section>
 
-      {/* Conseils automatiques : les 3 plus utiles, le reste sur demande */}
-      {conseils.length > 0 && (
-        <section className="space-y-2">
-          {(tousConseils ? conseils : conseils.slice(0, 3)).map((c, i) => (
-            <div key={i} className={`pop-in rounded-ios p-4 ${(TONS[c.ton] || TONS.info).carte}`} style={{ animationDelay: `${i * 60}ms` }}>
-              <div className="flex gap-3">
-                <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-lg ${(TONS[c.ton] || TONS.info).pastille}`}>{c.icone}</span>
-                <div>
-                  <h3 className="font-semibold leading-tight">{c.titre}</h3>
-                  <p className="mt-0.5 text-sm text-encre opacity-75">{c.texte}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-          {conseils.length > 3 && (
-            <button onClick={() => setTousConseils((v) => !v)} className="w-full py-1 text-xs font-medium text-sourdine">
-              {tousConseils ? "Réduire" : `Voir les ${conseils.length - 3} autres conseils`}
-            </button>
-          )}
-        </section>
-      )}
-
-      {conseils.length === 0 && (
-        <p className="rounded-ios bg-carte p-6 text-center text-sm text-sourdine shadow-carte">
-          Ajoute quelques opérations pour que l&apos;analyse démarre.
-        </p>
-      )}
+      <ConseilsList />
 
       {/* Outils d'analyse : repliés, on les ouvre quand on veut creuser */}
       <ScoreSante />
