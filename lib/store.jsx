@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { firebaseActif, auth, db } from "./firebase";
-import { aujourdhui, prochaineOccurrence, CATEGORIES, definirCategoriesPerso } from "./format";
+import { aujourdhui, prochaineOccurrence, CATEGORIES, definirCategoriesPerso, definirFormatAffichage } from "./format";
+import { appliquerAccent, ACCENT_DEFAUT } from "./themes";
 import { calculerSoldes } from "./soldes";
 
 const Ctx = createContext(null);
@@ -42,6 +43,7 @@ const donneesDemo = () => {
 
 export function DataProvider({ children }) {
   const [pret, setPret] = useState(false);
+  const [, setTick] = useState(0);
   const [erreurInit, setErreurInit] = useState("");
   const [toast, setToast] = useState(null);
   const [categoriesPerso, setCategoriesPerso] = useState({});
@@ -522,6 +524,16 @@ export function DataProvider({ children }) {
   }, [modeLocal]);
 
 
+  // ------- Format d'affichage (centimes, arrondis) -------
+  useEffect(() => {
+    definirFormatAffichage({
+      centimes: profil.afficherCentimes !== false,
+      arrondiGrandsNombres: profil.arrondiGrandsNombres !== false,
+    });
+    // Force un recalcul de l'affichage en touchant un état neutre
+    setTick((t) => t + 1);
+  }, [profil.afficherCentimes, profil.arrondiGrandsNombres]);
+
   // ------- Thème clair / sombre -------
   useEffect(() => {
     const pref = profil.theme || "auto";
@@ -529,14 +541,15 @@ export function DataProvider({ children }) {
     const appliquer = () => {
       const sombre = pref === "sombre" || (pref === "auto" && media.matches);
       document.documentElement.classList.toggle("sombre", sombre);
-      try { localStorage.setItem("budget-theme", pref); } catch {}
+      appliquerAccent(profil.accent || ACCENT_DEFAUT, sombre);
+      try { localStorage.setItem("budget-theme", pref); localStorage.setItem("budget-accent", profil.accent || ACCENT_DEFAUT); } catch {}
       const meta = document.querySelector('meta[name="theme-color"]');
       if (meta) meta.setAttribute("content", sombre ? "#000000" : "#F2F2F7");
     };
     appliquer();
     media.addEventListener("change", appliquer);
     return () => media.removeEventListener("change", appliquer);
-  }, [profil.theme]);
+  }, [profil.theme, profil.accent]);
 
   const importerDonnees = useCallback(async (d) => {
     if (!d || typeof d !== "object") return false;

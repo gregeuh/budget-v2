@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { COULEURS } from "@/lib/format";
 import { useBudget } from "@/lib/store";
 import Sheet from "./Sheet";
 
 const EMOJIS = ["🏷️", "👕", "🐶", "🎮", "⚽", "🍺", "☕", "💇", "🎁", "🚿", "📚", "🎾", "🧸", "🚬", "💊", "🎨"];
+const COULEURS_CAT = ["menthe", "corail", "lavande", "ciel", "peche", "beurre"];
 const TYPES = [
   { id: "besoin", label: "Besoin" },
   { id: "envie", label: "Envie" },
@@ -16,6 +18,7 @@ export default function CategoriesSheet({ onFermer }) {
   const { categoriesPerso, sauverCategoriesPerso } = useBudget();
   const [nom, setNom] = useState("");
   const [icone, setIcone] = useState("🏷️");
+  const [couleur, setCouleur] = useState("ciel");
   const [type, setType] = useState("envie");
   const [enEdition, setEnEdition] = useState(null); // clé en cours d'édition
 
@@ -23,13 +26,13 @@ export default function CategoriesSheet({ onFermer }) {
     const label = nom.trim();
     if (!label) return;
     const cle = enEdition || "perso_" + label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "").slice(0, 20) + "_" + Date.now().toString(36).slice(-4);
-    await sauverCategoriesPerso({ ...categoriesPerso, [cle]: { label, icone, type } });
-    setNom(""); setIcone("🏷️"); setType("envie"); setEnEdition(null);
+    await sauverCategoriesPerso({ ...categoriesPerso, [cle]: { label, icone, type, couleur } });
+    setNom(""); setIcone("🏷️"); setCouleur("ciel"); setType("envie"); setEnEdition(null);
   };
 
   const editer = (cle) => {
     const c = categoriesPerso[cle];
-    setEnEdition(cle); setNom(c.label); setIcone(c.icone || "🏷️"); setType(c.type || "envie");
+    setEnEdition(cle); setNom(c.label); setIcone(c.icone || "🏷️"); setCouleur(c.couleur || "ciel"); setType(c.type || "envie");
   };
 
   const supprimer = async (cle) => {
@@ -51,6 +54,22 @@ export default function CategoriesSheet({ onFermer }) {
             {EMOJIS.map((e) => (
               <button key={e} onClick={() => setIcone(e)}
                 className={`rounded-xl p-2 text-xl ${icone === e ? "bg-encre" : "bg-fond"}`}>{e}</button>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            {COULEURS_CAT.map((c) => (
+              <button
+                key={c}
+                onClick={() => setCouleur(c)}
+                aria-label={`Couleur ${c}`}
+                className="tappable flex h-8 w-8 items-center justify-center rounded-full"
+                style={{
+                  background: `var(--id-${{menthe:"vert",corail:"rouge",lavande:"indigo",ciel:"bleu",peche:"orange",beurre:"ambre"}[c]}-pale)`,
+                  boxShadow: couleur === c ? "0 0 0 2px var(--c-carte), 0 0 0 4px var(--marque)" : "none",
+                }}
+              >
+                <span className="h-3.5 w-3.5 rounded-full" style={{ background: COULEURS[c]?.vif }} />
+              </button>
             ))}
           </div>
           <input

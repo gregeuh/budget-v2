@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useBudget } from "@/lib/store";
 import { MODES_SALAIRE } from "@/lib/joursOuvres";
+import { ACCENTS, ACCENT_DEFAUT, appliquerAccent } from "@/lib/themes";
 import { auth } from "@/lib/firebase";
 import Sheet from "@/components/Sheet";
 import CategoriesSheet from "@/components/CategoriesSheet";
@@ -114,24 +115,130 @@ function ProfilSheet({ onFermer }) {
 /* ---- Fiche apparence ---- */
 function ApparenceSheet({ onFermer }) {
   const { profil, sauverApp } = useBudget();
-  const choisir = async (theme) => {
-    await sauverApp(undefined, { ...profil, theme });
+  // Aperçu en direct : on applique tout de suite, on enregistre au choix.
+  const [theme, setTheme] = useState(profil.theme || "auto");
+  const [accent, setAccent] = useState(profil.accent || ACCENT_DEFAUT);
+  const [centimes, setCentimes] = useState(profil.afficherCentimes !== false);
+  const [arrondi, setArrondi] = useState(profil.arrondiGrandsNombres !== false);
+
+  const estSombre = () =>
+    theme === "sombre" ||
+    (theme === "auto" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+  // Applique l'aperçu à la volée
+  useEffect(() => {
+    document.documentElement.classList.toggle("sombre", estSombre());
+    appliquerAccent(accent, estSombre());
+  }, [theme, accent]);
+
+  const enregistrer = async () => {
+    await sauverApp(undefined, { ...profil, theme, accent, afficherCentimes: centimes, arrondiGrandsNombres: arrondi });
     onFermer();
   };
+
+  // Restaure l'état enregistré si on ferme sans valider
+  const annuler = () => {
+    document.documentElement.classList.toggle("sombre", (profil.theme || "auto") === "sombre" ||
+      ((profil.theme || "auto") === "auto" && window.matchMedia("(prefers-color-scheme: dark)").matches));
+    appliquerAccent(profil.accent || ACCENT_DEFAUT, document.documentElement.classList.contains("sombre"));
+    onFermer();
+  };
+
   return (
-    <Sheet titre="Apparence" onFermer={onFermer}>
-      <div className="overflow-hidden rounded-ios bg-carte shadow-carte">
-        {THEMES.map((t, i) => (
-          <Ligne
-            key={t.id}
-            icone={t.icone}
-            label={t.label}
-            detail={t.detail}
-            onClick={() => choisir(t.id)}
-            dernier={i === THEMES.length - 1}
-            droite={(profil.theme || "auto") === t.id ? <span className="font-bold text-menthe">✓</span> : <span />}
-          />
-        ))}
+    <Sheet titre="Apparence" onFermer={annuler}>
+      <div className="space-y-4">
+        {/* Aperçu en direct */}
+        <div className="rounded-ios bg-fond p-4">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-sourdine">Aperçu</p>
+          <div className="rounded-ios bg-carte p-3 shadow-carte">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold">Compte courant</span>
+              <span className="chiffres text-sm font-bold text-marque">1 144 €</span>
+            </div>
+            <div className="mt-2 flex gap-2">
+              <span className="rounded-full bg-marque-pale px-2.5 py-0.5 text-xs font-medium text-marque-texte">Courses</span>
+              <button className="ml-auto rounded-pill bg-marque-bouton px-3 py-1 text-xs font-semibold text-surMarque">
+                Ajouter
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Thème clair / sombre / auto */}
+        <div>
+          <p className="mb-1.5 px-1 text-xs font-semibold uppercase tracking-wide text-sourdine">Thème</p>
+          <div className="overflow-hidden rounded-ios bg-carte shadow-carte">
+            {THEMES.map((t, i) => (
+              <Ligne
+                key={t.id}
+                icone={t.icone}
+                label={t.label}
+                detail={t.detail}
+                onClick={() => setTheme(t.id)}
+                dernier={i === THEMES.length - 1}
+                droite={theme === t.id ? <span className="font-bold text-marque">✓</span> : <span />}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Couleur d'accent */}
+        <div>
+          <p className="mb-1.5 px-1 text-xs font-semibold uppercase tracking-wide text-sourdine">Couleur</p>
+          <div className="grid grid-cols-6 gap-2 rounded-ios bg-carte p-3 shadow-carte">
+            {Object.entries(ACCENTS).map(([id, a]) => (
+              <button
+                key={id}
+                onClick={() => setAccent(id)}
+                aria-label={a.label}
+                className="tappable flex aspect-square items-center justify-center rounded-full"
+                style={{
+                  background: a.apercu,
+                  boxShadow: accent === id ? "0 0 0 2px var(--c-carte), 0 0 0 4px " + a.apercu : "none",
+                }}
+              >
+                {accent === id && (
+                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Format des montants */}
+        <div>
+          <p className="mb-1.5 px-1 text-xs font-semibold uppercase tracking-wide text-sourdine">Montants</p>
+          <div className="overflow-hidden rounded-ios bg-carte shadow-carte">
+            <label className="flex items-center justify-between px-4 py-3">
+              <span className="text-sm">Afficher les centimes</span>
+              <input
+                type="checkbox"
+                checked={centimes}
+                onChange={(e) => setCentimes(e.target.checked)}
+                className="h-6 w-6 accent-marque"
+              />
+            </label>
+            <div className="mx-4 border-t border-bordure" />
+            <label className="flex items-center justify-between px-4 py-3">
+              <span className="min-w-0 pr-3 text-sm">
+                Arrondir les gros montants
+                <span className="block text-xs text-sourdine">Au-delà de 1 000 € (ex : 1 234 € au lieu de 1 234,56 €)</span>
+              </span>
+              <input
+                type="checkbox"
+                checked={arrondi}
+                onChange={(e) => setArrondi(e.target.checked)}
+                className="h-6 w-6 shrink-0 accent-marque"
+              />
+            </label>
+          </div>
+        </div>
+
+        <button onClick={enregistrer} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque">
+          Enregistrer
+        </button>
       </div>
     </Sheet>
   );

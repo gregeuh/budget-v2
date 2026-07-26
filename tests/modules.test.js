@@ -4,6 +4,8 @@ import { statsMois, detecterAbonnements, genererConseils } from "@/lib/conseils"
 import { analyserDepenses } from "@/lib/depenses";
 import { calculerScore } from "@/lib/score";
 import { tendances } from "@/lib/tendances";
+import { euros, definirFormatAffichage } from "@/lib/format";
+import { afterEach } from "vitest";
 import { cleMoisLocal, moisDecaleLocal } from "@/lib/format";
 
 /*
@@ -275,5 +277,34 @@ describe("Conseils : clé de masquage stable", () => {
       transactions: [...donnees.transactions, { montant: -100, categorie: "courses", date: "2026-07-09", compteId: "cc" }] };
     const b = genererConseils(donnees2).find((c) => c.titre.includes("épargne"));
     if (a && b) expect(a.cle).toBe(b.cle);
+  });
+});
+
+describe("Préférences de format d'affichage", () => {
+  afterEach(() => definirFormatAffichage({ centimes: true, arrondiGrandsNombres: true }));
+
+  const norm = (s) => s.replace(/\u202f|\u00a0/g, " ");
+
+  it("masque les centimes quand demandé", () => {
+    definirFormatAffichage({ centimes: false });
+    expect(norm(euros(42.5))).toBe("43 €");
+    expect(norm(euros(1234.56))).toBe("1 235 €");
+  });
+
+  it("garde precis prioritaire même sans centimes", () => {
+    // Les fiches (ajustement de solde) doivent rester exactes
+    definirFormatAffichage({ centimes: false });
+    expect(norm(euros(42.5, { precis: true }))).toBe("42,50 €");
+  });
+
+  it("peut désactiver l'arrondi des gros montants", () => {
+    definirFormatAffichage({ centimes: true, arrondiGrandsNombres: false });
+    expect(norm(euros(1234.56))).toBe("1 234,56 €");
+  });
+
+  it("revient au comportement par défaut", () => {
+    definirFormatAffichage({ centimes: true, arrondiGrandsNombres: true });
+    expect(norm(euros(1234.56))).toBe("1 235 €");
+    expect(norm(euros(42.5))).toBe("42,50 €");
   });
 });
