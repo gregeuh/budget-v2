@@ -115,13 +115,13 @@ export default function ConseilsList() {
         <div className="flex rounded-pill bg-voile p-0.5 text-sm">
           <button
             onClick={() => setSource("auto")}
-            className={`rounded-pill px-3 py-1 font-medium transition-colors ${source === "auto" ? "bg-carte shadow-carte" : "text-sourdine"}`}
+            className={`tappable rounded-pill px-3 py-1 font-medium transition-colors ${source === "auto" ? "bg-carte shadow-carte" : "text-sourdine"}`}
           >
             Automatiques
           </button>
           <button
             onClick={() => (conseilsIA ? setSource("ia") : genererIA())}
-            className={`flex items-center gap-1 rounded-pill px-3 py-1 font-medium transition-colors ${source === "ia" ? "bg-carte shadow-carte" : "text-sourdine"}`}
+            className={`tappable flex items-center gap-1 rounded-pill px-3 py-1 font-medium transition-colors ${source === "ia" ? "bg-carte shadow-carte" : "text-sourdine"}`}
           >
             ✨ Par l&apos;IA
           </button>

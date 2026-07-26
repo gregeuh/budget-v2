@@ -5,6 +5,7 @@ import { useBudget } from "@/lib/store";
 import { euros, cleMoisLocal, moisDecaleLocal, dateCourte, toutesCategories } from "@/lib/format";
 import Sheet from "./Sheet";
 import TxRow from "./TxRow";
+import Montant from "@/components/Montant";
 
 export default function FicheCategorie({ categorieId, onFermer }) {
   const { transactions, budgets } = useBudget();
@@ -36,7 +37,7 @@ export default function FicheCategorie({ categorieId, onFermer }) {
         {/* En-tête façon Wallet */}
         <div className="rounded-ios bg-carte p-4 text-center shadow-carte">
           <span className="text-4xl">{cat.icone}</span>
-          <p className="chiffres mt-2 text-3xl font-bold">{euros(stats.ce)}</p>
+          <Montant valeur={stats.ce} className="mt-2 block text-3xl font-bold" />
           <p className="text-sm text-sourdine">ce mois-ci</p>
           {stats.prec > 0 && (
             <p className={`mt-1 text-xs font-medium ${stats.delta > 0 ? "text-corail" : "text-menthe"}`}>

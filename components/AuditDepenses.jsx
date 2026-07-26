@@ -78,7 +78,7 @@ export default function AuditDepenses({ onFermer }) {
         {/* Total */}
         <div className="rounded-ios p-4 text-center" style={{ background: "linear-gradient(135deg, #1C1C1E, #0A3D91)" }}>
           <p className="text-xs font-semibold uppercase tracking-wide text-white/60">Tes dépenses récurrentes</p>
-          <p className="chiffres mt-1 text-3xl font-bold text-white">{euros(audit.totalMensuel)}<span className="text-lg font-medium text-white/60"> /mois</span></p>
+          <p className="chiffres mt-1 text-3xl font-bold text-white">{euros(audit.totalMensuel)}<span className="unite text-lg"> /mois</span></p>
           <p className="mt-0.5 text-sm text-white/70">
             soit {euros(audit.totalAnnuel)} par an
             {audit.partRevenu != null && ` · ${Math.round(audit.partRevenu * 100)} % de tes revenus`}
