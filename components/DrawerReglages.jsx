@@ -20,7 +20,7 @@ export default function DrawerReglages() {
 
   return createPortal(
     <div className="fixed inset-0 z-[100] mx-auto max-w-md">
-      <div className="fade-in absolute inset-0 bg-encre/30" onClick={fermer} />
+      <div className="voile-feuille absolute inset-0" onClick={fermer} />
       <aside
         className="drawer-in absolute inset-y-0 left-0 flex w-[86%] max-w-sm flex-col overflow-y-auto bg-fond px-4 shadow-flottant"
         style={{ paddingTop: "calc(var(--safe-top) + 12px)" }}
