@@ -40,7 +40,7 @@ export default function Tendances({ nbMois = 3 }) {
               <div key={m} className="flex flex-1 flex-col items-center gap-1">
                 <span className="tnum text-[11px] font-semibold">{euros(val)}</span>
                 <div
-                  className={`jauge-in w-full rounded-lg ${enCours ? "bg-marque/40" : "bg-marque"}`}
+                  className={`barre-monte w-full rounded-t-lg ${enCours ? "bg-marque/40" : "bg-marque"}`}
                   style={{ height: `${Math.max(8, (val / maxTotal) * 72)}px` }}
                 />
                 <span className="text-[11px] text-sourdine">

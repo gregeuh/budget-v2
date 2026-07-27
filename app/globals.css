@@ -257,6 +257,19 @@ html.sombre .reflet {
 }
 .jauge-in { animation: jauge-in 0.7s cubic-bezier(0.32, 0.72, 0, 1) both; transform-origin: left; }
 
+/* Barre de graphique qui monte depuis le bas, façon Apple Stocks / Revolut */
+@keyframes barre-monte {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+.barre-monte { animation: barre-monte 0.6s cubic-bezier(0.32, 0.72, 0, 1) both; transform-origin: bottom; }
+
+/* Tracé de courbe qui se dessine (patrimoine) */
+@keyframes trace-ligne {
+  from { stroke-dashoffset: var(--long, 1000); }
+  to { stroke-dashoffset: 0; }
+}
+
 /* Tracé de courbe */
 @keyframes tracer {
   from { stroke-dashoffset: 1; }

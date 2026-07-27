@@ -88,6 +88,11 @@ export default function PatrimoineChart({ comptes, transactions }) {
           </linearGradient>
         </defs>
         <path d={aire} fill="url(#grad-patrimoine)" className="apparait-tard" />
+        {/* Grille horizontale discrète */}
+        {[0.5, 1].map((f) => (
+          <line key={f} x1={PAD} y1={12 + f * (H - 24)} x2={L - PAD} y2={12 + f * (H - 24)}
+            stroke="var(--c-bordure)" strokeWidth="1" strokeDasharray="2 5" opacity="0.6" />
+        ))}
         <path d={chemin} pathLength="1" className="trace-in" fill="none" stroke="var(--menthe)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
         <circle cx={x(points.length - 1)} cy={y(dernier.valeur)} r="4" fill="var(--menthe)" className="apparait-tard" />
         {points.map((p, i) =>

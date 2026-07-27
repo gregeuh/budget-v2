@@ -32,7 +32,9 @@ export default function SpendChart({ transactions }) {
   const max = Math.max(1, ...donnees.map((d) => Math.max(d.depenses, d.revenus)));
   const L = 320, H = 104, PAD = 6;
   const largeurGroupe = (L - PAD * 2) / donnees.length;
-  const barre = Math.min(16, largeurGroupe / 3);
+  const barre = Math.min(14, largeurGroupe / 3.2);
+  const moisCourant = cleMoisLocal();
+  const derniere = donnees.length - 1;
 
   return (
     <div className="rounded-ios bg-carte p-3.5 shadow-carte">
@@ -44,15 +46,33 @@ export default function SpendChart({ transactions }) {
         </div>
       </div>
       <svg viewBox={`0 0 ${L} ${H + 18}`} className="w-full" role="img" aria-label="Revenus et dépenses des six derniers mois">
+        {/* Lignes de grille horizontales, discrètes */}
+        {[0.25, 0.5, 0.75, 1].map((f) => (
+          <line key={f} x1={PAD} y1={H - f * (H - 10)} x2={L - PAD} y2={H - f * (H - 10)}
+            stroke="var(--c-bordure)" strokeWidth="1" strokeDasharray="2 5" opacity="0.6" />
+        ))}
+        {/* Ligne de base pleine */}
+        <line x1={PAD} y1={H} x2={L - PAD} y2={H} stroke="var(--c-bordure)" strokeWidth="1" />
+
         {donnees.map((d, i) => {
           const x = PAD + i * largeurGroupe + largeurGroupe / 2;
           const hR = (d.revenus / max) * (H - 10);
           const hD = (d.depenses / max) * (H - 10);
+          const enCours = i === derniere;
           return (
             <g key={i}>
-              <rect x={x - barre - 1.5} y={H - hR} width={barre} height={Math.max(hR, 2)} rx={4} fill="var(--menthe)" opacity={d.revenus ? 1 : 0.15} />
-              <rect x={x + 1.5} y={H - hD} width={barre} height={Math.max(hD, 2)} rx={4} fill="var(--corail)" opacity={d.depenses ? 1 : 0.15} />
-              <text x={x} y={H + 14} textAnchor="middle" fontSize="11" fill="var(--c-sourdine)">{d.label}</text>
+              <rect
+                x={x - barre - 1.5} y={H - hR} width={barre} height={Math.max(hR, 2)} rx={barre / 2.4}
+                fill="var(--menthe)" opacity={d.revenus ? (enCours ? 1 : 0.85) : 0.15}
+                className="barre-monte" style={{ animationDelay: `${i * 70}ms` }}
+              />
+              <rect
+                x={x + 1.5} y={H - hD} width={barre} height={Math.max(hD, 2)} rx={barre / 2.4}
+                fill="var(--corail)" opacity={d.depenses ? (enCours ? 1 : 0.85) : 0.15}
+                className="barre-monte" style={{ animationDelay: `${i * 70 + 35}ms` }}
+              />
+              <text x={x} y={H + 14} textAnchor="middle" fontSize="11" fontWeight={enCours ? 700 : 400}
+                fill={enCours ? "var(--c-encre)" : "var(--c-sourdine)"}>{d.label}</text>
             </g>
           );
         })}
