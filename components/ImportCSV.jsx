@@ -174,7 +174,7 @@ export default function ImportCSV({ onFermer }) {
           </p>
           <label className="block">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Compte de destination</span>
-            <select value={compteId} onChange={(e) => setCompteId(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+            <select value={compteId} onChange={(e) => setCompteId(e.target.value)} className="w-full champ px-3 py-3 outline-none">
               {comptes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
             </select>
           </label>
@@ -206,7 +206,7 @@ export default function ImportCSV({ onFermer }) {
                 <select
                   value={o.categorie}
                   onChange={(e) => changerCategorie(i, e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-bordure bg-fond px-2 py-1.5 text-sm outline-none"
+                  className="mt-2 w-full champ px-2 py-1.5 text-sm outline-none"
                 >
                   {cats.map(([id, c]) => <option key={id} value={id}>{c.icone} {c.label}</option>)}
                 </select>

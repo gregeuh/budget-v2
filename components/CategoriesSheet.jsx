@@ -76,7 +76,7 @@ export default function CategoriesSheet({ onFermer }) {
             placeholder="Nom (ex : Maillots vintage)"
             value={nom}
             onChange={(e) => setNom(e.target.value)}
-            className="w-full rounded-ios border border-bordure bg-fond px-4 py-3 outline-none focus:border-marque"
+            className="w-full champ px-4 py-3 outline-none"
           />
           <div className="grid grid-cols-2 gap-1.5">
             {TYPES.map((t) => (

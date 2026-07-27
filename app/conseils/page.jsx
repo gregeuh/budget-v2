@@ -63,7 +63,7 @@ export default function Conseils() {
         {messages.length === 0 && (
           <div className="mb-3 mt-3 flex flex-wrap gap-2">
             {suggestions.map((s) => (
-              <button key={s} onClick={() => setSaisie(s)} className="rounded-pill border border-bordure bg-fond px-3 py-1.5 text-sm">
+              <button key={s} onClick={() => setSaisie(s)} className="champ px-3 py-1.5 text-sm">
                 {s}
               </button>
             ))}
@@ -86,7 +86,7 @@ export default function Conseils() {
             onChange={(e) => setSaisie(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && envoyer()}
             placeholder="Pose ta question…"
-            className="min-w-0 flex-1 rounded-pill border border-bordure bg-fond px-4 py-2.5 text-sm outline-none focus:border-marque"
+            className="min-w-0 flex-1 champ px-4 py-2.5 text-sm outline-none"
           />
           <button
             onClick={envoyer}

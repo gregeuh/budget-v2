@@ -67,18 +67,18 @@ function ProfilSheet({ onFermer }) {
         <label className="block min-w-0">
           <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Prénom</span>
           <input value={prenom} onChange={(e) => setPrenom(e.target.value)} placeholder="Ton prénom"
-            className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-marque" />
+            className="w-full champ px-4 py-3 outline-none" />
         </label>
         <div className="grid grid-cols-2 gap-3">
           <label className="block min-w-0">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Revenu mensuel net</span>
             <input inputMode="decimal" value={revenu} onChange={(e) => setRevenu(e.target.value)} placeholder="ex : 2300"
-              className="tnum w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-marque" />
+              className="tnum w-full champ px-4 py-3 outline-none" />
           </label>
           <label className="block min-w-0">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Quand tombe ton salaire</span>
             <select value={modeSalaire} onChange={(e) => setModeSalaire(e.target.value)}
-              className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+              className="w-full champ px-3 py-3 outline-none">
               {MODES_SALAIRE.map((m) => (
                 <option key={m.id} value={m.id}>{m.label}</option>
               ))}
@@ -89,7 +89,7 @@ function ProfilSheet({ onFermer }) {
             <label className="block min-w-0">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Jour du mois</span>
               <select value={jourSalaire} onChange={(e) => setJourSalaire(e.target.value)}
-                className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+                className="w-full champ px-3 py-3 outline-none">
                 <option value={0}>—</option>
                 {Array.from({ length: 28 }, (_, i) => i + 1).map((j) => (
                   <option key={j} value={j}>Le {j} du mois</option>

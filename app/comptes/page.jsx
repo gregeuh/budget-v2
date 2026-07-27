@@ -63,7 +63,7 @@ function FicheCompte({ compte, onFermer }) {
                 placeholder="Solde réel"
                 value={soldeReel}
                 onChange={(e) => setSoldeReel(e.target.value)}
-                className="tnum min-w-0 flex-1 rounded-xl border border-bordure bg-carte px-3 py-2.5 outline-none focus:border-marque"
+                className="tnum min-w-0 flex-1 champ px-3 py-2.5 outline-none"
               />
               <button
                 onClick={reajuster}
@@ -95,7 +95,7 @@ function FicheCompte({ compte, onFermer }) {
           placeholder={`Nom (ex : ${TYPES_COMPTE[type].label})`}
           value={nom}
           onChange={(e) => setNom(e.target.value)}
-          className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-marque"
+          className="w-full champ px-4 py-3 outline-none"
         />
         <label className="block">
           <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">
@@ -106,7 +106,7 @@ function FicheCompte({ compte, onFermer }) {
             placeholder="0"
             value={solde}
             onChange={(e) => setSolde(e.target.value)}
-            className="tnum w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-marque"
+            className="tnum w-full champ px-4 py-3 outline-none"
           />
         </label>
         <button onClick={valider} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque active:scale-[0.99] transition-transform">

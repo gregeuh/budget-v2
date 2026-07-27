@@ -268,7 +268,7 @@ export default function AddSheet({ onFermer }) {
                 onChange={(e) => setPhrase(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && interpreter()}
                 placeholder="« 15€ courses Carrefour hier » — ou dicte au micro 🎤"
-                className="min-w-0 flex-1 rounded-pill border border-bordure bg-carte px-4 py-2.5 text-sm outline-none focus:border-marque"
+                className="min-w-0 flex-1 champ champ-pill px-4 py-2.5 text-sm outline-none"
               />
               <button
                 onClick={interpreter}
@@ -359,7 +359,7 @@ export default function AddSheet({ onFermer }) {
                 value={libelle}
                 onChange={(e) => { setLibelle(e.target.value); setAutoApplique(null); }}
                 onBlur={(e) => appliquerHabitude(e.target.value)}
-                className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-marque"
+                className="w-full champ px-4 py-3 outline-none"
               />
 
               {propositions.length > 0 && (
@@ -388,7 +388,7 @@ export default function AddSheet({ onFermer }) {
 
               {/* Lieu, avec les lieux déjà utilisés */}
               <div>
-                <div className="flex items-center gap-2 rounded-ios border border-bordure bg-carte px-3.5 py-2.5">
+                <div className="flex items-center gap-2 champ px-3.5 py-2.5">
                   <span className="shrink-0 text-sm">📍</span>
                   <input
                     placeholder="Lieu (optionnel)"
@@ -428,7 +428,7 @@ export default function AddSheet({ onFermer }) {
                       onChange={(e) => setNomPerso(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && validerRenommage()}
                       placeholder="Ex : Coiffeur, Mon resto…"
-                      className="min-w-0 flex-1 rounded-ios border border-bordure bg-carte px-3 py-2 text-sm outline-none focus:border-marque"
+                      className="min-w-0 flex-1 champ px-3 py-2 text-sm outline-none"
                     />
                     <button
                       onClick={validerRenommage}
@@ -442,7 +442,7 @@ export default function AddSheet({ onFermer }) {
 
                 {/* Lieux réels trouvés (OpenStreetMap) */}
                 {suggestionsLieu.length > 0 && (
-                  <div className="fade-in mt-1.5 overflow-hidden rounded-ios border border-bordure bg-carte">
+                  <div className="fade-in mt-1.5 overflow-hidden champ">
                     {suggestionsLieu.map((s, i) => (
                       <button
                         key={i}
@@ -488,21 +488,21 @@ export default function AddSheet({ onFermer }) {
           <div className="grid grid-cols-2 gap-3">
             <label className="block min-w-0">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">{mode === "virement" ? "Depuis" : "Compte"}</span>
-              <select value={compteId} onChange={(e) => setCompteId(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+              <select value={compteId} onChange={(e) => setCompteId(e.target.value)} className="w-full min-w-0 champ px-3 py-3 outline-none">
                 {comptes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
               </select>
             </label>
             {mode === "virement" ? (
               <label className="block min-w-0">
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Vers</span>
-                <select value={versId} onChange={(e) => setVersId(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+                <select value={versId} onChange={(e) => setVersId(e.target.value)} className="w-full min-w-0 champ px-3 py-3 outline-none">
                   {comptes.filter((c) => c.id !== compteId).map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
                 </select>
               </label>
             ) : (
               <label className="block min-w-0">
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Date</span>
-                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-2 py-3 text-[15px] outline-none" />
+                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full min-w-0 champ px-2 py-3 text-[15px] outline-none" />
               </label>
             )}
           </div>
@@ -510,7 +510,7 @@ export default function AddSheet({ onFermer }) {
           {mode === "virement" && (
             <label className="block min-w-0">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Date</span>
-              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-2 py-3 text-[15px] outline-none" />
+              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full min-w-0 champ px-2 py-3 text-[15px] outline-none" />
             </label>
           )}
 

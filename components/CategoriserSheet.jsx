@@ -157,7 +157,7 @@ export default function CategoriserSheet({ onFermer }) {
                       value={cat}
                       onChange={(e) => setChoix((c) => ({ ...c, [g.cle]: e.target.value }))}
                       disabled={!actif}
-                      className="shrink-0 rounded-lg border border-bordure bg-fond px-2 py-1.5 text-xs font-medium outline-none disabled:opacity-50"
+                      className="shrink-0 champ px-2 py-1.5 text-xs font-medium outline-none disabled:opacity-50"
                     >
                       {cats.map(([id, c]) => (
                         <option key={id} value={id}>{c.icone} {c.label}</option>

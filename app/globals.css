@@ -169,6 +169,23 @@ html.sombre .reflet {
 .tappable { transition: transform 0.14s ease, background-color 0.14s ease; }
 .tappable:active { transform: scale(0.985); }
 
+/* Champ de saisie premium façon iOS : bordure douce, halo au focus en fondu.
+   L'anneau apparaît progressivement au lieu du saut de bordure sec. */
+.champ {
+  border: 1px solid var(--c-bordure);
+  background: var(--c-carte);
+  border-radius: 14px;
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+.champ:focus,
+.champ:focus-within {
+  border-color: var(--marque);
+  box-shadow: 0 0 0 3.5px var(--marque-pale);
+}
+.champ::placeholder { color: var(--c-sourdine); opacity: 0.7; }
+.champ-pill { border-radius: 9999px; }
+
 /* Apparition en cascade d'une liste : chaque ligne entre juste après la précédente */
 @keyframes ligne-in {
   from { opacity: 0; transform: translateY(8px); }

@@ -265,14 +265,14 @@ export default function AssistantConfig({ onFermer }) {
               value={montantSalaire}
               onChange={(e) => setMontantSalaire(e.target.value)}
               placeholder="ex : 1840"
-              className="chiffres w-full min-w-0 rounded-ios border border-bordure bg-carte px-4 py-3 text-2xl font-bold outline-none focus:border-marque"
+              className="chiffres w-full min-w-0 champ px-4 py-3 text-2xl font-bold outline-none"
             />
           </label>
 
           <div className="grid grid-cols-2 gap-3">
             <label className="col-span-2 block min-w-0">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Versé</span>
-              <select value={modeSalaire} onChange={(e) => setModeSalaire(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+              <select value={modeSalaire} onChange={(e) => setModeSalaire(e.target.value)} className="w-full min-w-0 champ px-3 py-3 outline-none">
                 {MODES_SALAIRE.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
               </select>
             </label>
@@ -280,7 +280,7 @@ export default function AssistantConfig({ onFermer }) {
             {modeAvecJour && (
               <label className="block min-w-0">
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Le</span>
-                <select value={jourSalaire} onChange={(e) => setJourSalaire(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+                <select value={jourSalaire} onChange={(e) => setJourSalaire(e.target.value)} className="w-full min-w-0 champ px-3 py-3 outline-none">
                   {Array.from({ length: 28 }, (_, i) => i + 1).map((j) => (
                     <option key={j} value={j}>{j} du mois</option>
                   ))}
@@ -289,7 +289,7 @@ export default function AssistantConfig({ onFermer }) {
             )}
             <label className="block min-w-0">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Sur</span>
-              <select value={compteSalaire} onChange={(e) => setCompteSalaire(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+              <select value={compteSalaire} onChange={(e) => setCompteSalaire(e.target.value)} className="w-full min-w-0 champ px-3 py-3 outline-none">
                 {comptes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
               </select>
             </label>
@@ -332,7 +332,7 @@ export default function AssistantConfig({ onFermer }) {
                       inputMode="decimal"
                       value={Math.abs(p.montant)}
                       onChange={(e) => majMontant(p.id, e.target.value)}
-                      className="tnum w-16 shrink-0 rounded-lg border border-bordure bg-fond px-1.5 py-1 text-right text-sm outline-none focus:border-marque"
+                      className="tnum w-16 shrink-0 champ px-1.5 py-1 text-right text-sm outline-none"
                     />
                     <span className="shrink-0 text-xs text-sourdine">€</span>
                   </li>
@@ -378,14 +378,14 @@ export default function AssistantConfig({ onFermer }) {
                     value={manuelles[c.cle] || ""}
                     onChange={(e) => setManuelles({ ...manuelles, [c.cle]: e.target.value })}
                     placeholder="—"
-                    className="tnum w-16 shrink-0 rounded-lg border border-bordure bg-fond px-1.5 py-1 text-right text-sm outline-none focus:border-marque"
+                    className="tnum w-16 shrink-0 champ px-1.5 py-1 text-right text-sm outline-none"
                   />
                   <span className="shrink-0 text-xs text-sourdine">€</span>
                 </label>
               ))}
               <label className="block min-w-0 pt-1">
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Prélevées le</span>
-                <select value={jourManuel} onChange={(e) => setJourManuel(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-fond px-3 py-2.5 outline-none">
+                <select value={jourManuel} onChange={(e) => setJourManuel(e.target.value)} className="w-full min-w-0 champ px-3 py-2.5 outline-none">
                   {Array.from({ length: 28 }, (_, i) => i + 1).map((j) => (
                     <option key={j} value={j}>{j} du mois</option>
                   ))}
@@ -396,7 +396,7 @@ export default function AssistantConfig({ onFermer }) {
 
           <label className="block min-w-0">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Compte prélevé</span>
-            <select value={compteCharges} onChange={(e) => setCompteCharges(e.target.value)} className="w-full min-w-0 rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+            <select value={compteCharges} onChange={(e) => setCompteCharges(e.target.value)} className="w-full min-w-0 champ px-3 py-3 outline-none">
               {comptes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
             </select>
           </label>

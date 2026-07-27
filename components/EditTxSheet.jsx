@@ -131,7 +131,7 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
           value={libelle}
           onChange={(e) => setLibelle(e.target.value)}
           onBlur={(e) => appliquerHabitude(e.target.value)}
-          className="w-full rounded-ios border border-bordure bg-carte px-4 py-3 outline-none focus:border-marque"
+          className="w-full champ px-4 py-3 outline-none"
         />
 
         {propositions.length > 0 && (
@@ -179,28 +179,28 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
         <div className="grid grid-cols-2 gap-3">
           <label className="block min-w-0">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">{estVirement ? "Depuis" : "Compte"}</span>
-            <select value={compteId} onChange={(e) => setCompteId(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+            <select value={compteId} onChange={(e) => setCompteId(e.target.value)} className="w-full champ px-3 py-3 outline-none">
               {comptes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
             </select>
           </label>
           {estVirement ? (
             <label className="block min-w-0">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Vers</span>
-              <select value={versId} onChange={(e) => setVersId(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none">
+              <select value={versId} onChange={(e) => setVersId(e.target.value)} className="w-full champ px-3 py-3 outline-none">
                 {comptes.filter((c) => c.id !== compteId).map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
               </select>
             </label>
           ) : (
             <label className="block min-w-0">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Date</span>
-              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none" />
+              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full champ px-3 py-3 outline-none" />
             </label>
           )}
         </div>
         {estVirement && (
           <label className="block min-w-0">
             <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Date</span>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-ios border border-bordure bg-carte px-3 py-3 outline-none" />
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full champ px-3 py-3 outline-none" />
           </label>
         )}
 
@@ -217,7 +217,7 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
         )}
 
         {/* Lieu, façon fiche Apple Wallet — ajoutable à la main, ouvrable dans Plans */}
-        <div className="rounded-ios border border-bordure bg-carte p-3.5">
+        <div className="champ p-3.5">
           <div className="flex items-center gap-2">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-voile text-sm">📍</span>
             <input

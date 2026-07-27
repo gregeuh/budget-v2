@@ -38,7 +38,7 @@ export default function RechercheSheet({ onFermer }) {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Commerçant, montant (>50), catégorie, lieu…"
-            className="w-full rounded-pill border border-bordure bg-carte py-2.5 pl-10 pr-9 text-sm outline-none focus:border-marque"
+            className="w-full champ champ-pill py-2.5 pl-10 pr-9 text-sm outline-none"
           />
           {q && (
             <button onClick={() => setQ("")} aria-label="Effacer" className="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-voile text-xs text-sourdine">

@@ -44,7 +44,7 @@ function FicheBudget({ onFermer }) {
                 placeholder="—"
                 value={locaux[id] ?? ""}
                 onChange={(e) => setLocaux({ ...locaux, [id]: e.target.value })}
-                className="tnum w-20 rounded-xl border border-bordure px-2 py-1.5 text-right outline-none focus:border-marque"
+                className="tnum w-20 rounded-xl border border-bordure px-2 py-1.5 text-right outline-none"
               />
               <span className="text-sm text-sourdine">€</span>
             </span>
