@@ -28,7 +28,7 @@ export default function DonutCat({ transactions, mois }) {
   let decalage = 0;
 
   return (
-    <div className="rounded-ios bg-carte p-3.5 shadow-carte">
+    <div className="rounded-ios bg-carte p-4 shadow-carte">
       <h3 className="mb-3 font-semibold">Répartition du mois</h3>
       <div className="flex items-center gap-4">
         <div className="relative h-24 w-24 shrink-0">

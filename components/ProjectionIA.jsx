@@ -41,7 +41,7 @@ export default function ProjectionIA() {
   const coul = resultat ? COULEURS[resultat.verdict] || COULEURS.orange : null;
 
   return (
-    <div className="rounded-ios bg-carte p-3.5 shadow-carte">
+    <div className="rounded-ios bg-carte p-4 shadow-carte">
       {!resultat ? (
         <button onClick={lancer} disabled={chargement} className="flex w-full items-center gap-3 text-left disabled:opacity-60">
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-marque-pale text-xl">🔮</span>

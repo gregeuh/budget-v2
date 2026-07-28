@@ -24,7 +24,7 @@ export default function ScoreSante() {
   const progression = anime ? score.total / 100 : 0;
 
   return (
-    <div className="rounded-ios bg-carte p-3.5 shadow-carte">
+    <div className="rounded-ios bg-carte p-4 shadow-carte">
       <button onClick={() => setDeplie(!deplie)} className="flex w-full items-center gap-4 text-left" aria-expanded={deplie}>
         {/* Anneau */}
         <div className="relative h-24 w-24 shrink-0">

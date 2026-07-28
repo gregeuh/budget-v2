@@ -10,7 +10,7 @@ export default function Repliable({ icone, titre, sousTitre, ouvertParDefaut = f
   const [ouvert, setOuvert] = useState(ouvertParDefaut);
 
   return (
-    <div className="rounded-ios bg-carte p-3.5 shadow-carte">
+    <div className="rounded-ios bg-carte p-4 shadow-carte">
       <button
         onClick={() => setOuvert((o) => !o)}
         aria-expanded={ouvert}

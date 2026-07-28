@@ -95,7 +95,7 @@ export default function Onboarding() {
               const t = TYPES_COMPTE[type];
               const actif = choix[type]?.actif;
               return (
-                <div key={type} className={`rounded-ios border p-3.5 transition-colors ${actif ? "border-menthe bg-carte" : "border-bordure bg-carte/50"}`}>
+                <div key={type} className={`rounded-ios border p-4 transition-colors ${actif ? "border-menthe bg-carte" : "border-bordure bg-carte/50"}`}>
                   <button onClick={() => basculer(type)} className="flex w-full items-center justify-between">
                     <span className="font-semibold">{t.icone} {t.label}</span>
                     <span className={`flex h-6 w-6 items-center justify-center rounded-full text-sm ${actif ? "bg-menthe-bouton text-white" : "bg-voile"}`}>
@@ -125,9 +125,9 @@ export default function Onboarding() {
           <h1 className="mt-3 text-3xl font-bold tracking-tight">C'est parti{prenom ? `, ${prenom.trim()}` : ""} !</h1>
           <p className="mt-1 text-sourdine">Tout est prêt. Trois réflexes pour bien démarrer :</p>
           <ul className="mt-5 space-y-3 text-sm">
-            <li className="rounded-ios bg-carte p-3.5 shadow-carte"><span className="font-semibold">➕ Le bouton central</span> — ajoute dépenses, revenus et virements en quelques secondes. Active « Chaque mois » pour le loyer ou le salaire.</li>
-            <li className="rounded-ios bg-carte p-3.5 shadow-carte"><span className="font-semibold">⬇︎ Importer CSV</span> — depuis l'onglet Opérations, importe un relevé bancaire, tout est catégorisé automatiquement.</li>
-            <li className="rounded-ios bg-carte p-3.5 shadow-carte"><span className="font-semibold">📲 Installer l'app</span> — dans Safari : Partager → « Sur l'écran d'accueil ».</li>
+            <li className="rounded-ios bg-carte p-4 shadow-carte"><span className="font-semibold">➕ Le bouton central</span> — ajoute dépenses, revenus et virements en quelques secondes. Active « Chaque mois » pour le loyer ou le salaire.</li>
+            <li className="rounded-ios bg-carte p-4 shadow-carte"><span className="font-semibold">⬇︎ Importer CSV</span> — depuis l'onglet Opérations, importe un relevé bancaire, tout est catégorisé automatiquement.</li>
+            <li className="rounded-ios bg-carte p-4 shadow-carte"><span className="font-semibold">📲 Installer l'app</span> — dans Safari : Partager → « Sur l'écran d'accueil ».</li>
           </ul>
         </div>
       )}

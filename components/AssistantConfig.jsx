@@ -340,7 +340,7 @@ export default function AssistantConfig({ onFermer }) {
               </ul>
             </>
           ) : (
-            <p className="rounded-ios bg-carte p-3.5 text-sm text-sourdine shadow-carte">
+            <p className="rounded-ios bg-carte p-4 text-sm text-sourdine shadow-carte">
               Aucune récurrence détectée dans ton historique — normal si tu débutes. Saisis tes charges ci-dessous, ou importe ton relevé bancaire puis relance l&apos;assistant.
             </p>
           )}
@@ -366,7 +366,7 @@ export default function AssistantConfig({ onFermer }) {
             </div>
           )}
 
-          <details className="rounded-ios bg-carte p-3.5 shadow-carte">
+          <details className="rounded-ios bg-carte p-4 shadow-carte">
             <summary className="cursor-pointer text-sm font-semibold">➕ Ajouter à la main</summary>
             <div className="mt-2.5 space-y-2">
               {CHARGES_MANUELLES.map((c) => (

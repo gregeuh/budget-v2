@@ -50,7 +50,7 @@ export default function AnalyseDepenses() {
   };
 
   return (
-    <div className="rounded-ios bg-carte p-3.5 shadow-carte">
+    <div className="rounded-ios bg-carte p-4 shadow-carte">
       {/* En-tête */}
       <button onClick={() => setOuvert(!ouvert)} className="flex w-full items-center gap-3 text-left">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-corail-pale text-xl">🔍</span>

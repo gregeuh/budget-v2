@@ -33,7 +33,7 @@ export default function Rapprochement({ lignes, compteId, soldeActuel, onValider
   return (
     <div className="space-y-3">
       {/* Récapitulatif */}
-      <div className="rounded-ios bg-carte p-3.5 shadow-carte">
+      <div className="rounded-ios bg-carte p-4 shadow-carte">
         <p className="text-sm font-semibold">Rapprochement avec tes opérations</p>
         <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
           {compte_("nouvelle") > 0 && <span className="rounded-pill bg-menthe-pale px-2 py-1 font-medium text-menthe-texte">✅ {compte_("nouvelle")} nouvelle{compte_("nouvelle") > 1 ? "s" : ""}</span>}

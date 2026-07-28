@@ -27,8 +27,9 @@ module.exports = {
       boxShadow: {
         carte: "var(--ombre-carte)",
         // Élévation réservée à ce qui flotte réellement (feuilles, menus)
-        eleve: "0 0 0 1px var(--c-bordure), 0 12px 32px rgba(0,0,0,0.14)",
-        flottant: "0 8px 30px rgba(0,0,0,0.25)",
+        eleve: "var(--ombre-flottant)",
+        flottant: "var(--ombre-flottant)",
+        bouton: "var(--ombre-bouton)",
       },
       fontFamily: {
         sf: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"Segoe UI"', 'Roboto', 'sans-serif'],

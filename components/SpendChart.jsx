@@ -37,7 +37,7 @@ export default function SpendChart({ transactions }) {
   const derniere = donnees.length - 1;
 
   return (
-    <div className="rounded-ios bg-carte p-3.5 shadow-carte">
+    <div className="rounded-ios bg-carte p-4 shadow-carte">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="font-semibold">Revenus & dépenses</h3>
         <div className="flex gap-3 text-xs text-sourdine">

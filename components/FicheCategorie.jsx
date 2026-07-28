@@ -48,7 +48,7 @@ export default function FicheCategorie({ categorieId, onFermer }) {
 
         {/* Budget si défini */}
         {budget > 0 && (
-          <div className="rounded-ios bg-carte p-3.5 shadow-carte">
+          <div className="rounded-ios bg-carte p-4 shadow-carte">
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium">Budget mensuel</span>
               <span className={`tnum font-semibold ${depasse ? "text-corail" : ""}`}>{euros(stats.ce)} / {euros(budget)}</span>

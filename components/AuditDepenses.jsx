@@ -138,7 +138,7 @@ export default function AuditDepenses({ onFermer }) {
             {recos.map((r, i) => {
               const p = PRIORITE[r.priorite] || PRIORITE.moyenne;
               return (
-                <div key={i} className="rounded-ios bg-carte p-3.5 shadow-carte">
+                <div key={i} className="rounded-ios bg-carte p-4 shadow-carte">
                   <div className="flex items-start justify-between gap-2">
                     <p className="text-sm font-bold">{r.titre}</p>
                     <span className={`shrink-0 rounded-pill px-2 py-0.5 text-[10px] font-semibold ${p.couleur}`}>{p.label}</span>

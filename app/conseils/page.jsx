@@ -57,7 +57,7 @@ export default function Conseils() {
       <h1 className="text-xl font-bold">Conseils</h1>
 
       {/* Coach IA : c'est ce qu'on vient chercher, donc en premier */}
-      <section className="rounded-ios bg-carte p-3.5 shadow-carte">
+      <section className="rounded-ios bg-carte p-4 shadow-carte">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">Coach budgétaire ✨</h2>
 
         {messages.length === 0 && (

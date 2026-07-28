@@ -46,7 +46,7 @@ export default function CalendrierDepenses({ mois }) {
   };
 
   return (
-    <div className="rounded-ios bg-carte p-3.5 shadow-carte">
+    <div className="rounded-ios bg-carte p-4 shadow-carte">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-bold">Calendrier des dépenses</h3>
         <span className="tnum text-sm text-sourdine">{euros(totalMois)}</span>

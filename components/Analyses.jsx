@@ -15,7 +15,7 @@ export default function Analyses({ comptes, transactions, mois }) {
   const [ouvert, setOuvert] = useState(false);
 
   return (
-    <div className="rounded-ios bg-carte p-3.5 shadow-carte">
+    <div className="rounded-ios bg-carte p-4 shadow-carte">
       <button
         onClick={() => setOuvert((o) => !o)}
         aria-expanded={ouvert}

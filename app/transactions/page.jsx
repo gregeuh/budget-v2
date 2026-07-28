@@ -153,7 +153,7 @@ export default function Transactions() {
 
       {/* Reste à vivre projeté */}
       {!recherche && (
-        <div className="rounded-ios bg-carte p-3.5 shadow-carte">
+        <div className="rounded-ios bg-carte p-4 shadow-carte">
           <div className="flex items-baseline justify-between">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">
               💼 Reste à vivre

@@ -337,7 +337,7 @@ export default function AddSheet({ onFermer }) {
           ) : (
             <button
               onClick={() => (valeur > 0 ? setEtape(2) : secouer())}
-              className={`mt-3 w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque active:scale-[0.99] transition-transform ${valeur <= 0 ? "opacity-40" : ""}`}
+              className={`mt-3 w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque shadow-bouton active:scale-[0.99] transition-transform ${valeur <= 0 ? "opacity-40" : ""}`}
             >
               Continuer
             </button>

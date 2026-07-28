@@ -35,7 +35,7 @@ export default function BanniereConfig() {
 
   return (
     <>
-      <div className="pop-in relative overflow-hidden rounded-ios bg-carte p-3.5 shadow-carte ring-1 ring-menthe/30">
+      <div className="pop-in relative overflow-hidden rounded-ios bg-carte p-4 shadow-carte ring-1 ring-menthe/30">
         <div className="flex items-start gap-3">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-menthe-pale text-lg">💼</span>
           <div className="min-w-0 flex-1">

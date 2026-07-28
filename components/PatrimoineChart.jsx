@@ -45,7 +45,7 @@ export default function PatrimoineChart({ comptes, transactions }) {
   if (moisActifs < 2) {
     const valeurActuelle = points[points.length - 1]?.valeur || 0;
     return (
-      <div className="rounded-ios bg-carte p-3.5 shadow-carte">
+      <div className="rounded-ios bg-carte p-4 shadow-carte">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold">Évolution du patrimoine</h3>
           <span className="chiffres text-sm font-bold">{euros(valeurActuelle)}</span>
@@ -72,7 +72,7 @@ export default function PatrimoineChart({ comptes, transactions }) {
   const variation = dernier.valeur - premier.valeur;
 
   return (
-    <div className="rounded-ios bg-carte p-3.5 shadow-carte">
+    <div className="rounded-ios bg-carte p-4 shadow-carte">
       <div className="mb-1 flex items-center justify-between">
         <h3 className="font-semibold">Évolution du patrimoine</h3>
         <span className={`tnum text-sm font-bold ${variation >= 0 ? "text-menthe" : "text-corail"}`}>

@@ -132,7 +132,7 @@ export default function Budgets() {
               const couleur = pct >= 100 ? "var(--corail)" : pct >= 80 ? "var(--beurre)" : "var(--menthe)";
               return (
                 <li key={cat}>
-                  <button onClick={() => setFicheCat(cat)} className="w-full rounded-ios bg-carte p-3.5 text-left shadow-carte active:scale-[0.99] transition-transform">
+                  <button onClick={() => setFicheCat(cat)} className="w-full rounded-ios bg-carte p-4 text-left shadow-carte active:scale-[0.99] transition-transform">
                   <div className="mb-1.5 flex items-center justify-between text-sm">
                     <span className="font-semibold">{c.icone} {c.label} <span className="text-sourdine/50">›</span></span>
                     <span className="tnum text-sourdine">{euros(reel)} / {euros(limite)}</span>
@@ -165,7 +165,7 @@ export default function Budgets() {
               const pct = p.objectif > 0 ? Math.min(100, (p.montantActuel / p.objectif) * 100) : 0;
               const atteint = pct >= 100;
               return (
-                <li key={p.id} className="rounded-ios bg-carte p-3.5 shadow-carte">
+                <li key={p.id} className="rounded-ios bg-carte p-4 shadow-carte">
                   {/* Zone d'ouverture de la fiche (div cliquable : on ne peut pas imbriquer des boutons) */}
                   <div
                     role="button"

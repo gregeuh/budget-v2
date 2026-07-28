@@ -174,7 +174,7 @@ export default function Comptes() {
                   <li key={c.id}>
                     <button
                       onClick={() => setFiche(c)}
-                      className="w-full rounded-ios bg-carte p-3.5 text-left shadow-carte active:scale-[0.99] transition-transform"
+                      className="w-full rounded-ios bg-carte p-4 text-left shadow-carte active:scale-[0.99] transition-transform"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -227,7 +227,7 @@ export default function Comptes() {
               const n = mensualitesRestantes(c.restant, c.mensualite, c.taux);
               return (
                 <li key={c.id}>
-                  <button onClick={() => setFicheCredit(c)} className="w-full rounded-ios bg-carte p-3.5 text-left shadow-carte active:scale-[0.99] transition-transform">
+                  <button onClick={() => setFicheCredit(c)} className="w-full rounded-ios bg-carte p-4 text-left shadow-carte active:scale-[0.99] transition-transform">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-corail-pale text-xl">🏦</span>
