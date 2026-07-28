@@ -4,6 +4,7 @@ import { fetchSuivi } from "@/lib/journal";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useBudget } from "@/lib/store";
 import { FREQUENCES, aujourdhui, euros, COULEURS } from "@/lib/format";
+import LogoCommercant from "./LogoCommercant";
 import Sheet from "./Sheet";
 import PointsSautillants from "./PointsSautillants";
 import { construireMemoire, devinerDepuisHistorique, lieuxConnus, proposerLibelles } from "@/lib/habitudes";
@@ -351,12 +352,7 @@ export default function AddSheet({ onFermer }) {
                       onClick={() => appliquerSuggestion(sug)}
                       className="tappable flex w-full items-center gap-3 rounded-2xl bg-carte px-3 py-2.5 shadow-carte"
                     >
-                      <span
-                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-lg"
-                        style={{ background: COULEURS[cat.couleur]?.fond || "var(--marque-pale)" }}
-                      >
-                        {cat.icone}
-                      </span>
+                      <LogoCommercant nom={sug.libelle} couleur={teinte} taille={36} />
                       <span className="min-w-0 flex-1 truncate text-left text-sm font-semibold">{sug.libelle}</span>
                       {sug.n > 1 && <span className="shrink-0 text-xs text-sourdine">{sug.n} fois</span>}
                       <span className="shrink-0 text-sourdine">›</span>

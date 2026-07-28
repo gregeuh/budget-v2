@@ -7,6 +7,7 @@ import { tendances } from "@/lib/tendances";
 import { euros, definirFormatAffichage } from "@/lib/format";
 import { urlCarteEmbed, lienCarte } from "@/lib/lieux";
 import { lieuPersoProche, enregistrerLieuPerso, supprimerLieuPerso } from "@/lib/lieuxPerso";
+import { devinerDomaine, urlLogo } from "@/lib/logos";
 import { afterEach } from "vitest";
 import { cleMoisLocal, moisDecaleLocal } from "@/lib/format";
 
@@ -371,5 +372,34 @@ describe("Carnet de lieux personnalisés", () => {
   it("ignore une entrée sans nom ou coordonnées", () => {
     expect(enregistrerLieuPerso([], { nom: "", lat: 44, lon: -0.5 }).length).toBe(0);
     expect(enregistrerLieuPerso([], { nom: "X", lat: NaN, lon: -0.5 }).length).toBe(0);
+  });
+});
+
+describe("Logos de commerçants", () => {
+  it("trouve le domaine des enseignes connues", () => {
+    expect(devinerDomaine("Carrefour")).toBe("carrefour.fr");
+    expect(devinerDomaine("Revolut")).toBe("revolut.com");
+    expect(devinerDomaine("Netflix")).toBe("netflix.com");
+  });
+
+  it("reconnaît une enseigne dans un libellé bancaire", () => {
+    expect(devinerDomaine("CARREFOUR MARKET BEGLES")).toBe("carrefour.fr");
+    expect(devinerDomaine("PAIEMENT MCDO 33")).toBe("mcdonalds.fr");
+  });
+
+  it("retombe sur rien (→ initiale) pour les inconnus", () => {
+    expect(devinerDomaine("Fran's")).toBeNull();
+    expect(devinerDomaine("chez paulo")).toBeNull();
+    expect(devinerDomaine("virement 12/06")).toBeNull();
+    expect(devinerDomaine("")).toBeNull();
+  });
+
+  it("tente un .fr pour un mot simple non listé", () => {
+    expect(devinerDomaine("Biocoop")).toBe("biocoop.fr");
+  });
+
+  it("génère une URL de logo valide", () => {
+    expect(urlLogo("carrefour.fr")).toContain("logo.clearbit.com/carrefour.fr");
+    expect(urlLogo(null)).toBeNull();
   });
 });
