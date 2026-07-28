@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { euros, dateCourte } from "@/lib/format";
 import EditTxSheet from "./EditTxSheet";
+import LogoCommercant from "./LogoCommercant";
 
 const LARGEUR_ACTION = 88;   // largeur du bouton Supprimer révélé
 const SEUIL_OUVERTURE = 44;  // au-delà, la ligne reste ouverte au relâchement
@@ -88,7 +89,7 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
             transition: glisse ? "none" : "transform 0.28s cubic-bezier(0.32, 0.72, 0, 1)",
           }}
         >
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-fond text-base">{cat.icone}</span>
+          <LogoCommercant nom={tx.libelle || ""} emoji={cat.icone} taille={32} />
           <span className="min-w-0 flex-1">
             <span className="block truncate text-sm font-semibold">
               {tx.libelle || cat.label}

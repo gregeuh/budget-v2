@@ -8,14 +8,24 @@ import { devinerDomaine, urlLogo } from "@/lib/logos";
  * colorée avec son initiale. Si le logo échoue au chargement (domaine deviné
  * mais inexistant), on bascule automatiquement sur l'initiale : aucun trou.
  */
-export default function LogoCommercant({ nom = "", couleur = "var(--marque)", taille = 36 }) {
+export default function LogoCommercant({ nom = "", couleur = "var(--marque)", taille = 36, emoji = null }) {
   const domaine = devinerDomaine(nom);
   const [echec, setEchec] = useState(false);
   const initiale = (nom || "?").trim().charAt(0).toUpperCase();
   const rayon = Math.round(taille * 0.28);
 
-  // Repli : pastille colorée à initiale
+  // Repli : emoji de catégorie si fourni (listes d'opérations), sinon initiale colorée.
   if (!domaine || echec) {
+    if (emoji) {
+      return (
+        <span
+          className="flex shrink-0 items-center justify-center bg-fond"
+          style={{ width: taille, height: taille, borderRadius: rayon, fontSize: taille * 0.5 }}
+        >
+          {emoji}
+        </span>
+      );
+    }
     return (
       <span
         className="flex shrink-0 items-center justify-center font-bold text-white"
