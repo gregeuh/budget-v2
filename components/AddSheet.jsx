@@ -3,12 +3,40 @@
 import { fetchSuivi } from "@/lib/journal";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useBudget } from "@/lib/store";
-import { FREQUENCES, aujourdhui, euros } from "@/lib/format";
+import { FREQUENCES, aujourdhui, euros, COULEURS } from "@/lib/format";
 import Sheet from "./Sheet";
 import PointsSautillants from "./PointsSautillants";
 import { construireMemoire, devinerDepuisHistorique, lieuxConnus, proposerLibelles } from "@/lib/habitudes";
 import { chercherLieux } from "@/lib/lieux";
 import { lieuPersoProche, enregistrerLieuPerso } from "@/lib/lieuxPerso";
+
+// Pictos dessinés maison (pas de logo de marque), un par mode.
+const IconeMode = ({ id, className = "h-4 w-4", style }) => {
+  if (id === "revenu")
+    return (
+      <svg viewBox="0 0 24 24" className={className} style={style} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 19V5M5 12l7-7 7 7" />
+      </svg>
+    );
+  if (id === "virement")
+    return (
+      <svg viewBox="0 0 24 24" className={className} style={style} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 7h13l-3-3M20 17H7l3 3" />
+      </svg>
+    );
+  return (
+    <svg viewBox="0 0 24 24" className={className} style={style} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="6" width="18" height="12" rx="2.5" /><path d="M3 10h18" />
+    </svg>
+  );
+};
+
+// Couleur de chaque mode, branchée sur les tokens (donc suit le thème clair/sombre).
+const COULEUR_MODE = {
+  depense: "var(--corail)",
+  revenu: "var(--menthe)",
+  virement: "var(--marque)",
+};
 
 const MODES = [
   { id: "depense", label: "Dépense" },
@@ -263,52 +291,79 @@ export default function AddSheet({ onFermer }) {
           {/* Saisie en langage naturel */}
           {erreurIA && <p className="mb-2 px-1 text-xs text-corail">{erreurIA}</p>}
 
-          {/* Mode : la pastille active prend la couleur du type */}
-          <div className="mb-5 grid grid-cols-3 rounded-pill bg-voile p-1">
+          {/* Mode : trois cartes avec picto, la sélectionnée prend sa couleur */}
+          <div className="mb-4 grid grid-cols-3 gap-2">
             {MODES.map((m) => {
               const actif = mode === m.id;
-              const couleurFond =
-                m.id === "depense" ? "var(--corail)" : m.id === "revenu" ? "var(--menthe)" : "var(--marque)";
               return (
                 <button
                   key={m.id}
                   onClick={() => { setMode(m.id); setCategorie(m.id === "revenu" ? "salaire" : "courses"); }}
-                  className={`tappable rounded-pill py-2 text-sm font-semibold transition-all duration-200 ${
-                    actif ? "text-white shadow-bouton" : "text-sourdine"
+                  className={`tappable flex items-center justify-center gap-1.5 rounded-2xl py-2.5 text-sm font-semibold transition-all duration-200 ${
+                    actif ? "text-white shadow-bouton" : "bg-carte text-sourdine shadow-carte"
                   }`}
-                  style={actif ? { background: couleurFond } : undefined}
+                  style={actif ? { background: COULEUR_MODE[m.id] } : undefined}
                 >
+                  <IconeMode id={m.id} className="h-4 w-4" style={!actif ? { color: COULEUR_MODE[m.id] } : undefined} />
                   {m.label}
                 </button>
               );
             })}
           </div>
 
-          {/* Montant héros : signe, curseur clignotant, étiquette du contexte */}
-          <div key={`sec-${secousse}`} className={`flex h-[84px] items-center justify-center ${secousse ? "secousse" : ""}`}>
-            <span key={impulsion} className={`rebond chiffres flex items-center font-bold leading-none ${tailleMontant} ${montant ? couleurMontant : "text-sourdine/40"}`}>
-              {montant && mode !== "virement" && (
-                <span className="mr-0.5 opacity-80">{mode === "depense" ? "−" : "+"}</span>
-              )}
-              {montant || "0"}
-              <span className="unite ml-1 text-[0.5em]">€</span>
-              {montant && <span className="curseur ml-0.5 inline-block h-[0.8em] w-[3px] rounded-full align-middle" style={{ background: "currentColor" }} />}
-            </span>
+          {/* Grande carte montant, colorée selon le mode (suit le thème clair/sombre) */}
+          <div
+            key={`sec-${secousse}`}
+            className={`relative mb-4 overflow-hidden rounded-ios px-4 pb-5 pt-4 text-center text-white shadow-bouton ${secousse ? "secousse" : ""}`}
+            style={{ background: `linear-gradient(150deg, ${COULEUR_MODE[mode]}, color-mix(in srgb, ${COULEUR_MODE[mode]} 78%, #000))` }}
+          >
+            {/* Vagues décoratives en bas de la carte */}
+            <svg viewBox="0 0 400 120" className="pointer-events-none absolute inset-x-0 bottom-0 h-24 w-full" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M0 60 Q100 30 200 55 T400 50 V120 H0 Z" fill="rgba(255,255,255,0.10)" />
+              <path d="M0 80 Q120 55 240 78 T400 72 V120 H0 Z" fill="rgba(255,255,255,0.08)" />
+            </svg>
+            <p className="relative text-xs font-semibold uppercase tracking-wide text-white/70">Montant</p>
+            <div className="relative mt-1 flex h-[70px] items-center justify-center">
+              <span key={impulsion} className={`rebond chiffres flex items-center font-bold leading-none ${tailleMontant} ${montant ? "text-white" : "text-white/50"}`}>
+                {montant && mode !== "virement" && <span className="mr-0.5 opacity-80">{mode === "depense" ? "−" : "+"}</span>}
+                {montant || "0"}
+                <span className="unite ml-1 text-[0.5em]">€</span>
+                {montant && <span className="curseur ml-0.5 inline-block h-[0.8em] w-[3px] rounded-full bg-white align-middle" />}
+              </span>
+            </div>
+            <p className="relative text-xs font-medium text-white/70">
+              {mode === "depense" ? "Dépense" : mode === "revenu" ? "Revenu" : "Virement"}
+              {comptes[0] && mode !== "virement" ? ` · ${comptes.find((c) => c.id === compteId)?.nom || comptes[0].nom}` : ""}
+            </p>
           </div>
-          <p className="mb-3 text-center text-xs font-medium text-sourdine">
-            {mode === "depense" ? "Dépense" : mode === "revenu" ? "Revenu" : "Virement"}
-            {comptes[0] && mode !== "virement" ? ` · ${comptes.find((c) => c.id === compteId)?.nom || comptes[0].nom}` : ""}
-          </p>
 
-          {/* Suggestions */}
+          {/* Commerçants récents : pastille colorée + libellé + fréquence */}
           {suggestions.length > 0 && (
-            <div className="mb-3 flex flex-wrap gap-1.5">
-              {suggestions.map((sug) => (
-                <button key={sug.libelle} onClick={() => appliquerSuggestion(sug)}
-                  className="rounded-pill bg-voile px-2.5 py-1.5 text-[13px] font-medium">
-                  {(categories[sug.categorie] || categories.autre).icone} {sug.libelle}
-                </button>
-              ))}
+            <div className="mb-4">
+              <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-sourdine">Commerçants récents</p>
+              <div className="space-y-1.5">
+                {suggestions.slice(0, 4).map((sug) => {
+                  const cat = categories[sug.categorie] || categories.autre;
+                  const teinte = COULEURS[cat.couleur]?.vif || "var(--marque)";
+                  return (
+                    <button
+                      key={sug.libelle}
+                      onClick={() => appliquerSuggestion(sug)}
+                      className="tappable flex w-full items-center gap-3 rounded-2xl bg-carte px-3 py-2.5 shadow-carte"
+                    >
+                      <span
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-lg"
+                        style={{ background: COULEURS[cat.couleur]?.fond || "var(--marque-pale)" }}
+                      >
+                        {cat.icone}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-left text-sm font-semibold">{sug.libelle}</span>
+                      {sug.n > 1 && <span className="shrink-0 text-xs text-sourdine">{sug.n} fois</span>}
+                      <span className="shrink-0 text-sourdine">›</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
 
