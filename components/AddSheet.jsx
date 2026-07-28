@@ -261,47 +261,44 @@ export default function AddSheet({ onFermer }) {
       {etape === 1 ? (
         <div key="e1" className="pop-in">
           {/* Saisie en langage naturel */}
-          <div className="mb-4">
-            <div className="flex gap-2">
-              <input
-                value={phrase}
-                onChange={(e) => setPhrase(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && interpreter()}
-                placeholder="« 15€ courses Carrefour hier » — ou dicte au micro 🎤"
-                className="min-w-0 flex-1 champ champ-pill px-4 py-2.5 text-sm outline-none"
-              />
-              <button
-                onClick={interpreter}
-                disabled={!phrase.trim() || analyseEnCours}
-                aria-label="Interpréter"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-marque-pale text-marque-texte disabled:opacity-40"
-              >
-                {analyseEnCours ? <PointsSautillants taille={4} couleur="var(--marque-texte)" /> : "✨"}
-              </button>
-            </div>
-            {erreurIA && <p className="mt-1 px-1 text-xs text-corail">{erreurIA}</p>}
+          {erreurIA && <p className="mb-2 px-1 text-xs text-corail">{erreurIA}</p>}
+
+          {/* Mode : la pastille active prend la couleur du type */}
+          <div className="mb-5 grid grid-cols-3 rounded-pill bg-voile p-1">
+            {MODES.map((m) => {
+              const actif = mode === m.id;
+              const couleurFond =
+                m.id === "depense" ? "var(--corail)" : m.id === "revenu" ? "var(--menthe)" : "var(--marque)";
+              return (
+                <button
+                  key={m.id}
+                  onClick={() => { setMode(m.id); setCategorie(m.id === "revenu" ? "salaire" : "courses"); }}
+                  className={`tappable rounded-pill py-2 text-sm font-semibold transition-all duration-200 ${
+                    actif ? "text-white shadow-bouton" : "text-sourdine"
+                  }`}
+                  style={actif ? { background: couleurFond } : undefined}
+                >
+                  {m.label}
+                </button>
+              );
+            })}
           </div>
 
-          {/* Mode */}
-          <div className="mb-4 grid grid-cols-3 rounded-pill bg-voile p-1">
-            {MODES.map((m) => (
-              <button
-                key={m.id}
-                onClick={() => { setMode(m.id); setCategorie(m.id === "revenu" ? "salaire" : "courses"); }}
-                className={`rounded-pill py-2 text-sm font-semibold transition-colors ${mode === m.id ? "bg-carte shadow-carte" : "text-sourdine"}`}
-              >
-                {m.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Montant géant animé */}
-          <div key={`sec-${secousse}`} className={`flex h-[76px] items-center justify-center ${secousse ? "secousse" : ""}`}>
-            <span key={impulsion} className={`rebond chiffres font-bold leading-none ${tailleMontant} ${montant ? couleurMontant : "text-sourdine/40"}`}>
+          {/* Montant héros : signe, curseur clignotant, étiquette du contexte */}
+          <div key={`sec-${secousse}`} className={`flex h-[84px] items-center justify-center ${secousse ? "secousse" : ""}`}>
+            <span key={impulsion} className={`rebond chiffres flex items-center font-bold leading-none ${tailleMontant} ${montant ? couleurMontant : "text-sourdine/40"}`}>
+              {montant && mode !== "virement" && (
+                <span className="mr-0.5 opacity-80">{mode === "depense" ? "−" : "+"}</span>
+              )}
               {montant || "0"}
               <span className="unite ml-1 text-[0.5em]">€</span>
+              {montant && <span className="curseur ml-0.5 inline-block h-[0.8em] w-[3px] rounded-full align-middle" style={{ background: "currentColor" }} />}
             </span>
           </div>
+          <p className="mb-3 text-center text-xs font-medium text-sourdine">
+            {mode === "depense" ? "Dépense" : mode === "revenu" ? "Revenu" : "Virement"}
+            {comptes[0] && mode !== "virement" ? ` · ${comptes.find((c) => c.id === compteId)?.nom || comptes[0].nom}` : ""}
+          </p>
 
           {/* Suggestions */}
           {suggestions.length > 0 && (
@@ -315,21 +312,26 @@ export default function AddSheet({ onFermer }) {
             </div>
           )}
 
-          {/* Pavé numérique */}
-          <div className="grid grid-cols-3 gap-2">
-            {TOUCHES.map((t, i) => (
-              <button
-                key={t}
-                onClick={() => taper(t)}
-                style={{ animationDelay: `${i * 22}ms` }}
-                className={`pop-in chiffres h-14 rounded-2xl text-[26px] transition-all duration-100 active:scale-90 active:bg-voile ${
-                  t === "⌫" ? "text-sourdine" : ""
-                }`}
-                aria-label={t === "⌫" ? "Effacer" : t}
-              >
-                {t}
-              </button>
-            ))}
+          {/* Pavé numérique : touches en relief, tactiles */}
+          <div className="grid grid-cols-3 gap-2.5">
+            {TOUCHES.map((t, i) => {
+              const backspace = t === "⌫";
+              return (
+                <button
+                  key={t}
+                  onClick={() => taper(t)}
+                  style={{ animationDelay: `${i * 22}ms` }}
+                  className={`pop-in chiffres tappable h-14 rounded-2xl text-[26px] transition-all duration-100 active:scale-90 ${
+                    backspace
+                      ? "bg-voile text-sourdine active:bg-voile"
+                      : "bg-carte shadow-carte active:bg-voile"
+                  }`}
+                  aria-label={backspace ? "Effacer" : t}
+                >
+                  {t}
+                </button>
+              );
+            })}
           </div>
 
           {comptes.length === 0 ? (
@@ -342,6 +344,30 @@ export default function AddSheet({ onFermer }) {
               Continuer
             </button>
           )}
+
+          {/* Voie secondaire : décrire en langage naturel */}
+          <div className="mt-4 flex items-center gap-3">
+            <span className="h-px flex-1 bg-bordure" />
+            <span className="text-xs font-medium text-sourdine">ou décris-la ✨</span>
+            <span className="h-px flex-1 bg-bordure" />
+          </div>
+          <div className="mt-3 flex gap-2">
+            <input
+              value={phrase}
+              onChange={(e) => setPhrase(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && interpreter()}
+              placeholder="« 15€ courses Carrefour hier »"
+              className="min-w-0 flex-1 champ champ-pill px-4 py-2.5 text-sm outline-none"
+            />
+            <button
+              onClick={interpreter}
+              disabled={!phrase.trim() || analyseEnCours}
+              aria-label="Interpréter"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-marque-pale text-marque-texte disabled:opacity-40"
+            >
+              {analyseEnCours ? <PointsSautillants taille={4} couleur="var(--marque-texte)" /> : "✨"}
+            </button>
+          </div>
         </div>
       ) : (
         <div key="e2" className="pop-in space-y-3">
