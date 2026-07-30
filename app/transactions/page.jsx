@@ -83,17 +83,15 @@ export default function Transactions() {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">Opérations</h1>
-        <button onClick={() => setImportOuvert(true)} className="rounded-pill bg-marque-bouton px-4 py-2 text-sm font-semibold text-surMarque">
-          ⬇︎ Importer CSV
-        </button>
+      <header className="flex items-center justify-between px-1">
+        <div><p className="text-v3-caption font-medium text-ui-text-secondary">Suivi en temps réel</p><h1 className="text-v3-title font-semibold">Opérations</h1></div>
+        <button onClick={() => setImportOuvert(true)} className="tappable rounded-pill bg-marque-bouton px-4 py-2.5 text-sm font-semibold text-surMarque shadow-bouton">Importer</button>
       </header>
 
       <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
         <button
           onClick={() => setCompteId("tous")}
-          className={`shrink-0 rounded-pill border px-3 py-1.5 text-sm font-medium ${compteId === "tous" ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte"}`}
+          className={`shrink-0 rounded-pill border px-3 py-2 text-sm font-medium transition-all duration-v3-normal ${compteId === "tous" ? "border-ui-primary bg-ui-primary text-white shadow-v3-soft" : "border-ui-hairline bg-ui-surface-floating text-ui-text-secondary"}`}
         >
           Tous les comptes
         </button>
@@ -101,7 +99,7 @@ export default function Transactions() {
           <button
             key={c.id}
             onClick={() => setCompteId(c.id)}
-            className={`shrink-0 rounded-pill border px-3 py-1.5 text-sm font-medium ${compteId === c.id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte"}`}
+            className={`shrink-0 rounded-pill border px-3 py-2 text-sm font-medium transition-all duration-v3-normal ${compteId === c.id ? "border-ui-primary bg-ui-primary text-white shadow-v3-soft" : "border-ui-hairline bg-ui-surface-floating text-ui-text-secondary"}`}
           >
             {c.nom}
           </button>
@@ -115,7 +113,7 @@ export default function Transactions() {
           placeholder="Rechercher (Carrefour, Netflix, courses…)"
           value={recherche}
           onChange={(e) => setRecherche(e.target.value)}
-          className="w-full champ champ-pill py-2.5 pl-10 pr-9 text-sm outline-none"
+          className="w-full champ champ-pill bg-ui-surface-floating py-3 pl-10 pr-9 text-sm outline-none shadow-v3-soft"
         />
         {recherche && (
           <button onClick={() => setRecherche("")} aria-label="Effacer" className="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full bg-voile text-xs text-sourdine">✕</button>
@@ -153,28 +151,31 @@ export default function Transactions() {
 
       {/* Reste à vivre projeté */}
       {!recherche && (
-        <div className="rounded-ios bg-carte p-4 shadow-carte">
+        <div className={`relative overflow-hidden rounded-v3-m p-5 text-white shadow-v3-medium ${projection.reste < 0 ? "bg-[linear-gradient(145deg,var(--corail),var(--corail-bouton))]" : "bg-[linear-gradient(145deg,var(--marque),var(--marque-texte))]"}`}>
+          <div className="reflet opacity-60" />
+          <div className="relative">
           <div className="flex items-baseline justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">
-              💼 Reste à vivre
-              <span className="ml-1.5 font-medium text-sourdine">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-white/75">
+              Reste à vivre
+              <span className="ml-1.5 font-medium text-white/65">
                 {salaireISO ? `jusqu'au salaire (${dateCourte(salaireISO)})` : "sur 30 jours"}
               </span>
             </h2>
-            <span className="text-xs text-sourdine">{projection.jours} j</span>
+            <span className="rounded-pill bg-white/15 px-2.5 py-1 text-xs font-semibold">{projection.jours} j</span>
           </div>
-          <div className={`chiffres mt-1 text-3xl font-bold ${projection.reste < 0 ? "text-corail" : ""}`}>
+          <div className="chiffres mt-2 text-4xl font-bold">
             {euros(projection.reste)}
           </div>
-          <p className="tnum mt-1 text-xs text-sourdine">
+          <p className="tnum mt-2 text-xs text-white/75">
             {euros(projection.dispo)} dispo
             {projection.prevu > 0 && ` − ${euros(projection.prevu)} prévus`}
             {projection.attendu > 0 && ` + ${euros(projection.attendu)} attendus`}
             {" "}· ~{euros(projection.reste / projection.jours)} / jour
           </p>
           {!salaireISO && (
-            <p className="mt-1.5 text-xs text-sourdine">Renseigne ton jour de salaire dans ⚙️ → Mon profil pour caler la projection sur ta paie.</p>
+            <p className="mt-2 text-xs text-white/75">Renseigne ton jour de salaire dans ⚙️ → Mon profil pour caler la projection sur ta paie.</p>
           )}
+          </div>
         </div>
       )}
 
