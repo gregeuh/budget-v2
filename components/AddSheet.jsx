@@ -10,6 +10,8 @@ import PointsSautillants from "./PointsSautillants";
 import { construireMemoire, devinerDepuisHistorique, lieuxConnus, proposerLibelles } from "@/lib/habitudes";
 import { chercherLieux } from "@/lib/lieux";
 import { lieuPersoProche, enregistrerLieuPerso } from "@/lib/lieuxPerso";
+import { suggererIcone } from "@/lib/icones";
+import IconePicker from "./IconePicker";
 
 // Pictos dessinés maison (pas de logo de marque), un par mode.
 const IconeMode = ({ id, className = "h-4 w-4", style }) => {
@@ -55,6 +57,8 @@ export default function AddSheet({ onFermer }) {
   const [impulsion, setImpulsion] = useState(0);
   const [libelle, setLibelle] = useState("");
   const [categorie, setCategorie] = useState("courses");
+  const [icone, setIcone] = useState("");
+  const [iconeManuelle, setIconeManuelle] = useState(false);
   const [compteId, setCompteId] = useState(comptes[0]?.id || "");
   const [versId, setVersId] = useState(comptes[1]?.id || "");
   const [date, setDate] = useState(aujourdhui());
@@ -260,6 +264,11 @@ export default function AddSheet({ onFermer }) {
   const cats = Object.entries(categories).filter(([, c]) =>
     mode === "revenu" ? c.type === "revenu" : c.type !== "revenu" && c.type !== "virement"
   );
+  const iconeSuggeree = suggererIcone(libelle, categories[categorie]?.icone || "📦");
+
+  useEffect(() => {
+    if (!iconeManuelle) setIcone(iconeSuggeree);
+  }, [iconeSuggeree, iconeManuelle]);
 
   const valider = async () => {
     if (!valeur || valeur <= 0 || !compteId) return;
@@ -272,6 +281,7 @@ export default function AddSheet({ onFermer }) {
         montant: mode === "depense" ? -valeur : valeur,
         categorie,
         libelle: libelle.trim() || (categories[categorie]?.label ?? "Opération"),
+        ...(icone ? { icone } : {}),
         ...(lieu.trim() ? { lieu: lieu.trim() } : {}),
         ...(lieuCoords && lieuCoords.nom === lieu.trim() ? { lieuLat: lieuCoords.lat, lieuLon: lieuCoords.lon, lieuAdresse: lieuCoords.adresse || "" } : {}),
         ...(horsSolde ? { horsSolde: true } : {}),
@@ -462,6 +472,14 @@ export default function AddSheet({ onFermer }) {
                   {autoApplique.lieu ? ` 📍 ${autoApplique.lieu}` : ""}
                 </p>
               )}
+
+              <IconePicker
+                icone={icone}
+                suggestion={iconeSuggeree}
+                personnalisee={iconeManuelle}
+                onChoisir={(emoji) => { setIcone(emoji); setIconeManuelle(true); }}
+                onChoisirAuto={() => { setIcone(iconeSuggeree); setIconeManuelle(false); }}
+              />
 
               {/* Lieu, avec les lieux déjà utilisés */}
               <div>

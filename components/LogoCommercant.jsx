@@ -1,21 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { devinerDomaine, urlLogo } from "@/lib/logos";
+import { devinerDomaine, urlFavicon, urlLogo } from "@/lib/logos";
 
 /**
  * Affiche le vrai logo d'un commerçant si on le trouve, sinon une pastille
  * colorée avec son initiale. Si le logo échoue au chargement (domaine deviné
  * mais inexistant), on bascule automatiquement sur l'initiale : aucun trou.
  */
-export default function LogoCommercant({ nom = "", couleur = "var(--marque)", taille = 36, emoji = null }) {
+export default function LogoCommercant({ nom = "", couleur = "var(--marque)", taille = 36, emoji = null, iconePersonnalisee = false }) {
   const domaine = devinerDomaine(nom);
-  const [echec, setEchec] = useState(false);
+  const [source, setSource] = useState("logo");
   const initiale = (nom || "?").trim().charAt(0).toUpperCase();
   const rayon = Math.round(taille * 0.28);
 
   // Repli : emoji de catégorie si fourni (listes d'opérations), sinon initiale colorée.
-  if (!domaine || echec) {
+  if (iconePersonnalisee || !domaine || source === "echec") {
     if (emoji) {
       return (
         <span
@@ -43,12 +43,12 @@ export default function LogoCommercant({ nom = "", couleur = "var(--marque)", ta
       style={{ width: taille, height: taille, borderRadius: rayon }}
     >
       <img
-        src={urlLogo(domaine, taille * 2)}
+        src={source === "logo" ? urlLogo(domaine, taille * 2) : urlFavicon(domaine, taille * 2)}
         alt=""
         width={taille}
         height={taille}
         loading="lazy"
-        onError={() => setEchec(true)}
+        onError={() => setSource((actuelle) => actuelle === "logo" ? "favicon" : "echec")}
         style={{ width: "82%", height: "82%", objectFit: "contain" }}
       />
     </span>

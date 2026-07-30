@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { aujourdhui } from "@/lib/format";
 import Sheet from "./Sheet";
@@ -8,6 +8,8 @@ import { nettoyerLibelle } from "@/lib/libelles";
 import { construireMemoire, devinerDepuisHistorique, lieuxConnus, proposerLibelles } from "@/lib/habitudes";
 import { lienCarte } from "@/lib/lieux";
 import MiniCarte from "./MiniCarte";
+import { suggererIcone } from "@/lib/icones";
+import IconePicker from "./IconePicker";
 
 export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
   const { comptes, categories, transactions, modifierTransaction, supprimerTransaction, ajouterTransaction } = useBudget();
@@ -19,6 +21,8 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
   const [date, setDate] = useState(tx.date);
   const [horsSolde, setHorsSolde] = useState(Boolean(tx.horsSolde));
   const [lieu, setLieu] = useState(tx.lieu || "");
+  const [icone, setIcone] = useState(tx.icone || "");
+  const [iconeManuelle, setIconeManuelle] = useState(Boolean(tx.icone));
   const [confirmeSuppr, setConfirmeSuppr] = useState(false);
 
   const repeter = async () => {
@@ -31,6 +35,7 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
       categorie,
       date: aujourdhui(),
       ...(lieu.trim() ? { lieu: lieu.trim() } : { lieu: null }),
+      ...(icone ? { icone } : {}),
       // Si le lieu a été réécrit à la main, les anciennes coordonnées ne valent plus.
       ...(lieu.trim() === (tx.lieu || "").trim() ? {} : { lieuLat: null, lieuLon: null }),
     });
@@ -49,6 +54,13 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
   const lieuxFrequents = useMemo(() => lieuxConnus(transactions, 8, lieu), [transactions, lieu]);
   const propositions = useMemo(() => proposerLibelles(libelle, memoire), [libelle, memoire]);
   const [habitude, setHabitude] = useState("");
+  const iconeSuggeree = suggererIcone(libelle, categories[categorie]?.icone || "📦");
+
+  // La suggestion accompagne la saisie tant que l'utilisateur ne l'a pas
+  // remplacée. Un choix manuel reste toujours prioritaire.
+  useEffect(() => {
+    if (!iconeManuelle) setIcone(iconeSuggeree);
+  }, [iconeSuggeree, iconeManuelle]);
 
   const appliquerHabitude = (valeur) => {
     const trouve = devinerDepuisHistorique(valeur, memoire);
@@ -83,6 +95,7 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
       date,
       horsSolde: horsSolde || false,
       lieu: lieu.trim() || null,
+      ...(icone ? { icone } : {}),
     });
     // Propagation aux opérations de même libellé d'origine
     const nouveauLibelle = libelle.trim();
@@ -151,6 +164,16 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
 
         {habitude && (
           <p className="fade-in -mt-1 px-1 text-[11px] text-menthe-texte">✨ {habitude}</p>
+        )}
+
+        {!estVirement && (
+          <IconePicker
+            icone={icone}
+            suggestion={iconeSuggeree}
+            personnalisee={iconeManuelle}
+            onChoisir={(emoji) => { setIcone(emoji); setIconeManuelle(true); }}
+            onChoisirAuto={() => { setIcone(iconeSuggeree); setIconeManuelle(false); }}
+          />
         )}
 
         {memesLibelles.length > 0 && libelle.trim() && libelle.trim() !== (tx.libelle || "") && (
