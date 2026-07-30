@@ -17,9 +17,23 @@ import Confettis from "./Confettis";
 export default function AppShell({ children }) {
   const { pret, user, modeLocal, profil, comptes, erreurInit, reglagesOuverts, celebration } = useBudget();
   const [fete, setFete] = useState(false);
+  const [enLigne, setEnLigne] = useState(true);
 
   // Capte les erreurs dès le démarrage, pour qu'aucune ne passe inaperçue
   useEffect(() => { brancherJournal(); }, []);
+
+  // Les données Firestore sont mises en cache par le SDK. Informer sans
+  // bloquer permet de continuer à consulter l'app même sans réseau.
+  useEffect(() => {
+    const actualiser = () => setEnLigne(navigator.onLine);
+    actualiser();
+    window.addEventListener("online", actualiser);
+    window.addEventListener("offline", actualiser);
+    return () => {
+      window.removeEventListener("online", actualiser);
+      window.removeEventListener("offline", actualiser);
+    };
+  }, []);
 
   useEffect(() => {
     if (celebration > 0) setFete(true);
@@ -59,6 +73,11 @@ export default function AppShell({ children }) {
       <div aria-hidden="true" className="app-shell__ambient" />
       <TirerPourRafraichir />
       <Toast />
+      {!enLigne && (
+        <div role="status" className="relative z-10 mx-4 mt-3 rounded-v3-s bg-beurre-pale px-3.5 py-2 text-xs font-medium text-beurre-texte shadow-v3-soft">
+          📡 Hors connexion — tes données restent consultables. Les changements seront synchronisés dès le retour du réseau.
+        </div>
+      )}
       {erreurInit && (
         <div className="relative z-10 mx-4 mt-3 rounded-v3-s bg-corail-pale px-3.5 py-2 text-xs font-medium text-corail-texte shadow-v3-soft">
           ⚠️ {erreurInit}
