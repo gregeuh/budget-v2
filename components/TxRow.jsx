@@ -71,7 +71,7 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
         <button
           onClick={() => { supprimerTransaction(tx.id); setDecalage(0); }}
           aria-label="Supprimer l'opération"
-          className="absolute inset-y-0 right-0 flex items-center justify-center bg-corail-bouton text-xs font-bold text-white"
+          className="absolute inset-y-0 right-0 flex min-h-11 items-center justify-center bg-corail-bouton text-xs font-bold text-white"
           style={{ width: LARGEUR_ACTION }}
         >
           🗑️ Supprimer
@@ -83,7 +83,16 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
           onTouchMove={surMouvement}
           onTouchEnd={surFin}
           onClick={ouvrirEdition}
-          className="tappable relative flex cursor-pointer items-center gap-3 rounded-2xl bg-carte px-3 py-2 shadow-carte"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              ouvrirEdition();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label={`Modifier l'opération ${tx.libelle || cat.label} de ${euros(tx.montant, { precis: true })}`}
+          className="tappable relative flex min-h-12 cursor-pointer items-center gap-3 rounded-2xl bg-carte px-3 py-2 shadow-carte focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marque focus-visible:ring-offset-2"
           style={{
             transform: `translateX(${decalage}px)`,
             transition: glisse ? "none" : "transform 0.28s cubic-bezier(0.32, 0.72, 0, 1)",
