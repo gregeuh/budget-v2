@@ -23,6 +23,7 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
   const [lieu, setLieu] = useState(tx.lieu || "");
   const [icone, setIcone] = useState(tx.icone || "");
   const [iconeManuelle, setIconeManuelle] = useState(Boolean(tx.icone));
+  const [iconeMemorisee, setIconeMemorisee] = useState(false);
   const [confirmeSuppr, setConfirmeSuppr] = useState(false);
 
   const repeter = async () => {
@@ -59,12 +60,15 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
   // La suggestion accompagne la saisie tant que l'utilisateur ne l'a pas
   // remplacée. Un choix manuel reste toujours prioritaire.
   useEffect(() => {
-    if (!iconeManuelle) setIcone(iconeSuggeree);
-  }, [iconeSuggeree, iconeManuelle]);
+    if (!iconeManuelle && !iconeMemorisee) setIcone(iconeSuggeree);
+  }, [iconeSuggeree, iconeManuelle, iconeMemorisee]);
 
   const appliquerHabitude = (valeur) => {
     const trouve = devinerDepuisHistorique(valeur, memoire);
-    if (!trouve) return;
+    if (!trouve) {
+      setIconeMemorisee(false);
+      return;
+    }
     const applique = [];
     if (trouve.categorie && categories[trouve.categorie] && trouve.categorie !== categorie) {
       setCategorie(trouve.categorie);
@@ -73,6 +77,11 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
     if (trouve.lieu && !lieu.trim()) {
       setLieu(trouve.lieu);
       applique.push(trouve.lieu);
+    }
+    if (trouve.icone && !iconeManuelle) {
+      setIcone(trouve.icone);
+      setIconeMemorisee(true);
+      applique.push(`icône ${trouve.icone}`);
     }
     setHabitude(applique.length ? `D'après tes habitudes : ${applique.join(" · ")}` : "");
   };
@@ -142,7 +151,7 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
         <input
           placeholder="Libellé"
           value={libelle}
-          onChange={(e) => setLibelle(e.target.value)}
+          onChange={(e) => { setLibelle(e.target.value); setIconeMemorisee(false); }}
           onBlur={(e) => appliquerHabitude(e.target.value)}
           className="w-full champ px-4 py-3 outline-none"
         />
@@ -170,9 +179,10 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
           <IconePicker
             icone={icone}
             suggestion={iconeSuggeree}
-            personnalisee={iconeManuelle}
-            onChoisir={(emoji) => { setIcone(emoji); setIconeManuelle(true); }}
-            onChoisirAuto={() => { setIcone(iconeSuggeree); setIconeManuelle(false); }}
+            personnalisee={iconeManuelle || iconeMemorisee}
+            message={iconeMemorisee ? "Mémorisée pour ce commerçant" : undefined}
+            onChoisir={(emoji) => { setIcone(emoji); setIconeManuelle(true); setIconeMemorisee(false); }}
+            onChoisirAuto={() => { setIcone(iconeSuggeree); setIconeManuelle(false); setIconeMemorisee(false); }}
           />
         )}
 

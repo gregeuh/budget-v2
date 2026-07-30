@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ICONES_ETENDUES, ICONES_RAPIDES } from "@/lib/icones";
 
-export default function IconePicker({ icone, suggestion, personnalisee, onChoisirAuto, onChoisir }) {
+export default function IconePicker({ icone, suggestion, personnalisee, message, onChoisirAuto, onChoisir }) {
   const [ouvert, setOuvert] = useState(false);
   const emojis = ouvert ? [...new Set([...ICONES_RAPIDES, ...ICONES_ETENDUES])] : ICONES_RAPIDES;
 
@@ -16,7 +16,7 @@ export default function IconePicker({ icone, suggestion, personnalisee, onChoisi
         </span>
       </div>
       <p className="mt-1 text-xs text-sourdine">
-        {personnalisee ? "Choix personnalisé" : "Suggestion intelligente selon le libellé"}
+        {message || (personnalisee ? "Choix personnalisé" : "Suggestion intelligente selon le libellé")}
       </p>
       <div className="mt-2.5 flex flex-wrap gap-1.5">
         {emojis.map((emoji) => (
