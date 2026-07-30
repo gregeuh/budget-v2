@@ -7,6 +7,7 @@ import { calculerProjection } from "@/lib/projection";
 import { statsMois } from "@/lib/conseils";
 import TxRow from "@/components/TxRow";
 import ImportCSV from "@/components/ImportCSV";
+import { rechercher } from "@/lib/recherche";
 
 export default function Transactions() {
   const { transactions, comptes, categories, recurrentes, soldes, profil } = useBudget();
@@ -14,17 +15,42 @@ export default function Transactions() {
   const [catFiltre, setCatFiltre] = useState("toutes");
   const [importOuvert, setImportOuvert] = useState(false);
   const [recherche, setRecherche] = useState("");
+  const [filtresOuverts, setFiltresOuverts] = useState(false);
+  const [periode, setPeriode] = useState("tout");
+  const [typeFiltre, setTypeFiltre] = useState("tous");
+  const [montantMin, setMontantMin] = useState("");
 
-  const normaliser = (t) => (t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const filtresActifs = catFiltre !== "toutes" || periode !== "tout" || typeFiltre !== "tous" || Boolean(montantMin.trim());
+  const debutPeriode = useMemo(() => {
+    const aujourd = new Date(`${aujourdhui()}T12:00:00`);
+    if (periode === "mois") return `${aujourdhui().slice(0, 7)}-01`;
+    if (periode === "3mois") {
+      aujourd.setMonth(aujourd.getMonth() - 2);
+      return `${aujourd.getFullYear()}-${String(aujourd.getMonth() + 1).padStart(2, "0")}-01`;
+    }
+    return null;
+  }, [periode]);
+
+  const effacerFiltres = () => {
+    setCompteId("tous");
+    setCatFiltre("toutes");
+    setPeriode("tout");
+    setTypeFiltre("tous");
+    setMontantMin("");
+    setRecherche("");
+  };
 
   const parMois = useMemo(() => {
-    const q = normaliser(recherche.trim());
-    const filtrees = transactions.filter((t) => {
+    const seuil = Number(String(montantMin).replace(",", "."));
+    const base = recherche.trim() ? rechercher(recherche, transactions, comptes) : transactions;
+    const filtrees = base.filter((t) => {
       if (compteId !== "tous" && t.compteId !== compteId && t.versId !== compteId) return false;
       if (catFiltre !== "toutes" && t.categorie !== catFiltre) return false;
-      if (!q) return true;
-      const cat = categories[t.categorie] || categories.autre;
-      return normaliser(t.libelle).includes(q) || normaliser(cat.label).includes(q);
+      if (debutPeriode && t.date < debutPeriode) return false;
+      if (typeFiltre === "depenses" && t.montant >= 0) return false;
+      if (typeFiltre === "revenus" && t.montant <= 0) return false;
+      if (Number.isFinite(seuil) && seuil > 0 && Math.abs(t.montant) < seuil) return false;
+      return true;
     });
     const groupes = {};
     for (const t of filtrees.filter((t) => t.date <= aujourdhui())) {
@@ -34,7 +60,7 @@ export default function Transactions() {
     return Object.entries(groupes)
       .sort((a, b) => b[0].localeCompare(a[0]))
       .map(([mois, txs]) => ({ mois, txs: txs.sort((a, b) => b.date.localeCompare(a.date)) }));
-  }, [transactions, compteId, catFiltre, recherche, categories]);
+  }, [transactions, compteId, catFiltre, recherche, comptes, debutPeriode, typeFiltre, montantMin]);
 
   const catsPresentes = useMemo(() => {
     const set = new Set(transactions.map((t) => t.categorie));
@@ -43,7 +69,7 @@ export default function Transactions() {
 
   // Bilan de la recherche
   const bilan = useMemo(() => {
-    if (!recherche.trim()) return null;
+    if (!recherche.trim() && !filtresActifs) return null;
     let nb = 0, depense = 0, recu = 0;
     for (const { txs } of parMois) {
       for (const t of txs) {
@@ -54,7 +80,7 @@ export default function Transactions() {
       }
     }
     return { nb, depense, recu };
-  }, [parMois, recherche]);
+  }, [parMois, recherche, filtresActifs]);
 
   const [astuce, setAstuce] = useState(false);
   useEffect(() => {
@@ -120,6 +146,49 @@ export default function Transactions() {
         )}
       </div>
 
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setFiltresOuverts((ouvert) => !ouvert)}
+          className={`flex flex-1 items-center justify-between rounded-ios border px-3.5 py-2.5 text-sm font-semibold transition ${filtresActifs ? "border-marque bg-marque-pale text-marque-texte" : "border-bordure bg-carte"}`}
+        >
+          <span>☷ Filtres avancés</span>
+          <span className="text-xs">{filtresOuverts ? "Masquer" : filtresActifs ? "Actifs" : "Afficher"}</span>
+        </button>
+        {(recherche || filtresActifs || compteId !== "tous") && (
+          <button onClick={effacerFiltres} className="rounded-ios bg-voile px-3 py-2.5 text-xs font-semibold text-sourdine">Réinitialiser</button>
+        )}
+      </div>
+
+      {filtresOuverts && (
+        <div className="fade-in space-y-3 rounded-v3-m border border-bordure bg-carte p-3.5 shadow-carte">
+          <div>
+            <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-sourdine">Période</p>
+            <div className="grid grid-cols-3 gap-1.5">
+              {[["mois", "Ce mois"], ["3mois", "3 mois"], ["tout", "Tout"]].map(([id, label]) => (
+                <button key={id} onClick={() => setPeriode(id)} className={`rounded-pill px-2 py-2 text-xs font-semibold ${periode === id ? "bg-encre text-contraste" : "bg-fond text-sourdine"}`}>{label}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-sourdine">Type</p>
+            <div className="grid grid-cols-3 gap-1.5">
+              {[["tous", "Tous"], ["depenses", "Dépenses"], ["revenus", "Revenus"]].map(([id, label]) => (
+                <button key={id} onClick={() => setTypeFiltre(id)} className={`rounded-pill px-2 py-2 text-xs font-semibold ${typeFiltre === id ? "bg-encre text-contraste" : "bg-fond text-sourdine"}`}>{label}</button>
+              ))}
+            </div>
+          </div>
+          <label className="block">
+            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-sourdine">Montant minimum</span>
+            <div className="champ flex items-center px-3">
+              <span className="text-sourdine">≥</span>
+              <input inputMode="decimal" value={montantMin} onChange={(e) => setMontantMin(e.target.value)} placeholder="Ex. 50" className="min-w-0 flex-1 bg-transparent px-2 py-2.5 text-sm outline-none" />
+              <span className="text-sm text-sourdine">€</span>
+            </div>
+          </label>
+          <p className="text-[11px] text-sourdine">La recherche comprend aussi le lieu, le compte, le libellé de la banque et les requêtes comme « &gt;50 » ou « dépense ».</p>
+        </div>
+      )}
+
       {/* Filtre par catégorie */}
       {catsPresentes.length > 1 && (
         <div className="no-scrollbar -mx-4 flex gap-1.5 overflow-x-auto px-4">
@@ -150,7 +219,7 @@ export default function Transactions() {
       )}
 
       {/* Reste à vivre projeté */}
-      {!recherche && (
+      {!recherche && !filtresActifs && (
         <div className={`relative overflow-hidden rounded-v3-m p-5 text-white shadow-v3-medium ${projection.reste < 0 ? "bg-[linear-gradient(145deg,var(--corail),var(--corail-bouton))]" : "bg-[linear-gradient(145deg,var(--marque),var(--marque-texte))]"}`}>
           <div className="reflet opacity-60" />
           <div className="relative">
@@ -180,7 +249,7 @@ export default function Transactions() {
       )}
 
       {/* À venir */}
-      {!recherche && aVenirAffiche.length > 0 && (
+      {!recherche && !filtresActifs && aVenirAffiche.length > 0 && (
         <section>
           <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-sourdine">À venir</h2>
           <ul className="space-y-2">
@@ -210,7 +279,7 @@ export default function Transactions() {
         </section>
       )}
 
-      {parMois.length > 0 && !recherche && (
+      {parMois.length > 0 && !recherche && !filtresActifs && (
         <div className="flex items-baseline justify-between">
           <h2 className="!mb-0 text-sm font-semibold uppercase tracking-wide text-sourdine">Passées</h2>
           {astuce && (
@@ -223,7 +292,7 @@ export default function Transactions() {
 
       {parMois.length === 0 && (
         <p className="rounded-ios bg-carte p-6 text-center text-sm text-sourdine shadow-carte">
-          {recherche ? `Aucune opération ne correspond à « ${recherche} ».` : "Aucune opération à afficher."}
+          {recherche ? `Aucune opération ne correspond à « ${recherche} ».` : filtresActifs ? "Aucune opération ne correspond à ces filtres." : "Aucune opération à afficher."}
         </p>
       )}
 
