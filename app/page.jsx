@@ -73,23 +73,39 @@ export default function Accueil() {
         </div>
       </div>
 
-      <header className="flex items-start justify-between">
+      <header className="flex items-center justify-between px-1">
         <div>
-          <p className="text-sm text-sourdine">
-            <span className="font-medium text-encre">
-              {accueil.mot}{profil.prenom ? ` ${profil.prenom.slice(0, 20)}` : ""} {accueil.emoji}
-            </span>
-            {" "}· {accueil.phrase}
-          </p>
-          <h1 className={`chiffres font-bold leading-tight ${Math.abs(patrimoine) >= 100000 ? "text-[28px]" : Math.abs(patrimoine) >= 10000 ? "text-[32px]" : "text-4xl"} ${patrimoine < 0 ? "text-corail" : ""}`}><ChiffresRoulants valeur={patrimoine} /></h1>
-          <p className="text-sm text-sourdine">
-            Patrimoine
-            {avantages > 0 && ` · hors titres-resto (${euros(avantages)})`}
-            {totalCredits > 0 && ` · hors crédits (−${euros(totalCredits)})`}
-          </p>
+          <p className="text-v3-caption font-medium text-ui-text-secondary">{moisLabel(mois)}</p>
+          <h1 className="mt-0.5 text-v3-title font-semibold tracking-tight">{accueil.mot}{profil.prenom ? ` ${profil.prenom.slice(0, 20)}` : ""} {accueil.emoji}</h1>
         </div>
-        <button onClick={() => setReglagesOuverts(true)} aria-label="Réglages" className="flex h-9 w-9 items-center justify-center rounded-full bg-carte text-base shadow-carte active:scale-95 transition-transform">⚙️</button>
+        <button onClick={() => setReglagesOuverts(true)} aria-label="Ouvrir les réglages" className="tappable flex h-11 w-11 items-center justify-center rounded-full border border-ui-hairline bg-ui-surface-floating text-lg shadow-v3-soft backdrop-blur-v3-glass">⚙️</button>
       </header>
+
+      <section className="relative overflow-hidden rounded-v3-xl bg-[linear-gradient(145deg,var(--marque),var(--marque-texte))] px-6 py-6 text-white shadow-v3-medium">
+        <div className="reflet opacity-70" />
+        <div className="relative">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-v3-caption font-medium text-white/70">Patrimoine net</p>
+              <div className={`chiffres mt-2 text-v3-hero ${patrimoine < 0 ? "text-white" : ""}`}><ChiffresRoulants valeur={patrimoine} /></div>
+            </div>
+            <span className="rounded-pill bg-white/15 px-3 py-1.5 text-v3-caption font-semibold backdrop-blur-v3-glass">Ce mois-ci</span>
+          </div>
+          <p className="mt-2 text-v3-caption text-white/75">{accueil.phrase}</p>
+          <svg viewBox="0 0 320 68" className="mt-5 h-16 w-full" role="img" aria-label="Tendance décorative du patrimoine">
+            <defs><linearGradient id="hero-area" x1="0" y1="0" x2="0" y2="1"><stop stopColor="white" stopOpacity=".26"/><stop offset="1" stopColor="white" stopOpacity="0"/></linearGradient></defs>
+            <path d="M0 53 C36 45 52 54 83 39 S130 45 159 30 S214 37 242 18 S285 26 320 7 L320 68 L0 68 Z" fill="url(#hero-area)" />
+            <path d="M0 53 C36 45 52 54 83 39 S130 45 159 30 S214 37 242 18 S285 26 320 7" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+            <circle cx="320" cy="7" r="4" fill="white" />
+          </svg>
+          <div className="mt-4 grid grid-cols-2 gap-3 border-t border-white/20 pt-4">
+            <div><p className="text-v3-caption text-white/65">Revenus</p><p className="tnum mt-0.5 text-sm font-semibold">+{euros(s.revenus)}</p></div>
+            <div className="border-l border-white/20 pl-4"><p className="text-v3-caption text-white/65">Dépenses</p><p className="tnum mt-0.5 text-sm font-semibold">−{euros(s.depenses)}</p></div>
+          </div>
+        </div>
+      </section>
+
+      {(avantages > 0 || totalCredits > 0) && <p className="px-1 text-v3-caption text-ui-text-secondary">{avantages > 0 && `Hors titres-resto (${euros(avantages)})`}{avantages > 0 && totalCredits > 0 && " · "}{totalCredits > 0 && `Hors crédits (−${euros(totalCredits)})`}</p>}
 
       <button
         onClick={() => setRechercheOuverte(true)}

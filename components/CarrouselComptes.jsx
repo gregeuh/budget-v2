@@ -44,7 +44,7 @@ export default function CarrouselComptes({ onChange }) {
       <div
         ref={rail}
         onScroll={surDefilement}
-        className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4"
+        className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-4"
       >
         {cartes.map((c, i) => {
           const estTous = c.id === null;
@@ -57,14 +57,13 @@ export default function CarrouselComptes({ onChange }) {
               key={c.id ?? "tous"}
               onClick={() => { if (!estTous && i === actif) transitionPartagee(() => setFiche(c)); }}
               role={estTous ? undefined : "button"}
-              className={`carte-compte relative w-[82%] shrink-0 snap-center overflow-hidden rounded-ios p-4 shadow-carte transition-[transform,opacity] duration-300 ${!estTous && i === actif ? "cursor-pointer" : ""}`}
+              className={`carte-compte relative w-[86%] shrink-0 snap-center overflow-hidden rounded-v3-l p-5 shadow-v3-medium transition-[transform,opacity] duration-v3-normal ease-v3-standard ${!estTous && i === actif ? "cursor-pointer" : ""}`}
               style={{
                 ...(estTous
-                  ? { background: "linear-gradient(135deg, #1C1C1E, #248A3D)" }
+                  ? { background: "linear-gradient(145deg, #2c2a74, #1965bc)" }
                   : {
-                      background: `linear-gradient(135deg, ${coul.fond}, transparent 70%)`,
-                      backgroundColor: "var(--c-carte)",
-                      border: `1px solid ${coul.vif}22`,
+                      background: `linear-gradient(145deg, ${coul.vif}, color-mix(in srgb, ${coul.vif} 62%, #19243b))`,
+                      border: `1px solid color-mix(in srgb, ${coul.vif} 72%, white)`,
                     }),
                 transform: i === actif ? "scale(1)" : "scale(0.93)",
                 opacity: i === actif ? 1 : 0.55,
@@ -75,13 +74,12 @@ export default function CarrouselComptes({ onChange }) {
               <div className="relative">
                 <div className="flex items-start justify-between">
                   <span
-                    className="flex h-9 w-9 items-center justify-center rounded-xl text-lg"
-                    style={{ background: estTous ? "rgba(255,255,255,0.15)" : coul.vif + "26" }}
+                    className="flex h-10 w-10 items-center justify-center rounded-v3-xs bg-white/15 text-lg text-white backdrop-blur-v3-glass"
                   >
                     {estTous ? "✨" : t.icone}
                   </span>
                   <span
-                    className={`rounded-pill px-2 py-0.5 text-[11px] font-semibold ${estTous ? "bg-white/15 text-white" : "bg-voile text-sourdine"}`}
+                    className="rounded-pill bg-white/15 px-2.5 py-1 text-[11px] font-semibold text-white/90 backdrop-blur-v3-glass"
                   >
                     {estTous ? `${comptes.length} comptes` : t.label}
                   </span>
@@ -104,19 +102,19 @@ export default function CarrouselComptes({ onChange }) {
                 <div className="mt-3">
                   <Montant
                     valeur={solde}
-                    className={`block font-bold leading-none ${Math.abs(solde) >= 100000 ? "text-[22px]" : Math.abs(solde) >= 10000 ? "text-[26px]" : "text-[30px]"} ${estTous ? "text-white" : solde < 0 ? "text-corail" : ""}`}
+                    className={`block font-bold leading-none text-white ${Math.abs(solde) >= 100000 ? "text-[24px]" : Math.abs(solde) >= 10000 ? "text-[28px]" : "text-[32px]"}`}
                   />
-                  <div className={`mt-0.5 flex items-center gap-1 text-[13px] ${estTous ? "text-white/70" : "text-sourdine"}`}>
+                  <div className="mt-1 flex items-center gap-1 text-[13px] text-white/75">
                     {estTous ? "Tous les comptes" : c.nom}
-                    {!estTous && i === actif && <span className="text-sourdine/50">›</span>}
+                    {!estTous && i === actif && <span className="text-white/60">›</span>}
                   </div>
                 </div>
                 {plafond && (
                   <div className="mt-3">
-                    <div className="h-1.5 overflow-hidden rounded-full bg-voile">
+                    <div className="h-1.5 overflow-hidden rounded-full bg-white/20">
                       <div className="jauge-in h-full rounded-full" style={{ width: `${Math.max(0, Math.min(100, (solde / plafond) * 100))}%`, background: coul.vif }} />
                     </div>
-                    <p className="mt-1 text-[11px] text-sourdine">{Math.max(0, Math.round((solde / plafond) * 100))} % du plafond</p>
+                    <p className="mt-1 text-[11px] text-white/70">{Math.max(0, Math.round((solde / plafond) * 100))} % du plafond</p>
                   </div>
                 )}
               </div>
@@ -132,7 +130,7 @@ export default function CarrouselComptes({ onChange }) {
         {cartes.map((c, i) => (
           <span
             key={c.id ?? "tous"}
-            className={`h-1.5 rounded-full transition-all ${i === actif ? "w-4 bg-encre" : "w-1.5 bg-encre/20"}`}
+            className={`h-1.5 rounded-full transition-all duration-v3-normal ${i === actif ? "w-5 bg-ui-primary" : "w-1.5 bg-encre/20"}`}
           />
         ))}
       </div>
