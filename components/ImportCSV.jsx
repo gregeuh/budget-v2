@@ -39,6 +39,7 @@ export default function ImportCSV({ onFermer }) {
   const [enCours, setEnCours] = useState(false);
   const [termine, setTermine] = useState(null); // { ajouts, fusions }
   const [etapeRappro, setEtapeRappro] = useState(false);
+  const [filtre, setFiltre] = useState("toutes");
   const fichierRef = useRef(null);
 
   const dejaImportees = useMemo(() => {
@@ -62,6 +63,10 @@ export default function ImportCSV({ onFermer }) {
           if (appris?.categorie && categories[appris.categorie]) o.categorie = appris.categorie;
           if (appris?.lieu && !o.lieu) o.lieu = appris.lieu;
           if (appris?.icone && !o.icone) o.icone = appris.icone;
+          o.appris = Boolean(appris?.categorie || appris?.lieu || appris?.icone);
+          // Une catégorie « Autre » non apprise mérite une décision explicite
+          // avant de passer au rapprochement.
+          o.aVerifier = !o.appris && o.categorie === "autre";
         }
         const sel = {};
         res.operations.forEach((o, i) => {
@@ -79,7 +84,7 @@ export default function ImportCSV({ onFermer }) {
   const changerCategorie = (i, cat) => {
     setResultat((r) => {
       const ops = [...r.operations];
-      ops[i] = { ...ops[i], categorie: cat };
+      ops[i] = { ...ops[i], categorie: cat, aVerifier: false };
       return { operations: ops };
     });
   };
@@ -93,7 +98,7 @@ export default function ImportCSV({ onFermer }) {
     resultat.operations
       .map((o, i) => ({ ...o, _i: i }))
       .filter((o) => selection[o._i])
-      .map((o) => ({ montant: o.montant, categorie: o.categorie, libelle: o.libelle, libelleBanque: o.libelleBanque, date: o.date }));
+      .map((o) => ({ montant: o.montant, categorie: o.categorie, libelle: o.libelle, libelleBanque: o.libelleBanque, date: o.date, icone: o.icone, lieu: o.lieu }));
 
   // Étape 2 : appliquer les décisions
   const [lotId, setLotId] = useState(null);
@@ -112,6 +117,8 @@ export default function ImportCSV({ onFermer }) {
           categorie: d.ligne.categorie,
           libelle: d.ligne.libelle,
           date: d.ligne.date,
+          ...(d.ligne.icone ? { icone: d.ligne.icone } : {}),
+          ...(d.ligne.lieu ? { lieu: d.ligne.lieu } : {}),
           importe: true,
           lotImport: id,
           dateImport,
@@ -138,6 +145,21 @@ export default function ImportCSV({ onFermer }) {
 
   const nbSelection = Object.values(selection).filter(Boolean).length;
   const cats = Object.entries(categories).filter(([, c]) => c.type !== "virement");
+  const operations = resultat?.operations || [];
+  const nbDoublons = operations.filter((o) => o.doublon).length;
+  const nbAVerifier = operations.filter((o) => o.aVerifier).length;
+  const nbApprises = operations.filter((o) => o.appris).length;
+  const operationsVisibles = operations
+    .map((o, i) => ({ ...o, _i: i }))
+    .filter((o) => filtre === "toutes" || filtre === "aVerifier" ? o.aVerifier || (filtre === "toutes") : filtre === "doublons" ? o.doublon : o.appris);
+
+  const selectionnerNouvelles = () => {
+    const prochaine = { ...selection };
+    operations.forEach((o, i) => { prochaine[i] = !o.doublon; });
+    setSelection(prochaine);
+  };
+
+  const toutDecocher = () => setSelection({});
 
   return (
     <Sheet titre="Importer un relevé CSV" onFermer={onFermer}>
@@ -187,26 +209,46 @@ export default function ImportCSV({ onFermer }) {
         </div>
       ) : (
         <div className="space-y-3">
-          <p className="text-sm text-sourdine">
-            {resultat.operations.length} opérations détectées — vérifie les catégories, décoche ce que tu ne veux pas.
-            {resultat.operations.some((o) => o.doublon) && " Les doublons probables sont décochés."}
-          </p>
+          <div className="rounded-ios bg-fond p-3">
+            <p className="text-sm font-semibold">Revue avant import</p>
+            <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
+              <span className="rounded-pill bg-carte px-2 py-1 font-medium">{operations.length} détectée{operations.length > 1 ? "s" : ""}</span>
+              {nbApprises > 0 && <span className="rounded-pill bg-menthe-pale px-2 py-1 font-medium text-menthe-texte">✨ {nbApprises} reconnue{nbApprises > 1 ? "s" : ""}</span>}
+              {nbAVerifier > 0 && <span className="rounded-pill bg-beurre-pale px-2 py-1 font-medium text-beurre-texte">⚠️ {nbAVerifier} à vérifier</span>}
+              {nbDoublons > 0 && <span className="rounded-pill bg-corail-pale px-2 py-1 font-medium text-corail-texte">⛓️ {nbDoublons} doublon{nbDoublons > 1 ? "s" : ""}</span>}
+            </div>
+            <p className="mt-2 text-xs text-sourdine">Les doublons probables sont décochés par sécurité. Les réglages appris pour tes commerçants sont déjà appliqués.</p>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {[["toutes", "Toutes"], ["aVerifier", "À vérifier"], ["doublons", "Doublons"], ["apprises", "Reconnues"]].map(([id, label]) => (
+              <button key={id} onClick={() => setFiltre(id)} className={`rounded-pill px-3 py-1.5 text-xs font-semibold ${filtre === id ? "bg-encre text-contraste" : "bg-carte ring-1 ring-bordure"}`}>{label}</button>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <button onClick={selectionnerNouvelles} className="flex-1 rounded-xl bg-menthe-pale py-2 text-xs font-semibold text-menthe-texte">Sélectionner les nouvelles</button>
+            <button onClick={toutDecocher} className="rounded-xl bg-voile px-3 py-2 text-xs font-semibold text-sourdine">Tout décocher</button>
+          </div>
           <ul className="max-h-[45dvh] space-y-2 overflow-y-auto">
-            {resultat.operations.map((o, i) => (
-              <li key={i} className={`rounded-2xl bg-carte p-3 shadow-carte ${selection[i] ? "" : "opacity-45"}`}>
+            {operationsVisibles.map((o) => (
+              <li key={o._i} className={`rounded-2xl bg-carte p-3 shadow-carte ${selection[o._i] ? "" : "opacity-45"}`}>
                 <div className="flex items-center gap-2.5">
-                  <input type="checkbox" checked={!!selection[i]} onChange={(e) => setSelection({ ...selection, [i]: e.target.checked })} className="h-5 w-5 shrink-0 accent-[var(--menthe)]" />
+                  <input type="checkbox" checked={!!selection[o._i]} onChange={(e) => setSelection({ ...selection, [o._i]: e.target.checked })} className="h-5 w-5 shrink-0 accent-[var(--menthe)]" />
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-semibold">{o.libelle}{o.doublon ? " · déjà présente ?" : ""}</div>
+                    <div className="truncate text-sm font-semibold">{o.icone || ""} {o.libelle}</div>
                     <div className="text-xs text-sourdine">{dateCourte(o.date)}</div>
                   </div>
                   <span className={`tnum shrink-0 text-sm font-bold ${o.montant > 0 ? "text-menthe" : ""}`}>
                     {o.montant > 0 ? "+" : ""}{euros(o.montant, { precis: true })}
                   </span>
                 </div>
+                <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold">
+                  {o.appris && <span className="rounded-pill bg-menthe-pale px-2 py-1 text-menthe-texte">✨ Préférences mémorisées</span>}
+                  {o.aVerifier && <span className="rounded-pill bg-beurre-pale px-2 py-1 text-beurre-texte">⚠️ Catégorie à confirmer</span>}
+                  {o.doublon && <span className="rounded-pill bg-corail-pale px-2 py-1 text-corail-texte">⛓️ Doublon probable</span>}
+                </div>
                 <select
                   value={o.categorie}
-                  onChange={(e) => changerCategorie(i, e.target.value)}
+                  onChange={(e) => changerCategorie(o._i, e.target.value)}
                   className="mt-2 w-full champ px-2 py-1.5 text-sm outline-none"
                 >
                   {cats.map(([id, c]) => <option key={id} value={id}>{c.icone} {c.label}</option>)}
