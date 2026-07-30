@@ -79,9 +79,9 @@ export default function Budgets() {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">Budgets</h1>
-        <button onClick={() => setEdition(true)} className="rounded-pill bg-marque-bouton px-4 py-2 text-sm font-semibold text-surMarque">
+      <header className="flex items-center justify-between px-1">
+        <div><p className="text-v3-caption font-medium text-ui-text-secondary">Objectifs mensuels</p><h1 className="text-v3-title font-semibold">Budgets</h1></div>
+        <button onClick={() => setEdition(true)} className="tappable rounded-pill bg-marque-bouton px-4 py-2.5 text-sm font-semibold text-surMarque shadow-bouton">
           Modifier
         </button>
       </header>
@@ -118,7 +118,7 @@ export default function Budgets() {
 
       {/* Budgets par catégorie */}
       <section>
-        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-sourdine">Plafonds par catégorie</h2>
+        <h2 className="mb-3 px-1 text-sm font-semibold uppercase tracking-wide text-sourdine">Plafonds par catégorie</h2>
         {Object.keys(budgets).length === 0 ? (
           <p className="rounded-ios bg-carte p-6 text-center text-sm text-sourdine shadow-carte">
             Aucun budget défini. Touche « Modifier » pour fixer tes plafonds mensuels.
@@ -132,7 +132,7 @@ export default function Budgets() {
               const couleur = pct >= 100 ? "var(--corail)" : pct >= 80 ? "var(--beurre)" : "var(--menthe)";
               return (
                 <li key={cat}>
-                  <button onClick={() => setFicheCat(cat)} className="w-full rounded-ios bg-carte p-4 text-left shadow-carte active:scale-[0.99] transition-transform">
+                  <button onClick={() => setFicheCat(cat)} className="tappable w-full rounded-v3-s bg-ui-surface-floating p-4 text-left shadow-v3-soft">
                   <div className="mb-1.5 flex items-center justify-between text-sm">
                     <span className="font-semibold">{c.icone} {c.label} <span className="text-sourdine/50">›</span></span>
                     <span className="tnum text-sourdine">{euros(reel)} / {euros(limite)}</span>
@@ -152,7 +152,7 @@ export default function Budgets() {
       {/* Projets d'épargne */}
       <section>
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">Projets d'épargne</h2>
+          <h2 className="px-1 text-sm font-semibold uppercase tracking-wide text-sourdine">Projets d'épargne</h2>
           <button onClick={() => setFicheProjet("nouveau")} className="text-sm font-medium text-marque">+ Projet</button>
         </div>
         {projets.length === 0 ? (
@@ -165,7 +165,7 @@ export default function Budgets() {
               const pct = p.objectif > 0 ? Math.min(100, (p.montantActuel / p.objectif) * 100) : 0;
               const atteint = pct >= 100;
               return (
-                <li key={p.id} className="rounded-ios bg-carte p-4 shadow-carte">
+              <li key={p.id} className="overflow-hidden rounded-v3-m bg-ui-surface-floating p-4 shadow-v3-soft">
                   {/* Zone d'ouverture de la fiche (div cliquable : on ne peut pas imbriquer des boutons) */}
                   <div
                     role="button"
