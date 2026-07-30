@@ -258,6 +258,10 @@ export function DataProvider({ children }) {
   const modifierTransaction = useCallback(async (id, maj, opts = {}) => {
     if (modeLocal) setTransactions((l) => l.map((t) => (t.id === id ? { ...t, ...maj } : t)));
     else {
+      // Mise à jour immédiate de l'interface : le choix d'icône (comme tout
+      // autre changement) est visible sans attendre le retour du listener
+      // Firestore. Le listener reste la source de vérité ensuite.
+      setTransactions((l) => l.map((t) => (t.id === id ? { ...t, ...maj } : t)));
       const { updateDoc, doc, base } = await fs();
       updateDoc(doc(db, `${base}/transactions`, id), maj).catch((e) => console.error("Écriture:", e));
     }

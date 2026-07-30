@@ -89,7 +89,7 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
             transition: glisse ? "none" : "transform 0.28s cubic-bezier(0.32, 0.72, 0, 1)",
           }}
         >
-          <LogoCommercant nom={tx.libelle || ""} emoji={cat.icone} taille={32} />
+          <LogoCommercant nom={tx.libelle || ""} emoji={tx.icone || cat.icone} iconePersonnalisee={Boolean(tx.icone)} taille={32} />
           <span className="min-w-0 flex-1">
             <span className="block truncate text-sm font-semibold">
               {tx.libelle || cat.label}
