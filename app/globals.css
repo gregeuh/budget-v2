@@ -64,6 +64,55 @@
   --id-orange-pale: rgba(255, 149, 0, 0.14);   --id-orange-texte: #ac5f00;
   --id-rouge-pale:  rgba(255, 45, 85, 0.12);   --id-rouge-texte:  #d4004a;
 
+  /* Budget V3 — tokens sémantiques, sans incidence sur les écrans existants. */
+  --v3-surface-1: var(--c-carte);
+  --v3-surface-2: #f8f9fc;
+  --v3-surface-3: #f1f4f9;
+  --v3-surface-floating: rgba(255, 255, 255, 0.82);
+  --v3-surface-glass: rgba(255, 255, 255, 0.64);
+  --v3-primary: var(--marque);
+  --v3-primary-accent: #2f8cff;
+  --v3-positive: var(--menthe);
+  --v3-negative: var(--corail);
+  --v3-text-primary: var(--c-encre);
+  --v3-text-secondary: var(--c-sourdine);
+  --v3-border-hairline: var(--c-bordure);
+
+  --v3-space-1: 4px;
+  --v3-space-2: 8px;
+  --v3-space-3: 12px;
+  --v3-space-4: 16px;
+  --v3-space-5: 20px;
+  --v3-space-6: 24px;
+  --v3-space-8: 32px;
+  --v3-space-10: 40px;
+  --v3-space-12: 48px;
+
+  --v3-radius-xs: 12px;
+  --v3-radius-s: 18px;
+  --v3-radius-m: 24px;
+  --v3-radius-l: 30px;
+  --v3-radius-xl: 36px;
+  --v3-radius-xxl: 44px;
+  --v3-radius-pill: 999px;
+
+  --v3-shadow-soft: 0 1px 2px rgba(20, 37, 63, 0.04), 0 8px 24px rgba(20, 37, 63, 0.06);
+  --v3-shadow-medium: 0 1px 2px rgba(20, 37, 63, 0.06), 0 12px 32px rgba(20, 37, 63, 0.10);
+  --v3-shadow-floating: 0 1px 2px rgba(20, 37, 63, 0.06), 0 18px 48px rgba(20, 37, 63, 0.14);
+
+  --v3-font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  --v3-font-display: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --v3-text-caption: 0.75rem;
+  --v3-text-body: 0.9375rem;
+  --v3-text-title: 1.375rem;
+  --v3-text-hero: clamp(2.5rem, 10vw, 4.5rem);
+
+  --v3-duration-fast: 160ms;
+  --v3-duration-normal: 280ms;
+  --v3-duration-slow: 420ms;
+  --v3-ease-standard: cubic-bezier(0.32, 0.72, 0, 1);
+  --v3-ease-spring: cubic-bezier(0.34, 1.32, 0.64, 1);
+  --v3-glass-blur: 20px;
 }
 
 html.sombre {
@@ -115,6 +164,14 @@ html.sombre {
   --id-orange-pale: rgba(255, 159, 10, 0.20);  --id-orange-texte: #ffbe57;
   --id-rouge-pale:  rgba(255, 55, 95, 0.20);   --id-rouge-texte:  #ff6482;
 
+  --v3-surface-2: #22242a;
+  --v3-surface-3: #2c2e35;
+  --v3-surface-floating: rgba(28, 28, 30, 0.82);
+  --v3-surface-glass: rgba(44, 44, 46, 0.66);
+  --v3-primary-accent: #4da3ff;
+  --v3-shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.20), 0 8px 24px rgba(0, 0, 0, 0.30);
+  --v3-shadow-medium: 0 1px 2px rgba(0, 0, 0, 0.28), 0 12px 32px rgba(0, 0, 0, 0.40);
+  --v3-shadow-floating: 0 1px 2px rgba(0, 0, 0, 0.32), 0 18px 48px rgba(0, 0, 0, 0.52);
 
   color-scheme: dark;
 }
