@@ -184,7 +184,26 @@ body {
   @apply bg-fond text-encre font-sf antialiased;
   overscroll-behavior-y: none;
   -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  background-image:
+    radial-gradient(90% 48% at 50% -12%, var(--marque-pale), transparent 72%),
+    radial-gradient(58% 32% at 96% 30%, color-mix(in srgb, var(--marque) 7%, transparent), transparent 76%),
+    linear-gradient(180deg, color-mix(in srgb, var(--c-fond) 92%, white) 0%, var(--c-fond) 52%);
+  background-attachment: fixed;
+  transition: background-color var(--v3-duration-normal) var(--v3-ease-standard), color var(--v3-duration-normal) var(--v3-ease-standard);
+}
+
+.app-shell {
+  isolation: isolate;
+}
+
+.app-shell__ambient {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(54% 28% at 10% 16%, color-mix(in srgb, var(--marque) 7%, transparent), transparent 78%),
+    radial-gradient(46% 24% at 84% 68%, color-mix(in srgb, var(--marque) 4%, transparent), transparent 80%);
 }
 
 /* Chiffres tabulaires pour les montants */
