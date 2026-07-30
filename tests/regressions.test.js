@@ -86,8 +86,8 @@ describe("Nettoyage des libellés LCL", () => {
 
 describe("Apprentissage des habitudes", () => {
   const txs = [
-    { libelle: "Fran's Verdu", categorie: "resto", lieu: "Bordeaux", date: "2026-06-18" },
-    { libelle: "Fran's Verdu", categorie: "resto", lieu: "Bordeaux", date: "2026-06-22" },
+    { libelle: "Fran's Verdu", categorie: "resto", lieu: "Bordeaux", icone: "🍷", date: "2026-06-18" },
+    { libelle: "Fran's Verdu", categorie: "resto", lieu: "Bordeaux", icone: "🍷", date: "2026-06-22" },
     { libelle: "Fran's Verdu", categorie: "courses", lieu: "Bordeaux", date: "2026-07-02" },
     { libelle: "Carrefour", categorie: "courses", lieu: "Bègles", date: "2026-07-07" },
   ];
@@ -95,6 +95,10 @@ describe("Apprentissage des habitudes", () => {
 
   it("retient la catégorie dominante, pas la dernière", () => {
     expect(devinerDepuisHistorique("Fran's Verdu", memoire).categorie).toBe("resto");
+  });
+
+  it("retient l'icône personnalisée dominante", () => {
+    expect(devinerDepuisHistorique("Fran's Verdu", memoire).icone).toBe("🍷");
   });
 
   it("tolère les variantes d'écriture (apostrophes, casse)", () => {

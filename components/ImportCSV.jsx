@@ -61,6 +61,7 @@ export default function ImportCSV({ onFermer }) {
           const appris = devinerDepuisHistorique(o.libelle, memoire);
           if (appris?.categorie && categories[appris.categorie]) o.categorie = appris.categorie;
           if (appris?.lieu && !o.lieu) o.lieu = appris.lieu;
+          if (appris?.icone && !o.icone) o.icone = appris.icone;
         }
         const sel = {};
         res.operations.forEach((o, i) => {

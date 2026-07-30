@@ -59,6 +59,7 @@ export default function AddSheet({ onFermer }) {
   const [categorie, setCategorie] = useState("courses");
   const [icone, setIcone] = useState("");
   const [iconeManuelle, setIconeManuelle] = useState(false);
+  const [iconeMemorisee, setIconeMemorisee] = useState(false);
   const [compteId, setCompteId] = useState(comptes[0]?.id || "");
   const [versId, setVersId] = useState(comptes[1]?.id || "");
   const [date, setDate] = useState(aujourdhui());
@@ -106,7 +107,10 @@ export default function AddSheet({ onFermer }) {
       const d = await r.json();
       if (d.montant > 0) setMontant(String(d.montant).replace(".", ","));
       if (d.type) setMode(d.type);
-      if (d.libelle) setLibelle(d.libelle);
+      if (d.libelle) {
+        setLibelle(d.libelle);
+        appliquerHabitude(d.libelle);
+      }
       if (d.categorie && categories[d.categorie]) setCategorie(d.categorie);
       if (d.date) setDate(d.date);
       if (d.compte) {
@@ -209,7 +213,7 @@ export default function AddSheet({ onFermer }) {
   // Quand tu tapes un libellé déjà connu : catégorie et lieu proposés automatiquement
   const appliquerHabitude = (valeurLibelle) => {
     const trouve = devinerDepuisHistorique(valeurLibelle, memoire);
-    if (!trouve) { setAutoApplique(null); return; }
+    if (!trouve) { setAutoApplique(null); setIconeMemorisee(false); return; }
     let applique = null;
     if (trouve.categorie && categories[trouve.categorie]) {
       setCategorie(trouve.categorie);
@@ -218,6 +222,11 @@ export default function AddSheet({ onFermer }) {
     if (trouve.lieu && !lieu.trim()) {
       setLieu(trouve.lieu);
       applique = { ...(applique || {}), lieu: trouve.lieu };
+    }
+    if (trouve.icone && !iconeManuelle) {
+      setIcone(trouve.icone);
+      setIconeMemorisee(true);
+      applique = { ...(applique || {}), icone: trouve.icone };
     }
     setAutoApplique(applique);
   };
@@ -243,6 +252,7 @@ export default function AddSheet({ onFermer }) {
   const appliquerSuggestion = (sug) => {
     setLibelle(sug.libelle);
     setCategorie(sug.categorie);
+    appliquerHabitude(sug.libelle);
     if (comptes.some((c) => c.id === sug.compteId)) setCompteId(sug.compteId);
     if (!montant) { setMontant(String(Math.abs(sug.montant)).replace(".", ",")); setImpulsion((i) => i + 1); }
     setEtape(2);
@@ -267,8 +277,8 @@ export default function AddSheet({ onFermer }) {
   const iconeSuggeree = suggererIcone(libelle, categories[categorie]?.icone || "📦");
 
   useEffect(() => {
-    if (!iconeManuelle) setIcone(iconeSuggeree);
-  }, [iconeSuggeree, iconeManuelle]);
+    if (!iconeManuelle && !iconeMemorisee) setIcone(iconeSuggeree);
+  }, [iconeSuggeree, iconeManuelle, iconeMemorisee]);
 
   const valider = async () => {
     if (!valeur || valeur <= 0 || !compteId) return;
@@ -444,7 +454,7 @@ export default function AddSheet({ onFermer }) {
               <input
                 placeholder="Libellé (ex : Carrefour, Loyer…)"
                 value={libelle}
-                onChange={(e) => { setLibelle(e.target.value); setAutoApplique(null); }}
+                onChange={(e) => { setLibelle(e.target.value); setAutoApplique(null); setIconeMemorisee(false); }}
                 onBlur={(e) => appliquerHabitude(e.target.value)}
                 className="w-full champ px-4 py-3 outline-none"
               />
@@ -470,15 +480,17 @@ export default function AddSheet({ onFermer }) {
                   {autoApplique.categorie ? ` ${autoApplique.categorie}` : ""}
                   {autoApplique.categorie && autoApplique.lieu ? " ·" : ""}
                   {autoApplique.lieu ? ` 📍 ${autoApplique.lieu}` : ""}
+                  {autoApplique.icone ? ` ${autoApplique.icone}` : ""}
                 </p>
               )}
 
               <IconePicker
                 icone={icone}
                 suggestion={iconeSuggeree}
-                personnalisee={iconeManuelle}
-                onChoisir={(emoji) => { setIcone(emoji); setIconeManuelle(true); }}
-                onChoisirAuto={() => { setIcone(iconeSuggeree); setIconeManuelle(false); }}
+                personnalisee={iconeManuelle || iconeMemorisee}
+                message={iconeMemorisee ? "Mémorisée pour ce commerçant" : undefined}
+                onChoisir={(emoji) => { setIcone(emoji); setIconeManuelle(true); setIconeMemorisee(false); }}
+                onChoisirAuto={() => { setIcone(iconeSuggeree); setIconeManuelle(false); setIconeMemorisee(false); }}
               />
 
               {/* Lieu, avec les lieux déjà utilisés */}
