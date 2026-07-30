@@ -176,6 +176,13 @@ html.sombre {
   color-scheme: dark;
 }
 
+html.sombre body {
+  background-image:
+    radial-gradient(90% 48% at 50% -12%, color-mix(in srgb, var(--marque) 20%, transparent), transparent 72%),
+    radial-gradient(58% 32% at 96% 30%, color-mix(in srgb, var(--marque) 10%, transparent), transparent 76%),
+    linear-gradient(180deg, #101115 0%, var(--c-fond) 58%);
+}
+
 html {
   -webkit-text-size-adjust: 100%;
 }
@@ -190,6 +197,36 @@ body {
     linear-gradient(180deg, color-mix(in srgb, var(--c-fond) 92%, white) 0%, var(--c-fond) 52%);
   background-attachment: fixed;
   transition: background-color var(--v3-duration-normal) var(--v3-ease-standard), color var(--v3-duration-normal) var(--v3-ease-standard);
+}
+
+::selection { background: var(--marque-pale); color: var(--c-encre); }
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--marque-pale);
+  outline-offset: 3px;
+}
+
+.surface-lift {
+  transition: transform var(--v3-duration-normal) var(--v3-ease-standard), box-shadow var(--v3-duration-normal) var(--v3-ease-standard);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .surface-lift:hover { transform: translateY(-2px); box-shadow: var(--v3-shadow-medium); }
+}
+
+@keyframes balayage {
+  from { background-position: 160% 0; }
+  to { background-position: -60% 0; }
+}
+
+.squelette-v3 {
+  background: linear-gradient(100deg, var(--c-voile) 30%, color-mix(in srgb, var(--c-carte) 72%, transparent) 48%, var(--c-voile) 66%);
+  background-size: 220% 100%;
+  animation: balayage 1.6s ease-in-out infinite;
 }
 
 .app-shell {
@@ -506,6 +543,7 @@ html.sombre .voile-feuille {
 @media (prefers-reduced-motion: reduce) {
   .sheet-in, .fade-in, .pop-in, .drawer-in, .page-in, .page-droite, .page-gauche, .pulse-doux, .tourne, .ligne-in, .curseur, .jauge-in, .trace-in, .apparait-tard, .donut-in, .point-saut { animation: none; }
   .trace-in { stroke-dasharray: none; }
+  .squelette-v3 { animation: none; }
 }
 
 /* Masquer la scrollbar horizontale des puces de filtres */
