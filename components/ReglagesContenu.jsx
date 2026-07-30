@@ -373,9 +373,9 @@ function Rangee({ icone, label, onClick, danger = false, dernier = false }) {
   return (
     <button
       onClick={onClick}
-      className={`flex w-full items-center gap-4 py-4 text-left active:opacity-60 ${dernier ? "" : "border-b border-bordure"}`}
+      className={`tappable flex w-full items-center gap-4 px-4 py-4 text-left ${dernier ? "" : "border-b border-ui-hairline"}`}
     >
-      <span className="w-7 text-center text-xl">{icone}</span>
+      <span className={`flex h-10 w-10 items-center justify-center rounded-v3-xs text-lg ${danger ? "bg-corail-pale" : "bg-ui-surface-2"}`}>{icone}</span>
       <span className={`flex-1 text-[16px] font-medium ${danger ? "text-corail" : ""}`}>{label}</span>
       {!danger && <span className="text-lg text-sourdine/40">›</span>}
     </button>
@@ -399,13 +399,10 @@ export default function ReglagesContenu() {
   return (
     <div className="flex min-h-full flex-col">
       {/* Salutation */}
-      <h1 className="pb-5 pt-2 text-[26px] font-bold tracking-tight">
-        Salut{profil.prenom ? ` ${profil.prenom}` : ""} !
-      </h1>
-      <div className="border-b border-bordure" />
+      <header className="px-1 pb-5 pt-2"><p className="text-v3-caption font-medium text-ui-text-secondary">Préférences & données</p><h1 className="mt-0.5 text-[26px] font-bold tracking-tight">Salut{profil.prenom ? ` ${profil.prenom}` : ""} !</h1></header>
 
       {/* Liste plate */}
-      <nav className="pt-1">
+      <nav className="overflow-hidden rounded-v3-m bg-ui-surface-floating shadow-v3-soft">
         <Rangee icone="👤" label="Mon profil" onClick={() => setFiche("profil")} />
         <Rangee icone="🌗" label="Apparence" onClick={() => setFiche("apparence")} />
         <Rangee icone="🏷️" label={`Catégories${nbCategories > 0 ? ` (${nbCategories})` : ""}`} onClick={() => setFiche("categories")} />
@@ -419,7 +416,7 @@ export default function ReglagesContenu() {
       </nav>
 
       {/* Zone de sortie, séparée par une bande */}
-      <div className="-mx-4 my-3 h-2 bg-voile" />
+      <div className="my-5 h-px bg-ui-hairline" />
       {modeLocal ? (
         <Rangee
           icone="🗑️"
@@ -437,7 +434,7 @@ export default function ReglagesContenu() {
       )}
 
       {/* Pied de panneau */}
-      <div className="-mx-4 mt-auto bg-voile px-4 py-5">
+      <div className="-mx-4 mt-auto rounded-t-v3-m bg-ui-surface-2 px-5 py-5">
         <p className="text-xs leading-relaxed text-sourdine">
           {modeLocal ? "Données stockées sur cet appareil — pense à exporter régulièrement." : `Connecté : ${user?.email}`}
         </p>
