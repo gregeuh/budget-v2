@@ -12,6 +12,7 @@ import { chercherLieux } from "@/lib/lieux";
 import { lieuPersoProche, enregistrerLieuPerso } from "@/lib/lieuxPerso";
 import { suggererIcone } from "@/lib/icones";
 import IconePicker from "./IconePicker";
+import CompteLogo from "./CompteLogo";
 
 // Pictos dessinés maison (pas de logo de marque), un par mode.
 const IconeMode = ({ id, className = "h-4 w-4", style }) => {
@@ -349,14 +350,14 @@ export default function AddSheet({ onFermer }) {
             </div>
             {comptes[0] && (
               <div className="relative mx-auto w-fit">
-              <button type="button" onClick={() => setChoixCompteOuvert((v) => !v)} aria-expanded={choixCompteOuvert} className="flex items-center gap-2 rounded-pill bg-white px-4 py-2 text-xs font-semibold text-[#273550] shadow-sm">
-                <span className="flex h-4 w-5 items-center justify-center rounded-[3px] border border-[#0a63ff] text-[8px] text-[#0a63ff]">▭</span>
+              <button type="button" onClick={() => setChoixCompteOuvert((v) => !v)} aria-expanded={choixCompteOuvert} className="flex items-center gap-2 rounded-pill bg-white px-3 py-2 text-xs font-semibold text-[#273550] shadow-sm">
+                <CompteLogo type={comptes.find((c) => c.id === compteId)?.type || comptes[0].type} taille={24} />
                 <span>{comptes.find((c) => c.id === compteId)?.nom || comptes[0].nom}</span>
                 <span aria-hidden="true" className={`text-sm leading-none transition-transform ${choixCompteOuvert ? "rotate-180" : ""}`}>⌄</span>
               </button>
               {choixCompteOuvert && (
                 <div className="absolute left-1/2 z-20 mt-2 w-52 -translate-x-1/2 overflow-hidden rounded-2xl bg-white p-1.5 text-left shadow-v3-floating ring-1 ring-black/5">
-                  {comptes.map((c) => <button key={c.id} type="button" onClick={() => { setCompteId(c.id); setChoixCompteOuvert(false); }} className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm ${c.id === compteId ? "bg-marque-pale font-semibold text-marque-texte" : "text-[#273550]"}`}><span className="truncate">{c.nom}</span>{c.id === compteId && <span>✓</span>}</button>)}
+                  {comptes.map((c) => <button key={c.id} type="button" onClick={() => { setCompteId(c.id); setChoixCompteOuvert(false); }} className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm ${c.id === compteId ? "bg-marque-pale font-semibold text-marque-texte" : "text-[#273550]"}`}><span className="flex min-w-0 items-center gap-2"><CompteLogo type={c.type} taille={28} /><span className="truncate">{c.nom}</span></span>{c.id === compteId && <span>✓</span>}</button>)}
                 </div>
               )}
               </div>
