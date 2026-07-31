@@ -115,6 +115,19 @@
   --v3-glass-blur: 20px;
 }
 
+/* Feuilles adaptées aux iPhone courts et au clavier Safari. */
+@media (max-height: 740px) {
+  .sheet-in { border-top-left-radius: 24px; border-top-right-radius: 24px; }
+  .sheet-in .h-14 { height: 2.75rem; }
+  .sheet-in .text-\[54px\] { font-size: 2.65rem; }
+}
+
+@media (max-height: 620px) {
+  .sheet-in { padding-top: 0.5rem; }
+  .sheet-in .mb-5 { margin-bottom: 0.75rem; }
+  .sheet-in .h-14 { height: 2.35rem; }
+}
+
 html.sombre {
   /* Wallet en sombre : noir profond, cartes gris très foncé */
   --c-fond: #000000;
