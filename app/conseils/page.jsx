@@ -9,6 +9,9 @@ import PointsSautillants from "@/components/PointsSautillants";
 import ScoreSante from "@/components/ScoreSante";
 import AnalyseDepenses from "@/components/AnalyseDepenses";
 import ConseilsList from "@/components/ConseilsList";
+import ConseilsHero from "@/components/ConseilsHero";
+import ConseilsPriorites from "@/components/ConseilsPriorites";
+import Sheet from "@/components/Sheet";
 
 export default function Conseils() {
   const donnees = useBudget();
@@ -16,7 +19,14 @@ export default function Conseils() {
   const [messages, setMessages] = useState([]);
   const [saisie, setSaisie] = useState("");
   const [enCours, setEnCours] = useState(false);
+  const [coachOuvert, setCoachOuvert] = useState(false);
   const finRef = useRef(null);
+  const analyseRef = useRef(null);
+
+  const ouvrirAnalyse = () => {
+    if (analyseRef.current) analyseRef.current.open = true;
+    requestAnimationFrame(() => analyseRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
 
   const envoyer = async () => {
     const texte = saisie.trim();
@@ -54,11 +64,26 @@ export default function Conseils() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold">Conseils</h1>
+      <ConseilsHero onVoirPriorites={ouvrirAnalyse} />
+      <ConseilsPriorites onVoirTout={ouvrirAnalyse} />
 
-      {/* Coach IA : c'est ce qu'on vient chercher, donc en premier */}
-      <section className="rounded-ios bg-carte p-4 shadow-carte">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">Coach budgétaire ✨</h2>
+      <details ref={analyseRef} id="tous-les-conseils" className="group scroll-mt-5 rounded-v3-l border border-ui-hairline bg-ui-surface-floating shadow-v3-soft">
+        <summary className="flex cursor-pointer list-none items-center gap-3 p-4 marker:hidden">
+          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#eff3ff] text-xl">🧭</span>
+          <span className="min-w-0 flex-1"><span className="block font-semibold tracking-tight">Analyse complète</span><span className="mt-0.5 block text-sm text-ui-text-secondary">Toutes tes recommandations et analyses.</span></span>
+          <span className="text-2xl font-light text-ui-text-secondary transition-transform group-open:rotate-90">›</span>
+        </summary>
+        <div className="border-t border-ui-hairline p-4">
+          <ConseilsList />
+          <div className="mt-5 space-y-3 border-t border-ui-hairline pt-5">
+            <ScoreSante />
+            <AnalyseDepenses />
+          </div>
+        </div>
+      </details>
+
+      {coachOuvert && <Sheet titre="Coach budgétaire" onFermer={() => setCoachOuvert(false)} clair>
+        <p className="-mt-2 text-sm text-[#667085]">Une analyse bienveillante basée sur tes données du mois.</p>
 
         {messages.length === 0 && (
           <div className="mb-3 mt-3 flex flex-wrap gap-2">
@@ -105,14 +130,9 @@ export default function Conseils() {
             Informations générales à visée pédagogique, pas un conseil financier personnalisé.
           </p>
         </details>
-      </section>
+      </Sheet>}
 
-      <ConseilsList />
-
-      {/* Outils d'analyse : repliés, on les ouvre quand on veut creuser */}
-      <ScoreSante />
-
-      <AnalyseDepenses />
+      <button onClick={() => setCoachOuvert(true)} aria-label="Ouvrir le coach budgétaire" className="fixed bottom-[calc(var(--safe-bottom)+5.75rem)] right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[linear-gradient(145deg,#7655ef,#5d44dc)] text-2xl text-white shadow-[0_12px_28px_rgba(100,72,220,.4)] transition-transform active:scale-90">✦</button>
     </div>
   );
 }
