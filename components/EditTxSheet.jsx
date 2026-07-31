@@ -91,6 +91,8 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
   const cats = Object.entries(categories).filter(([, c]) =>
     estVirement ? c.type === "virement" : sens === "revenu" ? c.type === "revenu" : c.type !== "revenu" && c.type !== "virement"
   );
+  const categorieActuelle = categories[categorie] || categories.autre;
+  const compteActuel = comptes.find((c) => c.id === compteId);
 
   const valider = async () => {
     const val = parseFloat(String(montant).replace(",", "."));
@@ -119,6 +121,14 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
   return (
     <Sheet titre="Modifier l'opération" onFermer={onFermer} niveau={niveau}>
       <div className="space-y-3">
+        <div className={`relative overflow-hidden rounded-v3-m p-4 text-white ${sens === "depense" ? "bg-[linear-gradient(145deg,var(--corail),var(--corail-bouton))]" : "bg-[linear-gradient(145deg,var(--menthe),var(--menthe-texte))]"}`}>
+          <div className="reflet opacity-50" />
+          <div className="relative flex items-center gap-3">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 text-2xl backdrop-blur">{icone || categorieActuelle.icone}</span>
+            <span className="min-w-0 flex-1"><span className="block truncate text-base font-semibold">{libelle || categorieActuelle.label}</span><span className="block text-xs text-white/75">{date} · {compteActuel?.nom || "Compte"}</span></span>
+            <span className="tnum text-lg font-bold">{sens === "depense" ? "−" : "+"}{montant} €</span>
+          </div>
+        </div>
         {!estVirement && (
           <div className="grid grid-cols-2 rounded-pill bg-voile p-1">
             {[["depense", "Dépense"], ["revenu", "Revenu"]].map(([id, label]) => (

@@ -306,22 +306,22 @@ export default function AddSheet({ onFermer }) {
     montant.length <= 5 ? "text-[54px]" : montant.length <= 7 ? "text-[44px]" : "text-[36px]";
 
   return (
-    <Sheet titre="Nouvelle opération" onFermer={onFermer}>
+    <Sheet titre="Nouvelle opération" onFermer={onFermer} clair>
       {etape === 1 ? (
         <div key="e1" className="pop-in">
           {/* Saisie en langage naturel */}
           {erreurIA && <p className="mb-2 px-1 text-xs text-corail">{erreurIA}</p>}
 
           {/* Mode : trois cartes avec picto, la sélectionnée prend sa couleur */}
-          <div className="mb-4 grid grid-cols-3 gap-2">
+          <div className="mb-5 grid grid-cols-3 gap-3">
             {MODES.map((m) => {
               const actif = mode === m.id;
               return (
                 <button
                   key={m.id}
                   onClick={() => { setMode(m.id); setCategorie(m.id === "revenu" ? "salaire" : "courses"); }}
-                  className={`tappable flex items-center justify-center gap-1.5 rounded-2xl py-2.5 text-sm font-semibold transition-all duration-200 ${
-                    actif ? "text-white shadow-bouton" : "bg-carte text-sourdine shadow-carte"
+                  className={`tappable flex flex-col items-center justify-center gap-1.5 rounded-full py-3 text-sm font-semibold transition-all duration-200 ${
+                    actif ? "text-white shadow-bouton" : "bg-white text-sourdine shadow-sm"
                   }`}
                   style={actif ? { background: COULEUR_MODE[m.id] } : undefined}
                 >
@@ -332,37 +332,31 @@ export default function AddSheet({ onFermer }) {
             })}
           </div>
 
-          {/* Grande carte montant, colorée selon le mode (suit le thème clair/sombre) */}
+          {/* Montant : priorité visuelle, dans l'esprit de la maquette claire */}
           <div
             key={`sec-${secousse}`}
-            className={`relative mb-4 overflow-hidden rounded-ios px-4 pb-5 pt-4 text-center text-white shadow-bouton ${secousse ? "secousse" : ""}`}
-            style={{ background: `linear-gradient(150deg, ${COULEUR_MODE[mode]}, color-mix(in srgb, ${COULEUR_MODE[mode]} 78%, #000))` }}
+            className={`relative mb-5 overflow-hidden px-4 pb-3 pt-1 text-center ${secousse ? "secousse" : ""}`}
           >
-            {/* Vagues décoratives en bas de la carte */}
-            <svg viewBox="0 0 400 120" className="pointer-events-none absolute inset-x-0 bottom-0 h-24 w-full" preserveAspectRatio="none" aria-hidden="true">
-              <path d="M0 60 Q100 30 200 55 T400 50 V120 H0 Z" fill="rgba(255,255,255,0.10)" />
-              <path d="M0 80 Q120 55 240 78 T400 72 V120 H0 Z" fill="rgba(255,255,255,0.08)" />
-            </svg>
-            <p className="relative text-xs font-semibold uppercase tracking-wide text-white/70">Montant</p>
+            <p className="relative sr-only">Montant</p>
             <div className="relative mt-1 flex h-[70px] items-center justify-center">
-              <span key={impulsion} className={`rebond chiffres flex items-center font-bold leading-none ${tailleMontant} ${montant ? "text-white" : "text-white/50"}`}>
-                {montant && mode !== "virement" && <span className="mr-0.5 opacity-80">{mode === "depense" ? "−" : "+"}</span>}
+              <span key={impulsion} className={`rebond chiffres flex items-center font-bold leading-none ${tailleMontant} ${montant ? "text-[#101828]" : "text-[#9aa3b5]"}`}>
+                {montant && mode !== "virement" && <span className="mr-0.5 opacity-60" style={{ color: COULEUR_MODE[mode] }}>{mode === "depense" ? "−" : "+"}</span>}
                 {montant || "0"}
-                <span className="unite ml-1 text-[0.5em]">€</span>
-                {montant && <span className="curseur ml-0.5 inline-block h-[0.8em] w-[3px] rounded-full bg-white align-middle" />}
+                <span className="unite ml-1 text-[0.5em] text-sourdine">€</span>
+                {montant && <span className="curseur ml-0.5 inline-block h-[0.8em] w-[3px] rounded-full align-middle" style={{ background: COULEUR_MODE[mode] }} />}
               </span>
             </div>
-            <p className="relative text-xs font-medium text-white/70">
-              {mode === "depense" ? "Dépense" : mode === "revenu" ? "Revenu" : "Virement"}
-              {comptes[0] && mode !== "virement" ? ` · ${comptes.find((c) => c.id === compteId)?.nom || comptes[0].nom}` : ""}
-            </p>
+            {comptes[0] && <p className="relative mx-auto w-fit rounded-pill bg-white px-4 py-2 text-xs font-semibold text-[#273550] shadow-sm">▭ {comptes.find((c) => c.id === compteId)?.nom || comptes[0].nom}⌄</p>}
           </div>
 
-          {/* Commerçants récents : pastille colorée + libellé + fréquence */}
+          {/* Raccourcis de commerçants : ligne légère à la manière de Wallet */}
           {suggestions.length > 0 && (
             <div className="mb-4">
-              <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-sourdine">Commerçants récents</p>
-              <div className="space-y-1.5">
+              <div className="mb-2 flex items-center justify-between px-1">
+                <p className="text-xs font-semibold uppercase tracking-wide text-sourdine">Récents</p>
+                <span className="text-xs font-medium text-marque">Tout afficher ›</span>
+              </div>
+              <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
                 {suggestions.slice(0, 4).map((sug) => {
                   const cat = categories[sug.categorie] || categories.autre;
                   const teinte = COULEURS[cat.couleur]?.vif || "var(--marque)";
@@ -370,12 +364,10 @@ export default function AddSheet({ onFermer }) {
                     <button
                       key={sug.libelle}
                       onClick={() => appliquerSuggestion(sug)}
-                      className="tappable flex w-full items-center gap-3 rounded-2xl bg-carte px-3 py-2.5 shadow-carte"
+                      className="tappable flex w-[76px] shrink-0 flex-col items-center gap-1.5 rounded-2xl bg-white px-2 py-2 shadow-sm"
                     >
                       <LogoCommercant nom={sug.libelle} couleur={teinte} taille={36} />
-                      <span className="min-w-0 flex-1 truncate text-left text-sm font-semibold">{sug.libelle}</span>
-                      {sug.n > 1 && <span className="shrink-0 text-xs text-sourdine">{sug.n} fois</span>}
-                      <span className="shrink-0 text-sourdine">›</span>
+                      <span className="w-full truncate text-center text-[11px] font-semibold">{sug.libelle}</span>
                     </button>
                   );
                 })}
@@ -394,8 +386,8 @@ export default function AddSheet({ onFermer }) {
                   style={{ animationDelay: `${i * 22}ms` }}
                   className={`pop-in chiffres tappable h-14 rounded-2xl text-[26px] transition-all duration-100 active:scale-90 ${
                     backspace
-                      ? "bg-voile text-sourdine active:bg-voile"
-                      : "bg-carte shadow-carte active:bg-voile"
+                      ? "bg-[#eef1f8] text-[#273550] active:bg-[#e3e8f2]"
+                      : "bg-white text-[#101828] shadow-sm active:bg-[#eef1f8]"
                   }`}
                   aria-label={backspace ? "Effacer" : t}
                 >
@@ -410,7 +402,7 @@ export default function AddSheet({ onFermer }) {
           ) : (
             <button
               onClick={() => (valeur > 0 ? setEtape(2) : secouer())}
-              className={`mt-3 w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque shadow-bouton active:scale-[0.99] transition-transform ${valeur <= 0 ? "opacity-40" : ""}`}
+              className={`mt-5 w-full rounded-ios bg-[#0a63ff] py-3.5 font-semibold text-white shadow-bouton active:scale-[0.99] transition-transform ${valeur <= 0 ? "opacity-40" : ""}`}
             >
               Continuer
             </button>
