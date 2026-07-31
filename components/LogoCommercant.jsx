@@ -39,7 +39,7 @@ export default function LogoCommercant({ nom = "", couleur = "var(--marque)", ta
   // Vrai logo, sur fond blanc pour les logos transparents
   return (
     <span
-      className="flex shrink-0 items-center justify-center overflow-hidden border border-bordure bg-white"
+      className="flex shrink-0 items-center justify-center overflow-hidden border border-bordure bg-carte"
       style={{ width: taille, height: taille, borderRadius: rayon }}
     >
       <img

@@ -308,7 +308,7 @@ export default function AddSheet({ onFermer }) {
     montant.length <= 5 ? "text-[54px]" : montant.length <= 7 ? "text-[44px]" : "text-[36px]";
 
   return (
-    <Sheet titre="Nouvelle opération" onFermer={onFermer} clair>
+    <Sheet titre="Nouvelle opération" onFermer={onFermer}>
       {etape === 1 ? (
         <div key="e1" data-add-step className="pop-in">
           {/* Saisie en langage naturel */}
@@ -323,7 +323,7 @@ export default function AddSheet({ onFermer }) {
                   key={m.id}
                   onClick={() => { setMode(m.id); setCategorie(m.id === "revenu" ? "salaire" : "courses"); }}
                   className={`tappable flex flex-col items-center justify-center gap-1.5 rounded-full py-3 text-sm font-semibold transition-all duration-200 ${
-                    actif ? "text-white shadow-bouton" : "bg-white text-sourdine shadow-sm"
+                    actif ? "text-white shadow-bouton" : "bg-ui-surface-floating text-ui-text-secondary shadow-v3-soft"
                   }`}
                   style={actif ? { background: COULEUR_MODE[m.id] } : undefined}
                 >
@@ -334,14 +334,14 @@ export default function AddSheet({ onFermer }) {
             })}
           </div>
 
-          {/* Montant : priorité visuelle, dans l'esprit de la maquette claire */}
+          {/* Montant : priorité visuelle, décliné via les tokens clair/sombre. */}
           <div
             key={`sec-${secousse}`}
             className={`relative mb-5 px-4 pb-3 pt-1 text-center ${secousse ? "secousse" : ""}`}
           >
             <p className="relative sr-only">Montant</p>
             <div className="relative mt-1 flex h-[70px] items-center justify-center">
-              <span key={impulsion} className={`rebond chiffres flex items-center font-bold leading-none ${tailleMontant} ${montant ? "text-[#101828]" : "text-[#9aa3b5]"}`}>
+              <span key={impulsion} className={`rebond chiffres flex items-center font-bold leading-none ${tailleMontant} ${montant ? "text-ui-text-primary" : "text-ui-text-secondary"}`}>
                 {montant && mode !== "virement" && <span className="mr-0.5 opacity-60" style={{ color: COULEUR_MODE[mode] }}>{mode === "depense" ? "−" : "+"}</span>}
                 {montant || "0"}
                 <span className="unite ml-1 text-[0.5em] text-sourdine">€</span>
@@ -350,14 +350,14 @@ export default function AddSheet({ onFermer }) {
             </div>
             {comptes[0] && (
               <div className="relative mx-auto w-fit">
-              <button type="button" onClick={() => setChoixCompteOuvert((v) => !v)} aria-expanded={choixCompteOuvert} className="flex items-center gap-2 rounded-pill bg-white px-3 py-2 text-xs font-semibold text-[#273550] shadow-sm">
+              <button type="button" onClick={() => setChoixCompteOuvert((v) => !v)} aria-expanded={choixCompteOuvert} className="flex items-center gap-2 rounded-pill bg-ui-surface-floating px-3 py-2 text-xs font-semibold text-ui-text-primary shadow-v3-soft">
                 <CompteLogo type={comptes.find((c) => c.id === compteId)?.type || comptes[0].type} taille={24} />
                 <span>{comptes.find((c) => c.id === compteId)?.nom || comptes[0].nom}</span>
                 <span aria-hidden="true" className={`text-sm leading-none transition-transform ${choixCompteOuvert ? "rotate-180" : ""}`}>⌄</span>
               </button>
               {choixCompteOuvert && (
-                <div className="absolute left-1/2 z-20 mt-2 w-52 -translate-x-1/2 overflow-hidden rounded-2xl bg-white p-1.5 text-left shadow-v3-floating ring-1 ring-black/5">
-                  {comptes.map((c) => <button key={c.id} type="button" onClick={() => { setCompteId(c.id); setChoixCompteOuvert(false); }} className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm ${c.id === compteId ? "bg-marque-pale font-semibold text-marque-texte" : "text-[#273550]"}`}><span className="flex min-w-0 items-center gap-2"><CompteLogo type={c.type} taille={28} /><span className="truncate">{c.nom}</span></span>{c.id === compteId && <span>✓</span>}</button>)}
+                <div className="absolute left-1/2 z-20 mt-2 w-52 -translate-x-1/2 overflow-hidden rounded-2xl bg-ui-surface-floating p-1.5 text-left shadow-v3-floating ring-1 ring-ui-hairline">
+                  {comptes.map((c) => <button key={c.id} type="button" onClick={() => { setCompteId(c.id); setChoixCompteOuvert(false); }} className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm ${c.id === compteId ? "bg-marque-pale font-semibold text-marque-texte" : "text-ui-text-primary"}`}><span className="flex min-w-0 items-center gap-2"><CompteLogo type={c.type} taille={28} /><span className="truncate">{c.nom}</span></span>{c.id === compteId && <span>✓</span>}</button>)}
                 </div>
               )}
               </div>
@@ -379,7 +379,7 @@ export default function AddSheet({ onFermer }) {
                     <button
                       key={sug.libelle}
                       onClick={() => appliquerSuggestion(sug)}
-                      className="tappable flex w-[76px] shrink-0 flex-col items-center gap-1.5 rounded-2xl bg-white px-2 py-2 shadow-sm"
+                      className="tappable flex w-[76px] shrink-0 flex-col items-center gap-1.5 rounded-2xl bg-ui-surface-floating px-2 py-2 shadow-v3-soft"
                     >
                       <LogoCommercant nom={sug.libelle} couleur={teinte} taille={36} />
                       <span className="w-full truncate text-center text-[11px] font-semibold">{sug.libelle}</span>
@@ -401,8 +401,8 @@ export default function AddSheet({ onFermer }) {
                   style={{ animationDelay: `${i * 22}ms` }}
                   className={`pop-in chiffres tappable h-14 rounded-2xl text-[26px] transition-all duration-100 active:scale-90 ${
                     backspace
-                      ? "bg-[#eef1f8] text-[#273550] active:bg-[#e3e8f2]"
-                      : "bg-white text-[#101828] shadow-sm active:bg-[#eef1f8]"
+                      ? "bg-ui-surface-3 text-ui-text-primary active:bg-ui-surface-2"
+                      : "bg-ui-surface-floating text-ui-text-primary shadow-v3-soft active:bg-ui-surface-2"
                   }`}
                   aria-label={backspace ? "Effacer" : t}
                 >
@@ -417,7 +417,7 @@ export default function AddSheet({ onFermer }) {
           ) : (
             <button
               onClick={() => (valeur > 0 ? setEtape(2) : secouer())}
-              className={`sticky bottom-0 z-10 mt-5 w-full rounded-ios bg-[#0a63ff] py-3.5 font-semibold text-white shadow-bouton active:scale-[0.99] transition-transform ${valeur <= 0 ? "opacity-40" : ""}`}
+              className={`sticky bottom-0 z-10 mt-5 w-full rounded-ios bg-marque-bouton py-3.5 font-semibold text-surMarque shadow-bouton active:scale-[0.99] transition-transform ${valeur <= 0 ? "opacity-40" : ""}`}
             >
               Continuer
             </button>
@@ -652,7 +652,7 @@ export default function AddSheet({ onFermer }) {
               className={`flex w-full items-center justify-between rounded-ios border px-3.5 py-2.5 text-left transition-colors ${horsSolde ? "border-menthe bg-menthe-pale" : "border-bordure bg-carte"}`}>
               <span className="text-sm font-semibold">👻 Hors solde</span>
               <span className={`relative ml-3 h-6 w-11 shrink-0 rounded-full transition-colors ${horsSolde ? "bg-menthe" : "bg-voile"}`}>
-                <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${horsSolde ? "translate-x-[22px]" : "translate-x-0.5"}`} />
+                <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-carte shadow transition-transform ${horsSolde ? "translate-x-[22px]" : "translate-x-0.5"}`} />
               </span>
             </button>
           )}

@@ -254,7 +254,7 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
           >
             👻 Hors solde
             <span className={`relative ml-3 h-6 w-11 shrink-0 rounded-full transition-colors ${horsSolde ? "bg-menthe" : "bg-voile"}`}>
-              <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${horsSolde ? "translate-x-[22px]" : "translate-x-0.5"}`} />
+              <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-carte shadow transition-transform ${horsSolde ? "translate-x-[22px]" : "translate-x-0.5"}`} />
             </span>
           </button>
         )}
