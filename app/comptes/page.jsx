@@ -5,6 +5,7 @@ import { useBudget } from "@/lib/store";
 import { TYPES_COMPTE, COULEURS, euros, PLAFONDS } from "@/lib/format";
 import Sheet from "@/components/Sheet";
 import FicheCredit, { mensualitesRestantes } from "@/components/FicheCredit";
+import CompteLogo from "@/components/CompteLogo";
 
 const GROUPES = [
   { id: "courant", label: "Au quotidien" },
@@ -178,9 +179,7 @@ export default function Comptes() {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <span className="flex h-10 w-10 items-center justify-center rounded-xl text-xl" style={{ background: coul.fond }}>
-                            {t.icone}
-                          </span>
+                          <CompteLogo type={c.type} taille={40} />
                           <div>
                             <div className="truncate font-semibold">{c.nom}</div>
                             <div className="text-xs" style={{ color: coul.texte }}>{t.label}</div>

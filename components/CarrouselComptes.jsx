@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useBudget } from "@/lib/store";
 import { TYPES_COMPTE, COULEURS, euros, PLAFONDS } from "@/lib/format";
 import Montant from "./Montant";
+import CompteLogo from "./CompteLogo";
 
 export default function CarrouselComptes({ onChange }) {
   const { comptes, soldes } = useBudget();
@@ -73,11 +74,7 @@ export default function CarrouselComptes({ onChange }) {
               <div className="reflet" />
               <div className="relative">
                 <div className="flex items-start justify-between">
-                  <span
-                    className="flex h-10 w-10 items-center justify-center rounded-v3-xs bg-white/15 text-lg text-white backdrop-blur-v3-glass"
-                  >
-                    {estTous ? "✨" : t.icone}
-                  </span>
+                  {estTous ? <span className="flex h-10 w-10 items-center justify-center rounded-v3-xs bg-white/15 text-lg text-white backdrop-blur-v3-glass">✨</span> : <CompteLogo type={c.type} taille={40} />}
                   <span
                     className="rounded-pill bg-white/15 px-2.5 py-1 text-[11px] font-semibold text-white/90 backdrop-blur-v3-glass"
                   >

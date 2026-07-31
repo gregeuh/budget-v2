@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { auth } from "@/lib/firebase";
+import PeculeLogo from "./PeculeLogo";
 
 const MESSAGES = {
   "auth/invalid-credential": "Email ou mot de passe incorrect.",
@@ -51,8 +52,7 @@ export default function Login() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-6">
       <div className="pop-in">
-        <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-[18px] text-3xl font-bold text-surMarque shadow-carte" style={{ background: "linear-gradient(135deg, #007AFF, #005AC8)" }}>P</div>
-        <h1 className="text-3xl font-bold tracking-tight">Pécule</h1>
+        <PeculeLogo className="mb-3" />
         <p className="mt-1 text-sourdine">Ton budget, au calme.</p>
       </div>
 

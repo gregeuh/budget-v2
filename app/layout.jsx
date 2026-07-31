@@ -21,6 +21,7 @@ export const metadata = {
   },
   icons: {
     apple: "/icons/apple-touch-icon.png",
+    icon: "/pecule-mark.svg",
   },
 };
 
