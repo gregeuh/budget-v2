@@ -1,6 +1,6 @@
 // Service worker minimal : cache des ressources statiques, réseau d'abord pour le reste.
-const CACHE = "budget-v2-4";
-const STATIQUES = ["/manifest.json", "/icons/icon-192.png", "/icons/icon-512.png"];
+const CACHE = "budget-v2-5";
+const STATIQUES = ["/manifest.json", "/pecule-mark.svg", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/icon-maskable-512.png", "/icons/apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(STATIQUES)));
