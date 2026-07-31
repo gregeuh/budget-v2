@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-export default function Sheet({ titre, onFermer, children, niveau = 1 }) {
+export default function Sheet({ titre, onFermer, children, niveau = 1, clair = false }) {
   const [monte, setMonte] = useState(false);
 
   // Rendu hors de la page (portail) : sinon l'animation de transition de page
@@ -24,13 +24,13 @@ export default function Sheet({ titre, onFermer, children, niveau = 1 }) {
     <div className="fixed inset-0 mx-auto max-w-md" style={{ zIndex: 100 + niveau * 5 }}>
       <div className="voile-feuille absolute inset-0" onClick={onFermer} />
       <div
-        className="sheet-in absolute inset-x-0 bottom-0 max-h-[88dvh] overflow-y-auto rounded-t-[24px] bg-fond px-4 pt-3"
+        className={`sheet-in absolute inset-x-0 bottom-0 max-h-[92dvh] overflow-y-auto rounded-t-[32px] px-4 pt-3 ${clair ? "bg-[#f8f9ff] text-[#101828]" : "bg-fond"}`}
         style={{ paddingBottom: "calc(var(--safe-bottom) + 24px)", boxShadow: "0 -8px 40px rgba(0,0,0,0.16)" }}
       >
-        <div className="mx-auto mb-3 h-1.5 w-9 rounded-full bg-voile" />
+        <div className={`mx-auto mb-3 h-1.5 w-9 rounded-full ${clair ? "bg-[#c9cedb]" : "bg-voile"}`} />
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold">{titre}</h2>
-          <button onClick={onFermer} aria-label="Fermer" className="flex h-8 w-8 items-center justify-center rounded-full bg-voile text-sourdine">✕</button>
+          <button onClick={onFermer} aria-label="Fermer" className={`flex h-10 w-10 items-center justify-center rounded-full text-xl shadow-sm ${clair ? "bg-white text-[#101828]" : "bg-voile text-sourdine"}`}>✕</button>
         </div>
         {children}
       </div>
