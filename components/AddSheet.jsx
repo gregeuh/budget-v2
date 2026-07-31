@@ -308,7 +308,7 @@ export default function AddSheet({ onFermer }) {
   return (
     <Sheet titre="Nouvelle opération" onFermer={onFermer} clair>
       {etape === 1 ? (
-        <div key="e1" className="pop-in">
+        <div key="e1" data-add-step className="pop-in">
           {/* Saisie en langage naturel */}
           {erreurIA && <p className="mb-2 px-1 text-xs text-corail">{erreurIA}</p>}
 
@@ -346,7 +346,13 @@ export default function AddSheet({ onFermer }) {
                 {montant && <span className="curseur ml-0.5 inline-block h-[0.8em] w-[3px] rounded-full align-middle" style={{ background: COULEUR_MODE[mode] }} />}
               </span>
             </div>
-            {comptes[0] && <p className="relative mx-auto w-fit rounded-pill bg-white px-4 py-2 text-xs font-semibold text-[#273550] shadow-sm">▭ {comptes.find((c) => c.id === compteId)?.nom || comptes[0].nom}⌄</p>}
+            {comptes[0] && (
+              <div className="relative mx-auto flex w-fit items-center gap-2 rounded-pill bg-white px-4 py-2 text-xs font-semibold text-[#273550] shadow-sm">
+                <span className="flex h-4 w-5 items-center justify-center rounded-[3px] border border-[#0a63ff] text-[8px] text-[#0a63ff]">▭</span>
+                <span>{comptes.find((c) => c.id === compteId)?.nom || comptes[0].nom}</span>
+                <span aria-hidden="true" className="text-sm leading-none">⌄</span>
+              </div>
+            )}
           </div>
 
           {/* Raccourcis de commerçants : ligne légère à la manière de Wallet */}
@@ -402,7 +408,7 @@ export default function AddSheet({ onFermer }) {
           ) : (
             <button
               onClick={() => (valeur > 0 ? setEtape(2) : secouer())}
-              className={`mt-5 w-full rounded-ios bg-[#0a63ff] py-3.5 font-semibold text-white shadow-bouton active:scale-[0.99] transition-transform ${valeur <= 0 ? "opacity-40" : ""}`}
+              className={`sticky bottom-0 z-10 mt-5 w-full rounded-ios bg-[#0a63ff] py-3.5 font-semibold text-white shadow-bouton active:scale-[0.99] transition-transform ${valeur <= 0 ? "opacity-40" : ""}`}
             >
               Continuer
             </button>
