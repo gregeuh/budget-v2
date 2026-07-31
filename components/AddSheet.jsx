@@ -61,6 +61,7 @@ export default function AddSheet({ onFermer }) {
   const [iconeManuelle, setIconeManuelle] = useState(false);
   const [iconeMemorisee, setIconeMemorisee] = useState(false);
   const [compteId, setCompteId] = useState(comptes[0]?.id || "");
+  const [choixCompteOuvert, setChoixCompteOuvert] = useState(false);
   const [versId, setVersId] = useState(comptes[1]?.id || "");
   const [date, setDate] = useState(aujourdhui());
   const [frequence, setFrequence] = useState("unefois");
@@ -335,7 +336,7 @@ export default function AddSheet({ onFermer }) {
           {/* Montant : priorité visuelle, dans l'esprit de la maquette claire */}
           <div
             key={`sec-${secousse}`}
-            className={`relative mb-5 overflow-hidden px-4 pb-3 pt-1 text-center ${secousse ? "secousse" : ""}`}
+            className={`relative mb-5 px-4 pb-3 pt-1 text-center ${secousse ? "secousse" : ""}`}
           >
             <p className="relative sr-only">Montant</p>
             <div className="relative mt-1 flex h-[70px] items-center justify-center">
@@ -347,10 +348,17 @@ export default function AddSheet({ onFermer }) {
               </span>
             </div>
             {comptes[0] && (
-              <div className="relative mx-auto flex w-fit items-center gap-2 rounded-pill bg-white px-4 py-2 text-xs font-semibold text-[#273550] shadow-sm">
+              <div className="relative mx-auto w-fit">
+              <button type="button" onClick={() => setChoixCompteOuvert((v) => !v)} aria-expanded={choixCompteOuvert} className="flex items-center gap-2 rounded-pill bg-white px-4 py-2 text-xs font-semibold text-[#273550] shadow-sm">
                 <span className="flex h-4 w-5 items-center justify-center rounded-[3px] border border-[#0a63ff] text-[8px] text-[#0a63ff]">▭</span>
                 <span>{comptes.find((c) => c.id === compteId)?.nom || comptes[0].nom}</span>
-                <span aria-hidden="true" className="text-sm leading-none">⌄</span>
+                <span aria-hidden="true" className={`text-sm leading-none transition-transform ${choixCompteOuvert ? "rotate-180" : ""}`}>⌄</span>
+              </button>
+              {choixCompteOuvert && (
+                <div className="absolute left-1/2 z-20 mt-2 w-52 -translate-x-1/2 overflow-hidden rounded-2xl bg-white p-1.5 text-left shadow-v3-floating ring-1 ring-black/5">
+                  {comptes.map((c) => <button key={c.id} type="button" onClick={() => { setCompteId(c.id); setChoixCompteOuvert(false); }} className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm ${c.id === compteId ? "bg-marque-pale font-semibold text-marque-texte" : "text-[#273550]"}`}><span className="truncate">{c.nom}</span>{c.id === compteId && <span>✓</span>}</button>)}
+                </div>
+              )}
               </div>
             )}
           </div>
