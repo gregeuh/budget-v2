@@ -17,5 +17,5 @@ function Symbole({ type }) {
 
 export default function CompteLogo({ type = "autre", taille = 40, className = "" }) {
   const style = STYLES[type] || STYLES.autre;
-  return <span className={`inline-flex shrink-0 items-center justify-center rounded-[30%] font-semibold ${className}`} style={{ width: taille, height: taille, color: style.couleur, background: `linear-gradient(145deg, ${style.fond}, rgba(255,255,255,.9))`, boxShadow: "inset 0 1px 0 rgba(255,255,255,.8), 0 2px 6px rgba(36,51,82,.08)", fontSize: `${Math.max(16, taille * .5)}px` }}><Symbole type={type} /></span>;
+  return <span className={`inline-flex shrink-0 items-center justify-center rounded-[30%] font-semibold ${className}`} style={{ width: taille, height: taille, color: style.couleur, background: `linear-gradient(145deg, color-mix(in srgb, ${style.fond} 80%, var(--c-carte)), var(--c-carte))`, boxShadow: "inset 0 1px 0 color-mix(in srgb, var(--c-contraste) 38%, transparent), 0 2px 6px color-mix(in srgb, var(--c-encre) 10%, transparent)", fontSize: `${Math.max(16, taille * .5)}px` }}><Symbole type={type} /></span>;
 }

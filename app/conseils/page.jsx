@@ -69,7 +69,7 @@ export default function Conseils() {
 
       <details ref={analyseRef} id="tous-les-conseils" className="group scroll-mt-5 rounded-v3-l border border-ui-hairline bg-ui-surface-floating shadow-v3-soft">
         <summary className="flex cursor-pointer list-none items-center gap-3 p-4 marker:hidden">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#eff3ff] text-xl">🧭</span>
+          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-marque-pale text-xl">🧭</span>
           <span className="min-w-0 flex-1"><span className="block font-semibold tracking-tight">Analyse complète</span><span className="mt-0.5 block text-sm text-ui-text-secondary">Toutes tes recommandations et analyses.</span></span>
           <span className="text-2xl font-light text-ui-text-secondary transition-transform group-open:rotate-90">›</span>
         </summary>
@@ -82,8 +82,8 @@ export default function Conseils() {
         </div>
       </details>
 
-      {coachOuvert && <Sheet titre="Coach budgétaire" onFermer={() => setCoachOuvert(false)} clair>
-        <p className="-mt-2 text-sm text-[#667085]">Une analyse bienveillante basée sur tes données du mois.</p>
+      {coachOuvert && <Sheet titre="Coach budgétaire" onFermer={() => setCoachOuvert(false)}>
+        <p className="-mt-2 text-sm text-ui-text-secondary">Une analyse bienveillante basée sur tes données du mois.</p>
 
         {messages.length === 0 && (
           <div className="mb-3 mt-3 flex flex-wrap gap-2">
