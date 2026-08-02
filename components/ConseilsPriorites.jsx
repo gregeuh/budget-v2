@@ -23,7 +23,7 @@ function Cercle({ valeur, couleur = "#2864f0" }) {
   );
 }
 
-export default function ConseilsPriorites({ onVoirTout }) {
+export default function ConseilsPriorites({ onVoirTout, onVoirTransactions, onModifierBudgets, onOuvrirActionPilier }) {
   const donnees = useBudget();
   const apercu = useMemo(() => {
     const mois = cleMois(aujourdhui());
@@ -47,6 +47,13 @@ export default function ConseilsPriorites({ onVoirTout }) {
   const depassement = priorite ? Math.max(0, priorite.depense - priorite.limite) : 0;
   const estDepasse = depassement > 0;
   const estPositif = !budgetDepasse && !budgetVigilance && Boolean(bonneNouvelle);
+  const actionPilier = {
+    epargne: "Définir mon épargne",
+    urgence: "Voir mes comptes",
+    budgets: "Modifier mes budgets",
+    dette: "Gérer mes crédits",
+    regularite: "Voir mes opérations",
+  };
 
   return (
     <section id="priorites-conseils" className="scroll-mt-5 space-y-7">
@@ -79,7 +86,10 @@ export default function ConseilsPriorites({ onVoirTout }) {
               <p className="mt-4 text-sm text-ui-text-secondary">{estDepasse ? "Dépassement du budget" : "Budget mensuel restant"}</p>
               <p className="chiffres mt-0.5 text-[2rem] font-semibold tracking-tight text-corail-texte">{estDepasse ? `+${euros(depassement)}` : euros(priorite.limite - priorite.depense)}</p>
               <p className="mt-0.5 text-sm text-ui-text-secondary">{estDepasse ? `au-dessus de ton plafond de ${euros(priorite.limite)}` : `à dépenser sur ${euros(priorite.limite)}`}</p>
-              <button onClick={onVoirTout} className="mt-4 rounded-pill bg-corail-pale px-3 py-1.5 text-xs font-semibold text-corail-texte transition-transform active:scale-95">{estDepasse ? "↗ Analyser mes dépenses" : "↗ Voir mes options"}</button>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button onClick={() => onVoirTransactions?.(priorite.id)} className="rounded-pill bg-corail-pale px-3 py-1.5 text-xs font-semibold text-corail-texte transition-transform active:scale-95">↗ Voir les dépenses</button>
+                <button onClick={onModifierBudgets} className="rounded-pill bg-ui-surface-floating px-3 py-1.5 text-xs font-semibold text-ui-primary shadow-v3-soft transition-transform active:scale-95">Modifier le budget</button>
+              </div>
             </div>
             <div className="rounded-v3-m border border-corail/20 bg-ui-surface-floating p-3.5">
               <span className="text-[10px] font-semibold uppercase tracking-wide text-corail-texte">Dépenses ce mois</span>
@@ -91,7 +101,7 @@ export default function ConseilsPriorites({ onVoirTout }) {
             </div>
           </div>
         ) : (
-          <div className="mt-4 flex items-start gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-corail-pale text-xl">🎯</span><div><h2 className="text-xl font-semibold tracking-tight">Définis ton premier budget</h2><p className="mt-1 text-sm leading-relaxed text-ui-text-secondary">Un plafond sur tes dépenses du quotidien suffit pour commencer à voir clair.</p><button onClick={onVoirTout} className="mt-3 rounded-pill bg-corail-pale px-3 py-1.5 text-xs font-semibold text-corail-texte">Voir mes conseils →</button></div></div>
+          <div className="mt-4 flex items-start gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-corail-pale text-xl">🎯</span><div><h2 className="text-xl font-semibold tracking-tight">Définis ton premier budget</h2><p className="mt-1 text-sm leading-relaxed text-ui-text-secondary">Un plafond sur tes dépenses du quotidien suffit pour commencer à voir clair.</p><button onClick={onModifierBudgets} className="mt-3 rounded-pill bg-corail-pale px-3 py-1.5 text-xs font-semibold text-corail-texte">Définir mes budgets →</button></div></div>
         )}
           </>
         )}
@@ -119,9 +129,9 @@ export default function ConseilsPriorites({ onVoirTout }) {
         <div className="mt-3 overflow-hidden rounded-v3-l border border-ui-hairline bg-ui-surface-floating shadow-v3-soft">
           {surveiller.map((p, index) => {
             const couleur = p.points >= 14 ? "#36b989" : p.points >= 8 ? "#5375ed" : "#f0a637";
-            return <button key={p.id} onClick={onVoirTout} className={`flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors active:bg-ui-surface-2 ${index ? "border-t border-ui-hairline" : ""}`}>
+            return <button key={p.id} onClick={() => onOuvrirActionPilier?.(p.id)} className={`flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors active:bg-ui-surface-2 ${index ? "border-t border-ui-hairline" : ""}`}>
               <Cercle valeur={(p.points / 20) * 100} couleur={couleur} />
-              <span className="min-w-0 flex-1"><span className="block text-base font-semibold text-ui-text-primary">{p.icone} {p.label}</span><span className="mt-0.5 block truncate text-sm text-ui-text-secondary">{p.detail}</span></span>
+              <span className="min-w-0 flex-1"><span className="block text-base font-semibold text-ui-text-primary">{p.icone} {p.label}</span><span className="mt-0.5 block truncate text-sm text-ui-text-secondary">{p.detail}</span><span className="mt-1.5 inline-flex rounded-pill bg-marque-pale px-2 py-0.5 text-[10px] font-semibold text-marque-texte">{actionPilier[p.id] || "Voir l'action"}</span></span>
               <Fleche />
             </button>;
           })}
