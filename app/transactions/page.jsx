@@ -7,6 +7,7 @@ import { calculerProjection } from "@/lib/projection";
 import { statsMois } from "@/lib/conseils";
 import TxRow from "@/components/TxRow";
 import ImportCSV from "@/components/ImportCSV";
+import Sheet from "@/components/Sheet";
 import { rechercher } from "@/lib/recherche";
 
 export default function Transactions() {
@@ -19,6 +20,7 @@ export default function Transactions() {
   const [periode, setPeriode] = useState("tout");
   const [typeFiltre, setTypeFiltre] = useState("tous");
   const [montantMin, setMontantMin] = useState("");
+  const [recurrenteEdition, setRecurrenteEdition] = useState(null);
 
   const filtresActifs = catFiltre !== "toutes" || periode !== "tout" || typeFiltre !== "tous" || Boolean(montantMin.trim());
   const debutPeriode = useMemo(() => {
@@ -270,6 +272,14 @@ export default function Transactions() {
                   <span className={`tnum shrink-0 text-sm font-bold ${t.montant > 0 ? "text-menthe" : "text-encre"}`}>
                     {t.montant > 0 ? "+" : ""}{euros(t.montant, { precis: true })}
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => setRecurrenteEdition(recurrentes.find((r) => r.id === t.recurrenteId) || null)}
+                    aria-label={`Gérer la récurrence ${t.libelle}`}
+                    className="tappable -mr-1 flex h-9 w-8 shrink-0 items-center justify-center rounded-full text-lg text-sourdine hover:bg-voile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marque"
+                  >
+                    ⋯
+                  </button>
                 </li>
               ) : (
                 <TxRow key={t.id} tx={t} avecCompte={compteId === "tous"} retard={i} />
@@ -282,11 +292,9 @@ export default function Transactions() {
       {parMois.length > 0 && !recherche && !filtresActifs && (
         <div className="flex items-baseline justify-between">
           <h2 className="!mb-0 text-sm font-semibold uppercase tracking-wide text-sourdine">Passées</h2>
-          {astuce && (
-            <button onClick={fermerAstuce} className="text-[11px] font-medium text-sourdine">
-              👈 Glisse une ligne pour supprimer · OK
-            </button>
-          )}
+          <button onClick={fermerAstuce} className="text-right text-[11px] font-medium text-sourdine">
+            {astuce ? "Touchez ⋯ pour modifier · glissez pour supprimer · OK" : "⋯ Modifier · glisser pour supprimer"}
+          </button>
         </div>
       )}
 
@@ -313,6 +321,52 @@ export default function Transactions() {
         );
       })}
       {importOuvert && <ImportCSV onFermer={() => setImportOuvert(false)} />}
+      {recurrenteEdition && <RecurrenteEdition recurrence={recurrenteEdition} onFermer={() => setRecurrenteEdition(null)} />}
     </div>
+  );
+}
+
+function RecurrenteEdition({ recurrence, onFermer }) {
+  const { comptes, categories, modifierRecurrente, supprimerRecurrente } = useBudget();
+  const [libelle, setLibelle] = useState(recurrence.libelle || "");
+  const [montant, setMontant] = useState(String(Math.abs(recurrence.montant)).replace(".", ","));
+  const [sens, setSens] = useState(recurrence.montant < 0 ? "depense" : "revenu");
+  const [categorie, setCategorie] = useState(recurrence.categorie);
+  const [compteId, setCompteId] = useState(recurrence.compteId);
+  const [date, setDate] = useState(recurrence.prochaine);
+  const [confirmeSuppr, setConfirmeSuppr] = useState(false);
+  const cats = Object.entries(categories).filter(([, cat]) => sens === "revenu" ? cat.type === "revenu" : cat.type !== "revenu" && cat.type !== "virement");
+
+  const enregistrer = async () => {
+    const valeur = Number(String(montant).replace(",", "."));
+    if (!valeur || valeur <= 0) return;
+    await modifierRecurrente(recurrence.id, {
+      libelle: libelle.trim() || "Opération récurrente",
+      montant: sens === "depense" ? -valeur : valeur,
+      compteId,
+      categorie,
+      prochaine: date,
+    });
+    onFermer();
+  };
+
+  return (
+    <Sheet titre="Gérer l'opération à venir" onFermer={onFermer} niveau={2}>
+      <div className="space-y-3">
+        <p className="rounded-ios bg-marque-pale px-3.5 py-2.5 text-sm text-marque-texte">🔁 Cette opération est générée par une récurrence. Tes changements s'appliqueront aux prochaines occurrences.</p>
+        <div className="grid grid-cols-2 rounded-pill bg-voile p-1">
+          {[['depense', 'Dépense'], ['revenu', 'Revenu']].map(([id, label]) => <button key={id} onClick={() => setSens(id)} className={`rounded-pill py-2 text-sm font-semibold ${sens === id ? 'bg-carte shadow-carte' : 'text-sourdine'}`}>{label}</button>)}
+        </div>
+        <label className="block"><span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Libellé</span><input value={libelle} onChange={(e) => setLibelle(e.target.value)} className="w-full champ px-3 py-3 outline-none" /></label>
+        <label className="block"><span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Montant</span><div className="champ flex items-center px-3"><input inputMode="decimal" value={montant} onChange={(e) => setMontant(e.target.value)} className="min-w-0 flex-1 bg-transparent py-3 outline-none" /><span className="text-sourdine">€</span></div></label>
+        <div className="flex flex-wrap gap-1.5">{cats.map(([id, cat]) => <button key={id} onClick={() => setCategorie(id)} className={`rounded-pill border px-2.5 py-1.5 text-xs font-semibold ${categorie === id ? 'border-encre bg-encre text-contraste' : 'border-bordure bg-carte'}`}>{cat.icone} {cat.label}</button>)}</div>
+        <div className="grid grid-cols-2 gap-3">
+          <label><span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Compte</span><select value={compteId} onChange={(e) => setCompteId(e.target.value)} className="w-full champ px-3 py-3 outline-none">{comptes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}</select></label>
+          <label><span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Prochaine date</span><input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full champ px-3 py-3 outline-none" /></label>
+        </div>
+        <button onClick={enregistrer} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque">Enregistrer</button>
+        <button onClick={async () => { if (!confirmeSuppr) return setConfirmeSuppr(true); await supprimerRecurrente(recurrence.id); onFermer(); }} className={`w-full rounded-ios py-3 text-sm font-semibold ${confirmeSuppr ? 'bg-corail-bouton text-white' : 'text-corail'}`}>{confirmeSuppr ? 'Confirmer la suppression de la récurrence' : 'Supprimer la récurrence'}</button>
+      </div>
+    </Sheet>
   );
 }

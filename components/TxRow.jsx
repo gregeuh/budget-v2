@@ -115,6 +115,15 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
           <span className={`tnum shrink-0 text-sm font-bold ${cat.type === "virement" ? "text-sourdine" : positif ? "text-menthe" : "text-encre"}`}>
             {estVirement ? "⇄ " : positif ? "+" : ""}{euros(estVirement ? Math.abs(tx.montant) : tx.montant, { precis: true })}
           </span>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setEdition(true); }}
+            onKeyDown={(e) => e.stopPropagation()}
+            aria-label={`Actions pour ${tx.libelle || cat.label}`}
+            className="tappable -mr-1 flex h-9 w-8 shrink-0 items-center justify-center rounded-full text-lg text-sourdine hover:bg-voile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marque"
+          >
+            ⋯
+          </button>
         </div>
       </li>
       {edition && <EditTxSheet tx={tx} onFermer={() => setEdition(false)} />}
