@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import Tendances from "./Tendances";
 import PatrimoineChart from "./PatrimoineChart";
 import SpendChart from "./SpendChart";
@@ -28,6 +29,10 @@ export default function Analyses({ comptes, transactions, mois }) {
         </span>
         <span className={`text-ui-text-secondary transition-transform duration-v3-normal ${ouvert ? "rotate-90" : ""}`}>›</span>
       </button>
+
+      <Link href="/statistiques" className="mx-4 mb-4 flex items-center justify-between rounded-v3-s bg-marque-pale px-3.5 py-2.5 text-sm font-semibold text-marque-texte transition-transform active:scale-[0.99]">
+        Ouvrir les statistiques complètes <span aria-hidden="true">›</span>
+      </Link>
 
       {ouvert && (
         <div className="fade-in space-y-5 border-t border-ui-hairline px-4 pb-4 pt-4">
