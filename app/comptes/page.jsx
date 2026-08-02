@@ -7,6 +7,7 @@ import Sheet from "@/components/Sheet";
 import FicheCredit, { mensualitesRestantes } from "@/components/FicheCredit";
 import CompteLogo from "@/components/CompteLogo";
 import FicheCompteDetail from "@/components/FicheCompte";
+import EtatVide from "@/components/EtatVide";
 
 const GROUPES = [
   { id: "courant", label: "Au quotidien" },
@@ -207,9 +208,13 @@ export default function Comptes() {
       })}
 
       {comptes.length === 0 && (
-        <p className="rounded-ios bg-carte p-6 text-center text-sm text-sourdine shadow-carte">
-          Aucun compte pour l'instant. Ajoute ton compte courant, Revolut, Swile, Livret A…
-        </p>
+        <EtatVide
+          icone="💳"
+          titre="Ajoute ton premier compte"
+          description="Compte courant, Revolut, Swile ou Livret A : tout ton patrimoine sera ensuite visible au même endroit."
+          actionLabel="Ajouter un compte"
+          onAction={() => setFiche("nouveau")}
+        />
       )}
 
       {/* Crédits */}
@@ -219,9 +224,14 @@ export default function Comptes() {
           <button onClick={() => setFicheCredit("nouveau")} className="text-sm font-medium text-marque">+ Crédit</button>
         </div>
         {credits.length === 0 ? (
-          <p className="rounded-ios border-2 border-dashed border-bordure p-4 text-center text-sm text-sourdine">
-            Aucun crédit suivi. Ajoute un prêt pour suivre le restant dû et la date de fin.
-          </p>
+          <EtatVide
+            compact
+            icone="🏦"
+            titre="Aucun crédit suivi"
+            description="Ajoute un prêt pour suivre le restant dû et sa date de fin."
+            actionLabel="Ajouter un crédit"
+            onAction={() => setFicheCredit("nouveau")}
+          />
         ) : (
           <ul className="space-y-2">
             {credits.map((c) => {
