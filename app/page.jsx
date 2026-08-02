@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { useBudget } from "@/lib/store";
 import { euros, moisLabel, aujourdhui, TYPES_COMPTE } from "@/lib/format";
@@ -8,15 +9,15 @@ import { statsMois } from "@/lib/conseils";
 import { cleMois } from "@/lib/format";
 import CarrouselComptes from "@/components/CarrouselComptes";
 import TxRow from "@/components/TxRow";
-import CountUp from "@/components/CountUp";
 import ChiffresRoulants from "@/components/ChiffresRoulants";
 import MoisSelecteur from "@/components/MoisSelecteur";
 import PremiersPas from "@/components/PremiersPas";
 import Analyses from "@/components/Analyses";
 import Accroches from "@/components/Accroches";
-import RechercheSheet from "@/components/RechercheSheet";
 import { messageAccueil } from "@/lib/messagesAccueil";
 import { calculerProjection } from "@/lib/projection";
+
+const RechercheSheet = dynamic(() => import("@/components/RechercheSheet"), { ssr: false });
 
 export default function Accueil() {
   const { comptes, transactions, soldes, profil, credits, projets, recurrentes, setReglagesOuverts } = useBudget();

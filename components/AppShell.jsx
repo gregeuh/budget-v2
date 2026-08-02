@@ -1,18 +1,22 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useBudget } from "@/lib/store";
 import { brancherJournal } from "@/lib/journal";
 import TabBar from "./TabBar";
-import AddSheet from "./AddSheet";
-import Login from "./Login";
-import Onboarding from "./Onboarding";
 import Toast from "./Toast";
-import DrawerReglages from "./DrawerReglages";
 import SqueletteAccueil from "./SqueletteAccueil";
 import TirerPourRafraichir from "./TirerPourRafraichir";
-import Confettis from "./Confettis";
+
+// Ces écrans ne sont utiles qu'à la demande : les isoler évite de les inclure
+// dans le premier rendu de chaque page, surtout sur réseau mobile.
+const AddSheet = dynamic(() => import("./AddSheet"), { ssr: false });
+const Login = dynamic(() => import("./Login"), { ssr: false });
+const Onboarding = dynamic(() => import("./Onboarding"), { ssr: false });
+const DrawerReglages = dynamic(() => import("./DrawerReglages"), { ssr: false });
+const Confettis = dynamic(() => import("./Confettis"), { ssr: false });
 
 export default function AppShell({ children }) {
   const { pret, user, modeLocal, profil, comptes, erreurInit, reglagesOuverts, celebration } = useBudget();

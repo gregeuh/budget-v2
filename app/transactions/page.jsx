@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { useBudget } from "@/lib/store";
 import { cleMois, euros, aujourdhui, dateCourte } from "@/lib/format";
 import { calculerProjection } from "@/lib/projection";
 import { statsMois } from "@/lib/conseils";
 import TxRow from "@/components/TxRow";
-import ImportCSV from "@/components/ImportCSV";
 import Sheet from "@/components/Sheet";
 import EtatVide from "@/components/EtatVide";
 import { rechercher } from "@/lib/recherche";
+
+const ImportCSV = dynamic(() => import("@/components/ImportCSV"), { ssr: false });
 
 export default function Transactions() {
   const { transactions, comptes, categories, recurrentes, soldes, profil } = useBudget();
