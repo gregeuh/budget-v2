@@ -8,6 +8,7 @@ import { statsMois } from "@/lib/conseils";
 import TxRow from "@/components/TxRow";
 import ImportCSV from "@/components/ImportCSV";
 import Sheet from "@/components/Sheet";
+import EtatVide from "@/components/EtatVide";
 import { rechercher } from "@/lib/recherche";
 
 export default function Transactions() {
@@ -303,9 +304,13 @@ export default function Transactions() {
       )}
 
       {parMois.length === 0 && (
-        <p className="rounded-ios bg-carte p-6 text-center text-sm text-sourdine shadow-carte">
-          {recherche ? `Aucune opération ne correspond à « ${recherche} ».` : filtresActifs ? "Aucune opération ne correspond à ces filtres." : "Aucune opération à afficher."}
-        </p>
+        <EtatVide
+          icone={recherche || filtresActifs || compteId !== "tous" ? "🔎" : "📥"}
+          titre={recherche ? "Aucun résultat" : filtresActifs || compteId !== "tous" ? "Aucune opération ici" : "Commence ton suivi"}
+          description={recherche ? `Aucune opération ne correspond à « ${recherche} ».` : filtresActifs || compteId !== "tous" ? "Modifie tes filtres ou reviens à tous les comptes pour retrouver tes opérations." : "Importe un relevé bancaire pour retrouver ton historique en quelques secondes."}
+          actionLabel={recherche || filtresActifs || compteId !== "tous" ? "Réinitialiser les filtres" : "Importer un relevé"}
+          onAction={recherche || filtresActifs || compteId !== "tous" ? effacerFiltres : () => setImportOuvert(true)}
+        />
       )}
 
       {parMois.map(({ mois, txs }) => {

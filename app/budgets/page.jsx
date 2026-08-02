@@ -11,6 +11,7 @@ import Sheet from "@/components/Sheet";
 import FicheProjet from "@/components/FicheProjet";
 import MoisSelecteur from "@/components/MoisSelecteur";
 import Repliable from "@/components/Repliable";
+import EtatVide from "@/components/EtatVide";
 
 const REGLE = [
   { id: "besoin", label: "Besoins", cible: 50, couleur: "var(--marque)" },
@@ -131,9 +132,13 @@ export default function Budgets() {
       <section>
         <h2 className="mb-3 px-1 text-sm font-semibold uppercase tracking-wide text-sourdine">Plafonds par catégorie</h2>
         {Object.keys(budgets).length === 0 ? (
-          <p className="rounded-ios bg-carte p-6 text-center text-sm text-sourdine shadow-carte">
-            Aucun budget défini. Touche « Modifier » pour fixer tes plafonds mensuels.
-          </p>
+          <EtatVide
+            icone="🎯"
+            titre="Fixe tes premiers plafonds"
+            description="Choisis les catégories à suivre et le montant maximum que tu souhaites leur consacrer chaque mois."
+            actionLabel="Définir mes budgets"
+            onAction={() => setEdition(true)}
+          />
         ) : (
           <ul className="space-y-2">
             {Object.entries(budgets).map(([cat, limite]) => {
