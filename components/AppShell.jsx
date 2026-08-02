@@ -22,6 +22,7 @@ export default function AppShell({ children }) {
   const { pret, user, modeLocal, profil, comptes, erreurInit, reglagesOuverts, celebration } = useBudget();
   const [fete, setFete] = useState(false);
   const [enLigne, setEnLigne] = useState(true);
+  const [chargementLong, setChargementLong] = useState(false);
 
   // Capte les erreurs dès le démarrage, pour qu'aucune ne passe inaperçue
   useEffect(() => { brancherJournal(); }, []);
@@ -39,6 +40,18 @@ export default function AppShell({ children }) {
     };
   }, []);
 
+  // Une authentification ou un réseau bloqué ne doit jamais laisser une page
+  // blanche sous un squelette indéfini. Après quelques secondes, on donne une
+  // explication et une action de récupération.
+  useEffect(() => {
+    if (pret) {
+      setChargementLong(false);
+      return;
+    }
+    const minuterie = setTimeout(() => setChargementLong(true), 6000);
+    return () => clearTimeout(minuterie);
+  }, [pret]);
+
   useEffect(() => {
     if (celebration > 0) setFete(true);
   }, [celebration]);
@@ -55,7 +68,21 @@ export default function AppShell({ children }) {
   const sens = rang(chemin) >= rang(cheminPrecedent.current) ? "page-droite" : "page-gauche";
   useEffect(() => { cheminPrecedent.current = chemin; }, [chemin]);
 
-  if (!pret) return <SqueletteAccueil />;
+  if (!pret) {
+    if (!chargementLong) return <SqueletteAccueil />;
+    return (
+      <div className="mx-auto flex min-h-dvh max-w-md items-center px-6 text-center">
+        <section aria-live="polite" className="w-full rounded-v3-l border border-ui-hairline bg-ui-surface-floating p-7 shadow-v3-medium">
+          <span aria-hidden="true" className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-beurre-pale text-2xl">⏳</span>
+          <h1 className="mt-4 text-v3-title font-semibold text-ui-text-primary">Le chargement prend plus de temps</h1>
+          <p className="mt-2 text-sm leading-5 text-ui-text-secondary">
+            {enLigne ? "Nous attendons la connexion sécurisée à tes données." : "Tu sembles hors connexion. Vérifie ton réseau puis réessaie."}
+          </p>
+          <button onClick={() => location.reload()} className="tappable mt-5 rounded-pill bg-marque-bouton px-5 py-3 text-sm font-semibold text-surMarque shadow-bouton">Réessayer</button>
+        </section>
+      </div>
+    );
+  }
 
   if (!modeLocal && erreurInit && !user) {
     return (

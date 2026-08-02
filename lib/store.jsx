@@ -155,7 +155,13 @@ export function DataProvider({ children }) {
         try {
         const { collection, onSnapshot, doc } = await import("firebase/firestore");
         const base = `users/${u.uid}`;
-        const surErreur = (e) => console.error("Firestore:", e?.code || e?.message || e);
+        const surErreur = (e) => {
+          console.error("Firestore:", e?.code || e?.message || e);
+          const message = e?.code === "permission-denied"
+            ? "L'accès à tes données est refusé. Vérifie les règles Firestore ou reconnecte-toi."
+            : "Certaines données ne sont pas accessibles pour le moment. Vérifie ta connexion puis réessaie.";
+          setErreurInit(message);
+        };
         stopsSnapshots.push(
           onSnapshot(collection(db, `${base}/comptes`), (s) =>
             setComptes(s.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (a.ordre ?? 0) - (b.ordre ?? 0)))
