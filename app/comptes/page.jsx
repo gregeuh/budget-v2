@@ -6,6 +6,7 @@ import { TYPES_COMPTE, COULEURS, euros, PLAFONDS } from "@/lib/format";
 import Sheet from "@/components/Sheet";
 import FicheCredit, { mensualitesRestantes } from "@/components/FicheCredit";
 import CompteLogo from "@/components/CompteLogo";
+import FicheCompteDetail from "@/components/FicheCompte";
 
 const GROUPES = [
   { id: "courant", label: "Au quotidien" },
@@ -133,6 +134,7 @@ function FicheCompte({ compte, onFermer }) {
 export default function Comptes() {
   const { comptes, soldes, credits } = useBudget();
   const [fiche, setFiche] = useState(null); // null | "nouveau" | compte
+  const [detailCompte, setDetailCompte] = useState(null);
   const [ficheCredit, setFicheCredit] = useState(null); // null | "nouveau" | credit
 
   const total = comptes.reduce((a, c) => a + (soldes[c.id] || 0), 0);
@@ -174,7 +176,7 @@ export default function Comptes() {
                 return (
                   <li key={c.id}>
                     <button
-                      onClick={() => setFiche(c)}
+                      onClick={() => setDetailCompte(c)}
                       className="w-full rounded-ios bg-carte p-4 text-left shadow-carte active:scale-[0.99] transition-transform"
                     >
                       <div className="flex items-center justify-between">
@@ -248,6 +250,13 @@ export default function Comptes() {
       </section>
 
       {fiche && <FicheCompte compte={fiche === "nouveau" ? null : fiche} onFermer={() => setFiche(null)} />}
+      {detailCompte && (
+        <FicheCompteDetail
+          compte={detailCompte}
+          onFermer={() => setDetailCompte(null)}
+          onModifier={() => { setDetailCompte(null); setFiche(detailCompte); }}
+        />
+      )}
       {ficheCredit && <FicheCredit credit={ficheCredit === "nouveau" ? null : ficheCredit} onFermer={() => setFicheCredit(null)} />}
     </div>
   );

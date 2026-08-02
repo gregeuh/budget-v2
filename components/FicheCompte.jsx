@@ -17,7 +17,7 @@ function LigneStat({ label, valeur, couleur = "", dernier = false }) {
   );
 }
 
-export default function FicheCompte({ compte, onFermer }) {
+export default function FicheCompte({ compte, onFermer, onModifier }) {
   const { transactions, soldes, ajouterTransaction, notifier } = useBudget();
   const [ajustOuvert, setAjustOuvert] = useState(false);
   const [soldeReel, setSoldeReel] = useState("");
@@ -177,6 +177,19 @@ export default function FicheCompte({ compte, onFermer }) {
               </button>
             </div>
           </div>
+        )}
+
+        {onModifier && (
+          <button
+            onClick={onModifier}
+            className="flex w-full items-center justify-between rounded-ios bg-carte px-3.5 py-3 shadow-carte active:bg-voile"
+          >
+            <span className="flex items-center gap-2 text-sm font-semibold">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-marque-pale text-sm">✎</span>
+              Modifier les informations du compte
+            </span>
+            <span className="text-sourdine/50">›</span>
+          </button>
         )}
 
         {/* Opérations du compte */}
