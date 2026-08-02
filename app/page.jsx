@@ -16,6 +16,7 @@ import Analyses from "@/components/Analyses";
 import Accroches from "@/components/Accroches";
 import { messageAccueil } from "@/lib/messagesAccueil";
 import { calculerProjection } from "@/lib/projection";
+import CourbeProjection from "@/components/CourbeProjection";
 
 const RechercheSheet = dynamic(() => import("@/components/RechercheSheet"), { ssr: false });
 
@@ -52,9 +53,18 @@ export default function Accueil() {
     [comptes, soldes, transactions, recurrentes, profil]
   );
   const joursAvantSalaire = projection.salaireISO ? projection.jours : null;
+  const tauxReste = projection.dispo > 0 ? Math.max(0, Math.min(100, Math.round((projection.reste / projection.dispo) * 100))) : 0;
+  const rythme = projection.reste < 0
+    ? { titre: "Reste à protéger", detail: "Tes échéances dépassent le disponible", couleur: "text-corail", fond: "bg-corail-pale", icone: "◔" }
+    : projection.parJour < 15
+      ? { titre: "Rythme à surveiller", detail: `${euros(projection.parJour)} par jour jusqu’à la paie`, couleur: "text-ambre-texte", fond: "bg-ambre-pale", icone: "◔" }
+      : { titre: "Rythme confortable", detail: `${euros(projection.parJour)} par jour jusqu’à la paie`, couleur: "text-menthe-texte", fond: "bg-menthe-pale", icone: "◔" };
+  const progressionProjet = projetPhare?.objectif > 0
+    ? Math.min(100, Math.round((projetPhare.montantActuel / projetPhare.objectif) * 100))
+    : null;
 
   return (
-    <div className="space-y-6">
+    <div className="dashboard-v3 space-y-5 sm:space-y-6">
       {/* En-tête compact au défilement */}
       <div
         className={`fixed inset-x-0 top-0 z-30 mx-auto max-w-md transition-all duration-300 ${
@@ -76,32 +86,36 @@ export default function Accueil() {
 
       <header className="flex items-center justify-between px-1">
         <div>
-          <p className="text-v3-caption font-medium text-ui-text-secondary">{moisLabel(mois)}</p>
+          <p className="text-v3-caption font-semibold uppercase tracking-[0.14em] text-marque">Ton mois en un regard</p>
           <h1 className="mt-0.5 text-v3-title font-semibold tracking-tight">{accueil.mot}{profil.prenom ? ` ${profil.prenom.slice(0, 20)}` : ""} {accueil.emoji}</h1>
         </div>
         <button onClick={() => setReglagesOuverts(true)} aria-label="Ouvrir les réglages" className="tappable flex h-11 w-11 items-center justify-center rounded-full border border-ui-hairline bg-ui-surface-floating text-lg shadow-v3-soft backdrop-blur-v3-glass">⚙️</button>
       </header>
 
-      <section className="relative overflow-hidden rounded-v3-xl bg-[linear-gradient(145deg,var(--marque),var(--marque-texte))] px-6 py-6 text-white shadow-v3-medium">
+      <section className="dashboard-in relative overflow-hidden rounded-v3-xl bg-[linear-gradient(145deg,var(--marque),var(--marque-texte))] px-5 py-5 sm:px-6 sm:py-6 text-white shadow-v3-medium">
         <div className="reflet opacity-70" />
         <div className="relative">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-v3-caption font-medium text-white/70">Patrimoine net</p>
-              <div className={`chiffres mt-2 text-v3-hero ${patrimoine < 0 ? "text-white" : ""}`}><ChiffresRoulants valeur={patrimoine} /></div>
+              <p className="text-v3-caption font-medium text-white/70">Reste à vivre</p>
+              <div className="chiffres mt-2 text-v3-hero"><ChiffresRoulants valeur={projection.reste} /></div>
             </div>
-            <span className="rounded-pill bg-white/15 px-3 py-1.5 text-v3-caption font-semibold backdrop-blur-v3-glass">Ce mois-ci</span>
+            <span className="rounded-pill bg-white/15 px-3 py-1.5 text-v3-caption font-semibold backdrop-blur-v3-glass">{joursAvantSalaire === null ? "30 jours" : joursAvantSalaire === 0 ? "Jour de paie" : `${joursAvantSalaire} j.`}</span>
           </div>
-          <p className="mt-2 text-v3-caption text-white/75">{accueil.phrase}</p>
-          <svg viewBox="0 0 320 68" className="mt-5 h-16 w-full" role="img" aria-label="Tendance décorative du patrimoine">
-            <defs><linearGradient id="hero-area" x1="0" y1="0" x2="0" y2="1"><stop stopColor="white" stopOpacity=".26"/><stop offset="1" stopColor="white" stopOpacity="0"/></linearGradient></defs>
-            <path d="M0 53 C36 45 52 54 83 39 S130 45 159 30 S214 37 242 18 S285 26 320 7 L320 68 L0 68 Z" fill="url(#hero-area)" />
-            <path d="M0 53 C36 45 52 54 83 39 S130 45 159 30 S214 37 242 18 S285 26 320 7" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-            <circle cx="320" cy="7" r="4" fill="white" />
-          </svg>
+          <p className="mt-2 text-v3-caption text-white/75">{projection.reste < 0 ? "Tes échéances à venir dépassent le disponible." : `Tu as environ ${euros(projection.parJour)} par jour jusqu’à la paie.`}</p>
+          <CourbeProjection evolution={projection.evolution} horizonISO={projection.horizonISO} />
+          <div className="mt-3 border-t border-white/20 pt-3">
+            <div className="mb-1.5 flex items-center justify-between text-v3-caption text-white/70">
+              <span>{joursAvantSalaire === null ? "Horizon de 30 jours" : "Budget préservé jusqu’à la paie"}</span>
+              <span className="tnum font-semibold text-white">{tauxReste} %</span>
+            </div>
+            <div className="h-1.5 overflow-hidden rounded-full bg-white/20">
+              <div className={`jauge-in h-full rounded-full ${projection.reste < 0 ? "bg-corail" : "bg-white"}`} style={{ width: `${tauxReste}%` }} />
+            </div>
+          </div>
           <div className="mt-4 grid grid-cols-2 gap-3 border-t border-white/20 pt-4">
-            <div><p className="text-v3-caption text-white/65">Revenus</p><p className="tnum mt-0.5 text-sm font-semibold">+{euros(s.revenus)}</p></div>
-            <div className="border-l border-white/20 pl-4"><p className="text-v3-caption text-white/65">Dépenses</p><p className="tnum mt-0.5 text-sm font-semibold">−{euros(s.depenses)}</p></div>
+            <div><p className="text-v3-caption text-white/65">Disponible</p><p className="tnum mt-0.5 text-sm font-semibold">{euros(projection.dispo)}</p></div>
+            <div className="border-l border-white/20 pl-4"><p className="text-v3-caption text-white/65">À venir</p><p className="tnum mt-0.5 text-sm font-semibold">−{euros(projection.prevu)}</p></div>
           </div>
         </div>
       </section>
@@ -128,33 +142,52 @@ export default function Accueil() {
         <CarrouselComptes onChange={setCompteActif} />
       </section>
 
+      <section className="dashboard-in space-y-2" style={{ animationDelay: "70ms" }}>
+        <div className="flex items-center justify-between px-1">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">Ton rythme</h2>
+          <Link href="/transactions" className="text-sm font-medium text-marque">Prévisions</Link>
+        </div>
+        <div className="overflow-hidden rounded-v3-m bg-ui-surface-floating shadow-v3-soft">
+          <Link href="/transactions" className="flex items-center gap-3 px-4 py-3.5 active:bg-ui-surface-raised">
+            <span className="relative grid h-12 w-12 shrink-0 place-items-center" aria-label={`${tauxReste} % du disponible préservé`}>
+              <svg viewBox="0 0 36 36" className="h-12 w-12 -rotate-90" aria-hidden="true">
+                <path d="M18 3.9a14.1 14.1 0 1 1 0 28.2a14.1 14.1 0 1 1 0-28.2" fill="none" stroke="var(--c-voile)" strokeWidth="3.2" />
+                <path className="dashboard-ring" d="M18 3.9a14.1 14.1 0 1 1 0 28.2a14.1 14.1 0 1 1 0-28.2" fill="none" stroke={projection.reste < 0 ? "var(--corail)" : "var(--menthe)"} strokeWidth="3.2" strokeLinecap="round" pathLength="100" strokeDasharray={`${tauxReste} 100`} />
+              </svg>
+              <span className={`absolute text-[10px] font-bold ${rythme.couleur}`}>{tauxReste}%</span>
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold">{rythme.titre}</span>
+              <span className="mt-0.5 block truncate text-v3-caption text-ui-text-secondary">{rythme.detail}</span>
+            </span>
+            <span className={`tnum text-sm font-bold ${rythme.couleur}`}>{tauxReste} %</span>
+            <span className="text-ui-text-secondary">›</span>
+          </Link>
+          {projetPhare && progressionProjet !== null && (
+            <Link href="/budgets" className="flex items-center gap-3 border-t border-ui-hairline px-4 py-3.5 active:bg-ui-surface-raised">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-marque-pale text-xl">{projetPhare.icone}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-semibold">{projetPhare.nom}</span>
+                <span className="mt-0.5 block text-v3-caption text-ui-text-secondary">Objectif d’épargne</span>
+              </span>
+              <span className="tnum text-sm font-bold text-marque-texte">{progressionProjet} %</span>
+              <span className="text-ui-text-secondary">›</span>
+            </Link>
+          )}
+        </div>
+        <Link href="/conseils" className="flex items-center gap-3 rounded-v3-m bg-[linear-gradient(135deg,var(--marque-pale),var(--ui-surface-floating))] px-4 py-3.5 shadow-v3-soft active:scale-[0.99] transition-transform">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--marque),var(--marque-texte))] text-2xl text-white shadow-v3-soft">✦</span>
+          <span className="min-w-0 flex-1">
+            <span className="text-v3-caption font-semibold uppercase tracking-[0.12em] text-marque">Conseil du jour</span>
+            <span className="mt-0.5 block text-sm font-semibold">{projection.reste < 0 ? "Réduire les dépenses à venir en priorité" : "Garde ce rythme pour préserver ton épargne"}</span>
+            <span className="mt-0.5 block text-v3-caption text-ui-text-secondary">Recommandations personnalisées <span className="text-marque">›</span></span>
+          </span>
+        </Link>
+      </section>
+
       <Accroches />
 
       <MoisSelecteur mois={mois} onChanger={setMois} revenus={s.revenus} depenses={s.depenses} />
-
-      {joursAvantSalaire !== null && (
-        <Link href="/transactions" className={`block rounded-ios px-3.5 py-2.5 text-sm font-medium shadow-carte ${projection.reste < 0 ? "bg-corail-pale text-corail-texte" : "bg-carte"}`}>
-          💼 {joursAvantSalaire === 0 ? "Jour de salaire ! 🎉" : `Salaire dans ${joursAvantSalaire} jour${joursAvantSalaire > 1 ? "s" : ""}`}
-          {joursAvantSalaire > 0 && (
-            <span className="block text-xs opacity-80">
-              Reste à vivre : {euros(projection.reste)}, soit ~{euros(projection.parJour)} / jour
-              {projection.prevu > 0 && ` (${euros(projection.prevu)} de prévus déduits)`}
-            </span>
-          )}
-        </Link>
-      )}
-
-      {projetPhare && projetPhare.objectif > 0 && (
-        <Link href="/budgets" className="block rounded-ios bg-carte px-4 py-3 shadow-carte">
-          <div className="flex items-center justify-between text-sm font-medium">
-            <span>{projetPhare.icone} {projetPhare.nom}</span>
-            <span className="tnum">{Math.min(100, Math.round((projetPhare.montantActuel / projetPhare.objectif) * 100))} %</span>
-          </div>
-          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-voile">
-            <div className="jauge-in h-full rounded-full bg-marque" style={{ width: `${Math.min(100, (projetPhare.montantActuel / projetPhare.objectif) * 100)}%` }} />
-          </div>
-        </Link>
-      )}
 
       <Analyses comptes={comptesPatrimoine} transactions={transactions} mois={mois} />
 

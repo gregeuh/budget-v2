@@ -415,6 +415,16 @@ html.sombre .reflet {
 }
 .jauge-in { animation: jauge-in 0.7s cubic-bezier(0.32, 0.72, 0, 1) both; transform-origin: left; }
 
+@keyframes dashboard-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.dashboard-in { animation: dashboard-in 0.48s var(--doux) both; }
+@keyframes dashboard-ring {
+  from { stroke-dasharray: 0 100; }
+}
+.dashboard-ring { animation: dashboard-ring 0.8s var(--ressort) 0.18s both; transform-origin: center; }
+
 /* Barre de graphique qui monte depuis le bas, façon Apple Stocks / Revolut */
 @keyframes barre-monte {
   from { transform: scaleY(0); }
@@ -574,7 +584,7 @@ html.sombre .voile-feuille {
 .pop-in { animation: pop-in 0.3s cubic-bezier(0.32, 0.72, 0, 1) both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .sheet-in, .fade-in, .pop-in, .drawer-in, .page-in, .page-droite, .page-gauche, .pulse-doux, .tourne, .ligne-in, .curseur, .jauge-in, .trace-in, .apparait-tard, .donut-in, .point-saut { animation: none; }
+  .sheet-in, .fade-in, .pop-in, .drawer-in, .page-in, .page-droite, .page-gauche, .pulse-doux, .tourne, .ligne-in, .curseur, .jauge-in, .trace-in, .apparait-tard, .donut-in, .point-saut, .dashboard-in, .dashboard-ring { animation: none; }
   .trace-in { stroke-dasharray: none; }
   .squelette-v3 { animation: none; }
 }
