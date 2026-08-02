@@ -7,7 +7,7 @@ const ONGLETS = [
   { href: "/", label: "Accueil", icone: "accueil", couleur: "#007AFF", pale: "rgba(0,122,255,.12)" },
   { href: "/comptes", label: "Comptes", icone: "comptes", couleur: "#5856D6", pale: "rgba(88,86,214,.13)" },
   { href: "AJOUT" },
-  { href: "/budgets", label: "Budgets", icone: "budgets", couleur: "#FF9500", pale: "rgba(255,149,0,.14)" },
+  { href: "/budgets", label: "Pilotage", icone: "budgets", couleur: "#FF9500", pale: "rgba(255,149,0,.14)" },
   { href: "/conseils", label: "Conseils", icone: "conseils", couleur: "#AF52DE", pale: "rgba(175,82,222,.13)" },
 ];
 
@@ -43,21 +43,24 @@ export default function TabBar({ onAjouter, ajoutOuvert = false }) {
               <span className={`transition-transform duration-v3-normal ease-v3-standard ${ajoutOuvert ? "rotate-45" : ""}`}>+</span>
             </button>
           ) : (
-            <Link
+            (() => {
+              const actif = chemin === o.href || (o.href === "/budgets" && chemin === "/statistiques");
+              return <Link
               key={o.href}
               href={o.href}
               onClick={() => {
                 if (chemin === o.href) window.scrollTo({ top: 0, behavior: "smooth" });
               }}
-              aria-current={chemin === o.href ? "page" : undefined}
+              aria-current={actif ? "page" : undefined}
               className={`relative flex min-h-12 flex-col items-center justify-center gap-1 rounded-v3-s py-1 text-[10px] font-semibold transition-all duration-v3-normal ease-v3-standard ${
-                chemin === o.href ? "shadow-sm" : "text-ui-text-secondary"
+                actif ? "shadow-sm" : "text-ui-text-secondary"
               }`}
-              style={chemin === o.href ? { color: o.couleur, backgroundColor: o.pale } : { color: o.couleur }}
+              style={actif ? { color: o.couleur, backgroundColor: o.pale } : undefined}
             >
-              <span key={chemin === o.href ? "actif" : "inactif"} className={chemin === o.href ? "saut-onglet" : "opacity-70"}><IconeOnglet nom={o.icone} /></span>
+              <span key={actif ? "actif" : "inactif"} className={actif ? "saut-onglet" : "opacity-70"}><IconeOnglet nom={o.icone} /></span>
               {o.label}
-            </Link>
+            </Link>;
+            })()
           )
         )}
       </div>

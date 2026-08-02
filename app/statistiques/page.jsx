@@ -1,0 +1,78 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useBudget } from "@/lib/store";
+import { aujourdhui, cleMois, euros } from "@/lib/format";
+import { statsMoisBudgetaire } from "@/lib/conseils";
+import MoisSelecteur from "@/components/MoisSelecteur";
+import SpendChart from "@/components/SpendChart";
+import DonutCat from "@/components/DonutCat";
+import Tendances from "@/components/Tendances";
+import PatrimoineChart from "@/components/PatrimoineChart";
+import CalendrierDepenses from "@/components/CalendrierDepenses";
+
+function Evolution({ valeur, precedent, inverse = false }) {
+  if (!precedent) return <span className="text-[11px] text-ui-text-secondary">Premier mois comparable</span>;
+  const delta = valeur - precedent;
+  const favorable = inverse ? delta <= 0 : delta >= 0;
+  return <span className={`text-[11px] font-semibold ${favorable ? "text-menthe" : "text-corail"}`}>{delta >= 0 ? "+" : ""}{euros(delta)} vs mois dernier</span>;
+}
+
+const moisPrecedent = (mois) => {
+  const [annee, numero] = mois.split("-").map(Number);
+  const date = new Date(annee, numero - 2, 1);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+};
+
+export default function Statistiques() {
+  const { transactions, comptes, profil } = useBudget();
+  const [mois, setMois] = useState(cleMois(aujourdhui()));
+  const bilan = useMemo(() => {
+    const actuel = statsMoisBudgetaire(transactions, mois, profil.jourSalaire);
+    const precedent = statsMoisBudgetaire(transactions, moisPrecedent(mois), profil.jourSalaire);
+    return { actuel, precedent, solde: actuel.revenus - actuel.depenses, soldePrec: precedent.revenus - precedent.depenses };
+  }, [transactions, mois, profil.jourSalaire]);
+  const cyclePaie = Number(profil.jourSalaire) >= 20;
+
+  return (
+    <div className="space-y-6">
+      <header className="px-1">
+        <p className="text-v3-caption font-medium text-ui-text-secondary">Comprendre tes habitudes</p>
+        <h1 className="text-v3-title font-semibold">Statistiques</h1>
+        <p className="mt-1 text-sm text-ui-text-secondary">Les chiffres essentiels, sans jargon.</p>
+        {cyclePaie && <p className="mt-2 inline-flex rounded-pill bg-marque-pale px-2.5 py-1 text-[11px] font-semibold text-marque-texte">💼 Mois budgétaire calé sur ta paie du {profil.jourSalaire}</p>}
+      </header>
+
+      <div className="grid grid-cols-2 rounded-pill bg-voile p-1 text-sm font-semibold">
+        <Link href="/budgets" className="rounded-pill py-2 text-center text-sourdine">Budgets</Link>
+        <Link href="/statistiques" className="rounded-pill bg-carte py-2 text-center shadow-carte">Statistiques</Link>
+      </div>
+
+      <MoisSelecteur mois={mois} onChanger={setMois} revenus={bilan.actuel.revenus} depenses={bilan.actuel.depenses} />
+
+      <section className="grid grid-cols-3 gap-2">
+        <div className="rounded-v3-m bg-menthe-pale p-3 shadow-v3-soft"><p className="text-[10px] font-semibold uppercase tracking-wide text-menthe-texte">Revenus</p><p className="chiffres mt-1 text-lg font-bold text-menthe-texte">{euros(bilan.actuel.revenus)}</p><Evolution valeur={bilan.actuel.revenus} precedent={bilan.precedent.revenus} /></div>
+        <div className="rounded-v3-m bg-corail-pale p-3 shadow-v3-soft"><p className="text-[10px] font-semibold uppercase tracking-wide text-corail-texte">Dépenses</p><p className="chiffres mt-1 text-lg font-bold text-corail-texte">{euros(bilan.actuel.depenses)}</p><Evolution valeur={bilan.actuel.depenses} precedent={bilan.precedent.depenses} inverse /></div>
+        <div className="rounded-v3-m bg-ui-surface-floating p-3 shadow-v3-soft"><p className="text-[10px] font-semibold uppercase tracking-wide text-ui-text-secondary">Solde</p><p className={`chiffres mt-1 text-lg font-bold ${bilan.solde >= 0 ? "text-menthe" : "text-corail"}`}>{bilan.solde >= 0 ? "+" : ""}{euros(bilan.solde)}</p><Evolution valeur={bilan.solde} precedent={bilan.soldePrec} /></div>
+      </section>
+
+      <section className="space-y-3">
+        <div className="px-1"><h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">Évolution</h2><p className="mt-0.5 text-xs text-ui-text-secondary">Compare tes revenus et tes dépenses au fil des mois.</p></div>
+        <SpendChart transactions={transactions} jourSalaire={profil.jourSalaire} />
+        <Tendances nbMois={6} />
+      </section>
+
+      <section className="space-y-3">
+        <div className="px-1"><h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">Où part ton argent</h2><p className="mt-0.5 text-xs text-ui-text-secondary">Répartition et rythme de tes dépenses sur le mois choisi.</p></div>
+        <DonutCat transactions={transactions} mois={mois} />
+        <CalendrierDepenses mois={mois} />
+      </section>
+
+      <section className="space-y-3">
+        <div className="px-1"><h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">Patrimoine</h2><p className="mt-0.5 text-xs text-ui-text-secondary">La valeur cumulée de tes comptes dans le temps.</p></div>
+        <PatrimoineChart comptes={comptes} transactions={transactions} />
+      </section>
+    </div>
+  );
+}

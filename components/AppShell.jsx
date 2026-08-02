@@ -42,7 +42,7 @@ export default function AppShell({ children }) {
   const chemin = usePathname();
 
   // La page entre du côté vers lequel on navigue, comme dans les apps natives.
-  const ORDRE = ["/", "/comptes", "/budgets", "/conseils"];
+  const ORDRE = ["/", "/comptes", "/budgets", "/statistiques", "/conseils"];
   const cheminPrecedent = useRef(chemin);
   const rang = (c) => {
     const i = ORDRE.indexOf(c);

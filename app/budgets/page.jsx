@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useEffect } from "react";
+import Link from "next/link";
 import { useBudget } from "@/lib/store";
 import FicheCategorie from "@/components/FicheCategorie";
 import { euros, cleMois, aujourdhui } from "@/lib/format";
@@ -90,6 +91,11 @@ export default function Budgets() {
           Modifier
         </button>
       </header>
+
+      <div className="grid grid-cols-2 rounded-pill bg-voile p-1 text-sm font-semibold">
+        <Link href="/budgets" className="rounded-pill bg-carte py-2 text-center shadow-carte">Budgets</Link>
+        <Link href="/statistiques" className="rounded-pill py-2 text-center text-sourdine">Statistiques</Link>
+      </div>
 
       <MoisSelecteur mois={mois} onChanger={setMois} revenus={s.revenus} depenses={s.depenses} />
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { rapprocher, impactSolde } from "@/lib/rapprochement";
-import { statsMois, detecterAbonnements, genererConseils } from "@/lib/conseils";
+import { statsMois, statsMoisBudgetaire, detecterAbonnements, genererConseils } from "@/lib/conseils";
 import { analyserDepenses } from "@/lib/depenses";
 import { calculerScore } from "@/lib/score";
 import { tendances } from "@/lib/tendances";
@@ -202,6 +202,20 @@ describe("Score de santé", () => {
     const score = calculerScore(donnees);
     expect(score.piliers.find((p) => p.id === "epargne").detail).toContain("9 %");
     expect(score.piliers.find((p) => p.id === "dette").detail).toContain("14 %");
+  });
+});
+
+describe("Statistiques par cycle de paie", () => {
+  it("rattache une paie et les opérations de fin juillet au budget d'août", () => {
+    const txs = [
+      { montant: 2200, categorie: "salaire", date: "2026-07-31", compteId: "cc" },
+      { montant: -50, categorie: "courses", date: "2026-07-31", compteId: "cc" },
+      { montant: -100, categorie: "courses", date: "2026-08-04", compteId: "cc" },
+    ];
+    const aout = statsMoisBudgetaire(txs, "2026-08", 31);
+    expect(aout.revenus).toBe(2200);
+    expect(aout.depenses).toBe(150);
+    expect(statsMoisBudgetaire(txs, "2026-07", 31).revenus).toBe(0);
   });
 });
 

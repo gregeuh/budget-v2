@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import { statsMois } from "@/lib/conseils";
+import { statsMoisBudgetaire } from "@/lib/conseils";
 import { euros, cleMoisLocal } from "@/lib/format";
 
-export default function SpendChart({ transactions }) {
+export default function SpendChart({ transactions, jourSalaire = 0 }) {
   const donnees = useMemo(() => {
     const premiereDate = transactions.map((t) => t.date).sort()[0];
     const actuel = new Date();
@@ -19,7 +19,7 @@ export default function SpendChart({ transactions }) {
       d.setDate(1);
       d.setMonth(d.getMonth() - i);
       const cle = cleMoisLocal(d);
-      const s = statsMois(transactions, cle);
+      const s = statsMoisBudgetaire(transactions, cle, jourSalaire);
       out.push({
         label: d.toLocaleDateString("fr-FR", { month: "short" }).replace(".", ""),
         depenses: s.depenses,
