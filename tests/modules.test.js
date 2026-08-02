@@ -10,6 +10,20 @@ import { lieuPersoProche, enregistrerLieuPerso, supprimerLieuPerso } from "@/lib
 import { devinerDomaine, urlLogo } from "@/lib/logos";
 import { afterEach } from "vitest";
 import { cleMoisLocal, moisDecaleLocal } from "@/lib/format";
+import { estSauvegardePecule, resumeSauvegarde } from "@/lib/sauvegarde";
+
+describe("Sauvegardes Pécule", () => {
+  it("reconnaît un export même lorsqu'il ne contient encore aucune opération", () => {
+    const sauvegarde = { version: 1, comptes: [], transactions: [], budgets: {}, profil: {} };
+    expect(estSauvegardePecule(sauvegarde)).toBe(true);
+    expect(resumeSauvegarde(sauvegarde)).toMatchObject({ comptes: 0, transactions: 0, budgets: 0 });
+  });
+
+  it("refuse un objet sans aucune donnée Pécule", () => {
+    expect(estSauvegardePecule({ version: 1, message: "bonjour" })).toBe(false);
+    expect(estSauvegardePecule([])).toBe(false);
+  });
+});
 
 /*
  * Modules qui n'avaient aucune couverture.

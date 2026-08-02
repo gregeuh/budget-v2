@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useBudget } from "@/lib/store";
 import { MODES_SALAIRE } from "@/lib/joursOuvres";
 import { ACCENTS, ACCENT_DEFAUT, appliquerAccent } from "@/lib/themes";
@@ -13,6 +13,7 @@ import RenommerSheet from "@/components/RenommerSheet";
 import CategoriserSheet from "@/components/CategoriserSheet";
 import JournalSheet from "@/components/JournalSheet";
 import { toutesCategories as CATEGORIES, FREQUENCES, euros, dateCourte, isoLocal, prochaineDateSalaire } from "@/lib/format";
+import { estSauvegardePecule, resumeSauvegarde } from "@/lib/sauvegarde";
 
 const THEMES = [
   { id: "auto", label: "Automatique", detail: "Suit le réglage de l'iPhone", icone: "🌗" },
@@ -292,12 +293,16 @@ function RecurrentesSheet({ onFermer }) {
 
 /* ---- Fiche données ---- */
 function DonneesSheet({ onFermer }) {
-  const { comptes, transactions, budgets, recurrentes, projets, credits, profil, categoriesPerso, importerDonnees, notifier, dernierImport, annulerImport } = useBudget();
+  const { comptes, transactions, budgets, recurrentes, projets, credits, profil, categoriesPerso, importerDonnees, notifier, dernierImport, annulerImport, modeLocal } = useBudget();
   const [annulation, setAnnulation] = useState(false);
+  const [sauvegarde, setSauvegarde] = useState(null);
+  const [erreurSauvegarde, setErreurSauvegarde] = useState("");
+  const [restaurationEnCours, setRestaurationEnCours] = useState(false);
+  const fichierRef = useRef(null);
 
   const exporter = () => {
     const blob = new Blob(
-      [JSON.stringify({ comptes, transactions, budgets, recurrentes, projets, credits, profil, categoriesPerso }, null, 2)],
+      [JSON.stringify({ format: "pecule-sauvegarde", version: 1, exporteLe: new Date().toISOString(), comptes, transactions, budgets, recurrentes, projets, credits, profil, categoriesPerso }, null, 2)],
       { type: "application/json" }
     );
     const url = URL.createObjectURL(blob);
@@ -313,15 +318,36 @@ function DonneesSheet({ onFermer }) {
     const f = e.target.files?.[0];
     if (!f) return;
     const l = new FileReader();
-    l.onload = async () => {
+    l.onload = () => {
       try {
-        const ok = await importerDonnees(JSON.parse(String(l.result)));
-        notifier(ok ? "Sauvegarde importée" : "Fichier non reconnu", ok ? "✓" : "⚠️");
+        const contenu = JSON.parse(String(l.result));
+        if (!estSauvegardePecule(contenu)) throw new Error("format");
+        setSauvegarde(contenu);
+        setErreurSauvegarde("");
       } catch {
-        notifier("Import impossible — fichier invalide", "⚠️");
+        setSauvegarde(null);
+        setErreurSauvegarde("Fichier non reconnu. Choisis une sauvegarde Pécule au format JSON.");
       }
     };
     l.readAsText(f);
+  };
+
+  const restaurer = async () => {
+    if (!sauvegarde) return;
+    setRestaurationEnCours(true);
+    try {
+      const ok = await importerDonnees(sauvegarde);
+      if (ok) {
+        notifier("Sauvegarde importée", "✓");
+        setSauvegarde(null);
+      } else {
+        setErreurSauvegarde("La sauvegarde ne contient aucune donnée Pécule exploitable.");
+      }
+    } catch {
+      setErreurSauvegarde("Restauration impossible. Tes données actuelles sont inchangées.");
+    } finally {
+      setRestaurationEnCours(false);
+    }
   };
 
   return (
@@ -359,10 +385,36 @@ function DonneesSheet({ onFermer }) {
         <button onClick={exporter} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque">
           ⬇︎ Exporter mes données
         </button>
-        <label className="block w-full cursor-pointer rounded-ios bg-voile py-3 text-center font-semibold">
-          ⬆︎ Importer une sauvegarde
-          <input type="file" accept=".json,application/json" className="hidden" onChange={importer} />
-        </label>
+        {sauvegarde ? (() => {
+          const resume = resumeSauvegarde(sauvegarde);
+          return (
+            <div className="rounded-ios border border-beurre/30 bg-beurre-pale p-3.5">
+              <p className="text-sm font-semibold text-beurre-texte">Vérifier la sauvegarde</p>
+              <p className="mt-0.5 text-xs text-beurre-texte/80">
+                {resume.exporteLe ? `Exportée le ${new Date(resume.exporteLe).toLocaleDateString("fr-FR", { dateStyle: "long" })}.` : "Sauvegarde Pécule détectée."}
+              </p>
+              <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold text-beurre-texte">
+                <span className="rounded-pill bg-carte/70 px-2 py-1">{resume.comptes} compte{resume.comptes > 1 ? "s" : ""}</span>
+                <span className="rounded-pill bg-carte/70 px-2 py-1">{resume.transactions} opération{resume.transactions > 1 ? "s" : ""}</span>
+                <span className="rounded-pill bg-carte/70 px-2 py-1">{resume.budgets} budget{resume.budgets > 1 ? "s" : ""}</span>
+                <span className="rounded-pill bg-carte/70 px-2 py-1">{resume.recurrentes} récurrence{resume.recurrentes > 1 ? "s" : ""}</span>
+              </div>
+              <p className="mt-2 text-xs leading-5 text-beurre-texte/90">
+                {modeLocal ? "Cette restauration remplacera les données stockées sur cet appareil." : "Les éléments de même identifiant seront mis à jour ; les autres données de ton compte restent conservées."}
+              </p>
+              <button onClick={restaurer} disabled={restaurationEnCours} className="mt-3 w-full rounded-ios bg-beurre-bouton py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+                {restaurationEnCours ? "Restauration…" : "Restaurer cette sauvegarde"}
+              </button>
+              <button onClick={() => { setSauvegarde(null); if (fichierRef.current) fichierRef.current.value = ""; }} className="mt-2 w-full text-xs font-semibold text-beurre-texte">Annuler</button>
+            </div>
+          );
+        })() : (
+          <label className="block w-full cursor-pointer rounded-ios bg-voile py-3 text-center font-semibold">
+            ⬆︎ Choisir une sauvegarde à restaurer
+            <input ref={fichierRef} type="file" accept=".json,application/json" className="hidden" onChange={importer} />
+          </label>
+        )}
+        {erreurSauvegarde && <p role="alert" className="rounded-ios bg-corail-pale px-3 py-2.5 text-xs font-medium text-corail-texte">⚠️ {erreurSauvegarde}</p>}
       </div>
     </Sheet>
   );
