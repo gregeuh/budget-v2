@@ -570,3 +570,43 @@ html.sombre .voile-feuille {
 input, select, textarea {
   font-size: 16px; /* évite le zoom auto d'iOS au focus */
 }
+
+/* Accessibilité : le clavier garde toujours un repère net, y compris sur les
+   boutons iconiques et les contrôles personnalisés. */
+:where(a, button, input, select, textarea, [role="button"], [tabindex="0"]):focus-visible {
+  outline: 3px solid var(--marque);
+  outline-offset: 3px;
+}
+
+button, a, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Un lien d'échappement est invisible au toucher, mais apparaît dès que
+   l'utilisateur navigue au clavier ou avec une technologie d'assistance. */
+.lien-echappement {
+  position: fixed;
+  z-index: 200;
+  top: calc(var(--safe-top) + 8px);
+  left: 50%;
+  transform: translate(-50%, -160%);
+  border-radius: var(--v3-radius-pill);
+  background: var(--marque-bouton);
+  padding: 10px 16px;
+  color: var(--sur-marque);
+  font-size: 0.875rem;
+  font-weight: 700;
+  box-shadow: var(--ombre-flottant);
+  transition: transform var(--v3-duration-fast) var(--v3-ease-standard);
+}
+.lien-echappement:focus { transform: translate(-50%, 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
