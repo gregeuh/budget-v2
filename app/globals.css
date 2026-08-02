@@ -132,6 +132,18 @@
   [data-add-step] .no-scrollbar { display: none; }
 }
 
+/* Les iPhone mini et les navigateurs en vue étroite conservent une vraie
+   respiration, sans que les cartes ou la barre de navigation ne débordent. */
+@media (max-width: 374px) {
+  .app-shell > main { padding-inline: 12px; padding-bottom: 8.5rem; }
+  .app-shell > nav { padding-inline: 8px; }
+  .app-shell > nav > div { padding-inline: 4px; }
+  .app-shell > nav a { font-size: 9px; }
+  .app-shell .text-v3-hero { font-size: clamp(2.25rem, 13vw, 3.25rem); }
+  .sheet-in { padding-inline: 12px; border-top-left-radius: 26px; border-top-right-radius: 26px; }
+  .sheet-in > .sticky { margin-inline: -12px; padding-inline: 12px; }
+}
+
 html.sombre {
   /* Wallet en sombre : noir profond, cartes gris très foncé */
   --c-fond: #000000;
@@ -202,11 +214,13 @@ html.sombre body {
 
 html {
   -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
   @apply bg-fond text-encre font-sf antialiased;
   overscroll-behavior-y: none;
+  overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
   background-image:
     radial-gradient(90% 48% at 50% -12%, var(--marque-pale), transparent 72%),
@@ -215,6 +229,8 @@ body {
   background-attachment: fixed;
   transition: background-color var(--v3-duration-normal) var(--v3-ease-standard), color var(--v3-duration-normal) var(--v3-ease-standard);
 }
+
+img, svg, video, canvas { max-width: 100%; }
 
 ::selection { background: var(--marque-pale); color: var(--c-encre); }
 
