@@ -12,9 +12,11 @@ import ConseilsList from "@/components/ConseilsList";
 import ConseilsHero from "@/components/ConseilsHero";
 import ConseilsPriorites from "@/components/ConseilsPriorites";
 import Sheet from "@/components/Sheet";
+import { useRouter } from "next/navigation";
 
 export default function Conseils() {
   const donnees = useBudget();
+  const router = useRouter();
 
   const [messages, setMessages] = useState([]);
   const [saisie, setSaisie] = useState("");
@@ -26,6 +28,18 @@ export default function Conseils() {
   const ouvrirAnalyse = () => {
     if (analyseRef.current) analyseRef.current.open = true;
     requestAnimationFrame(() => analyseRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
+  const voirTransactions = (categorie) => router.push(categorie ? `/transactions?categorie=${encodeURIComponent(categorie)}` : "/transactions");
+  const modifierBudgets = () => router.push("/budgets?edit=1");
+  const ouvrirActionPilier = (id) => {
+    const destinations = {
+      epargne: "/budgets?edit=1",
+      urgence: "/comptes",
+      budgets: "/budgets?edit=1",
+      dette: "/comptes#credits",
+      regularite: "/transactions",
+    };
+    router.push(destinations[id] || "/transactions");
   };
 
   const envoyer = async () => {
@@ -65,7 +79,7 @@ export default function Conseils() {
   return (
     <div className="space-y-6">
       <ConseilsHero onVoirPriorites={ouvrirAnalyse} />
-      <ConseilsPriorites onVoirTout={ouvrirAnalyse} />
+      <ConseilsPriorites onVoirTout={ouvrirAnalyse} onVoirTransactions={voirTransactions} onModifierBudgets={modifierBudgets} onOuvrirActionPilier={ouvrirActionPilier} />
 
       <details ref={analyseRef} id="tous-les-conseils" className="group scroll-mt-5 rounded-v3-l border border-ui-hairline bg-ui-surface-floating shadow-v3-soft">
         <summary className="flex cursor-pointer list-none items-center gap-3 p-4 marker:hidden">

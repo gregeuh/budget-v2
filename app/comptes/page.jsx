@@ -213,7 +213,7 @@ export default function Comptes() {
       )}
 
       {/* Crédits */}
-      <section>
+      <section id="credits" className="scroll-mt-5">
         <div className="mb-2 flex items-center justify-between">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">Crédits en cours</h2>
           <button onClick={() => setFicheCredit("nouveau")} className="text-sm font-medium text-marque">+ Crédit</button>

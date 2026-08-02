@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useEffect } from "react";
 import { useBudget } from "@/lib/store";
 import FicheCategorie from "@/components/FicheCategorie";
 import { euros, cleMois, aujourdhui } from "@/lib/format";
@@ -76,6 +77,10 @@ export default function Budgets() {
   const [mois, setMois] = useState(cleMois(aujourdhui()));
   const s = statsMois(transactions, mois);
   const revenu = s.revenus || profil.revenuMensuel || 0;
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("edit") === "1") setEdition(true);
+  }, []);
 
   return (
     <div className="space-y-6">

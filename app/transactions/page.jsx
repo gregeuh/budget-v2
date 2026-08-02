@@ -88,6 +88,10 @@ export default function Transactions() {
   useEffect(() => {
     try { setAstuce(!localStorage.getItem("astuce-swipe")); } catch {}
   }, []);
+  useEffect(() => {
+    const categorieDemandee = new URLSearchParams(window.location.search).get("categorie");
+    if (categorieDemandee && categories[categorieDemandee]) setCatFiltre(categorieDemandee);
+  }, [categories]);
   const fermerAstuce = () => {
     setAstuce(false);
     try { localStorage.setItem("astuce-swipe", "1"); } catch {}

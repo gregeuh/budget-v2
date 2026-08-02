@@ -187,6 +187,22 @@ describe("Score de santé", () => {
     const fragile = { ...base, soldes: { cc: 40, la: 0 } };
     expect(calculerScore(base).total).toBeGreaterThan(calculerScore(fragile).total);
   });
+
+  it("utilise le revenu mensuel déclaré plutôt qu'un encaissement ponctuel", () => {
+    const mois = cleMoisLocal();
+    const donnees = {
+      ...base,
+      transactions: [
+        { montant: 10, categorie: "autre", date: `${mois}-02`, compteId: "cc" },
+        { montant: -2000, categorie: "courses", date: `${mois}-03`, compteId: "cc" },
+      ],
+      profil: { revenuMensuel: 2200 },
+      credits: [{ mensualite: 300 }],
+    };
+    const score = calculerScore(donnees);
+    expect(score.piliers.find((p) => p.id === "epargne").detail).toContain("9 %");
+    expect(score.piliers.find((p) => p.id === "dette").detail).toContain("14 %");
+  });
 });
 
 describe("Détection d'abonnements", () => {

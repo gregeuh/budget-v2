@@ -79,6 +79,7 @@ export default function ConseilsList() {
 
   const genererIA = async () => {
     if (chargeIA) return;
+    setSource("ia");
     setChargeIA(true);
     setErreurIA("");
     try {
@@ -121,9 +122,11 @@ export default function ConseilsList() {
           </button>
           <button
             onClick={() => (conseilsIA ? setSource("ia") : genererIA())}
-            className={`tappable flex items-center gap-1 rounded-pill px-3 py-1 font-medium transition-colors ${source === "ia" ? "bg-carte shadow-carte" : "text-sourdine"}`}
+            disabled={chargeIA}
+            aria-busy={chargeIA}
+            className={`tappable flex items-center gap-1 rounded-pill px-3 py-1 font-medium transition-colors disabled:cursor-wait disabled:opacity-60 ${source === "ia" ? "bg-carte shadow-carte" : "text-sourdine"}`}
           >
-            ✨ Par l&apos;IA
+            {chargeIA ? "✨ Analyse…" : "✨ Conseils IA"}
           </button>
         </div>
         {masques.size > 0 && (
