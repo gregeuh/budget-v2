@@ -26,6 +26,7 @@ export default function TabBar({ onAjouter, ajoutOuvert = false }) {
   const chemin = usePathname();
   return (
     <nav
+      aria-label="Navigation principale"
       className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-4"
       style={{ paddingBottom: "calc(var(--safe-bottom) + 10px)" }}
     >

@@ -23,6 +23,8 @@ export default function Toast() {
   return createPortal(
     <div
       aria-live="polite"
+      aria-atomic="true"
+      role="status"
       className="pointer-events-none fixed inset-x-0 z-[120] mx-auto flex max-w-md justify-center px-4"
       style={{ top: "calc(var(--safe-top) + 14px)" }}
     >
