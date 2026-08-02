@@ -5,6 +5,7 @@ import { firebaseActif, auth, db } from "./firebase";
 import { aujourdhui, prochaineOccurrence, CATEGORIES, definirCategoriesPerso, definirFormatAffichage } from "./format";
 import { appliquerAccent, ACCENT_DEFAUT } from "./themes";
 import { calculerSoldes } from "./soldes";
+import { estSauvegardePecule } from "./sauvegarde";
 
 const Ctx = createContext(null);
 export const useBudget = () => useContext(Ctx);
@@ -556,7 +557,7 @@ export function DataProvider({ children }) {
   }, [profil.theme, profil.accent]);
 
   const importerDonnees = useCallback(async (d) => {
-    if (!d || typeof d !== "object") return false;
+    if (!estSauvegardePecule(d)) return false;
     const donnees = {
       comptes: Array.isArray(d.comptes) ? d.comptes : [],
       transactions: Array.isArray(d.transactions) ? d.transactions : [],
