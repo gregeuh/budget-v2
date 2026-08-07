@@ -12,6 +12,30 @@ export default function Sheet({ titre, onFermer, children, niveau = 1, clair = f
   useEffect(() => {
     setMonte(true);
     const scrollY = window.scrollY;
+    const rendreChampVisible = (champ, delai = 0) => {
+      if (!(champ instanceof HTMLElement) || !feuilleRef.current?.contains(champ)) return;
+
+      window.setTimeout(() => {
+        const feuille = feuilleRef.current;
+        if (!feuille || !feuille.contains(champ)) return;
+
+        // Sur Safari iOS, scrollIntoView peut déplacer le document derrière la
+        // feuille. On ne défile donc que le conteneur de la feuille.
+        const cadreFeuille = feuille.getBoundingClientRect();
+        const cadreChamp = champ.getBoundingClientRect();
+        const margeHaut = 84; // poignée + titre fixe
+        const margeBas = 24;
+        const hautVisible = cadreFeuille.top + margeHaut;
+        const basVisible = cadreFeuille.bottom - margeBas;
+
+        if (cadreChamp.top < hautVisible) {
+          feuille.scrollTo({ top: Math.max(0, feuille.scrollTop - (hautVisible - cadreChamp.top)), behavior: "smooth" });
+        } else if (cadreChamp.bottom > basVisible) {
+          feuille.scrollTo({ top: feuille.scrollTop + (cadreChamp.bottom - basVisible), behavior: "smooth" });
+        }
+      }, delai);
+    };
+
     const actualiserViewport = () => {
       const viewport = window.visualViewport;
       const hauteur = viewport?.height || window.innerHeight;
@@ -24,26 +48,28 @@ export default function Sheet({ titre, onFermer, children, niveau = 1, clair = f
 
       const actif = document.activeElement;
       if (actif instanceof HTMLElement && feuilleRef.current?.contains(actif)) {
-        window.setTimeout(() => actif.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" }), 80);
+        // Après le resize du visualViewport, le clavier a fini son animation :
+        // c'est ce second passage qui rend le champ réellement visible.
+        rendreChampVisible(actif, 90);
       }
     };
-    const rendreChampVisible = (event) => {
+    const gererFocus = (event) => {
       const champ = event.target;
       if (!(champ instanceof HTMLElement) || !feuilleRef.current?.contains(champ)) return;
-      window.setTimeout(() => champ.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" }), 180);
+      rendreChampVisible(champ, 220);
     };
     actualiserViewport();
     window.visualViewport?.addEventListener("resize", actualiserViewport);
     window.visualViewport?.addEventListener("scroll", actualiserViewport);
     window.addEventListener("resize", actualiserViewport);
-    document.addEventListener("focusin", rendreChampVisible);
+    document.addEventListener("focusin", gererFocus);
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
       window.visualViewport?.removeEventListener("resize", actualiserViewport);
       window.visualViewport?.removeEventListener("scroll", actualiserViewport);
       window.removeEventListener("resize", actualiserViewport);
-      document.removeEventListener("focusin", rendreChampVisible);
+      document.removeEventListener("focusin", gererFocus);
       document.documentElement.style.removeProperty("--sheet-viewport");
       document.documentElement.style.removeProperty("--sheet-clavier");
       window.scrollTo(0, scrollY);
@@ -61,8 +87,11 @@ export default function Sheet({ titre, onFermer, children, niveau = 1, clair = f
         style={{
           bottom: "var(--sheet-clavier, 0px)",
           maxHeight: "min(92dvh, calc(var(--sheet-viewport, 100dvh) - 8px))",
-          paddingBottom: "max(calc(var(--safe-bottom) + 24px), calc(var(--sheet-clavier, 0px) + 24px))",
-          scrollPaddingBottom: "max(calc(var(--safe-bottom) + 32px), calc(var(--sheet-clavier, 0px) + 32px))",
+          paddingBottom: "max(calc(var(--safe-bottom) + 24px), 24px)",
+          scrollPaddingTop: "84px",
+          scrollPaddingBottom: "32px",
+          WebkitOverflowScrolling: "touch",
+          overflowAnchor: "none",
           boxShadow: "0 -8px 40px rgba(0,0,0,0.16)",
         }}
       >
