@@ -339,7 +339,7 @@ export default function AddSheet({ onFermer }) {
             key={`sec-${secousse}`}
             className={`relative mb-5 px-4 pb-3 pt-1 text-center ${secousse ? "secousse" : ""}`}
           >
-            <p className="relative sr-only">Montant</p>
+            <p className="relative sr-only" aria-live="polite">Montant {montant || "0"} euros</p>
             <div className="relative mt-1 flex h-[70px] items-center justify-center">
               <span key={impulsion} className={`rebond chiffres flex items-center font-bold leading-none ${tailleMontant} ${montant ? "text-ui-text-primary" : "text-ui-text-secondary"}`}>
                 {montant && mode !== "virement" && <span className="mr-0.5 opacity-60" style={{ color: COULEUR_MODE[mode] }}>{mode === "depense" ? "−" : "+"}</span>}
@@ -432,6 +432,8 @@ export default function AddSheet({ onFermer }) {
           <div className="mt-3 flex gap-2">
             <input
               value={phrase}
+              inputMode="text"
+              enterKeyHint="done"
               onChange={(e) => setPhrase(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && interpreter()}
               placeholder="« 15€ courses Carrefour hier »"

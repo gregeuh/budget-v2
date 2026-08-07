@@ -147,7 +147,7 @@ export default function Comptes() {
   return (
     <div className="space-y-6">
       <header className="flex items-center justify-between">
-        <div>
+        <div className="min-w-0">
           <h1 className="text-xl font-bold">Comptes</h1>
           <p className="tnum text-sm text-sourdine">
             Total : {euros(total)}{avantages > 0 && ` · hors titres-resto : ${euros(total - avantages)}`}
@@ -242,7 +242,7 @@ export default function Comptes() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-corail-pale text-xl">🏦</span>
-                        <div>
+                        <div className="min-w-0">
                           <div className="truncate font-semibold">{c.nom}</div>
                           <div className="text-xs text-sourdine">
                             {euros(c.mensualite)} / mois{n ? ` · fin ≈ ${new Date(Date.now() + n * 30.44 * 86400000).toLocaleDateString("fr-FR", { month: "short", year: "numeric" })}` : ""}

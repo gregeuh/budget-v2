@@ -13,7 +13,7 @@ import PatrimoineChart from "@/components/PatrimoineChart";
 import CalendrierDepenses from "@/components/CalendrierDepenses";
 
 function Evolution({ valeur, precedent, inverse = false }) {
-  if (!precedent) return <span className="text-[11px] text-ui-text-secondary">Premier mois comparable</span>;
+  if (!precedent) return <span className="text-[11px] text-ui-text-secondary"><span className="hidden min-[360px]:inline">Premier mois comparable</span><span className="min-[360px]:hidden" aria-label="Premier mois comparable">—</span></span>;
   const delta = valeur - precedent;
   const favorable = inverse ? delta <= 0 : delta >= 0;
   return <span className={`text-[11px] font-semibold ${favorable ? "text-menthe" : "text-corail"}`}>{delta >= 0 ? "+" : ""}{euros(delta)} vs mois dernier</span>;
@@ -52,9 +52,9 @@ export default function Statistiques() {
       <MoisSelecteur mois={mois} onChanger={setMois} revenus={bilan.actuel.revenus} depenses={bilan.actuel.depenses} />
 
       <section className="grid grid-cols-3 gap-2">
-        <div className="rounded-v3-m bg-menthe-pale p-3 shadow-v3-soft"><p className="text-[10px] font-semibold uppercase tracking-wide text-menthe-texte">Revenus</p><p className="chiffres mt-1 text-lg font-bold text-menthe-texte">{euros(bilan.actuel.revenus)}</p><Evolution valeur={bilan.actuel.revenus} precedent={bilan.precedent.revenus} /></div>
-        <div className="rounded-v3-m bg-corail-pale p-3 shadow-v3-soft"><p className="text-[10px] font-semibold uppercase tracking-wide text-corail-texte">Dépenses</p><p className="chiffres mt-1 text-lg font-bold text-corail-texte">{euros(bilan.actuel.depenses)}</p><Evolution valeur={bilan.actuel.depenses} precedent={bilan.precedent.depenses} inverse /></div>
-        <div className="rounded-v3-m bg-ui-surface-floating p-3 shadow-v3-soft"><p className="text-[10px] font-semibold uppercase tracking-wide text-ui-text-secondary">Solde</p><p className={`chiffres mt-1 text-lg font-bold ${bilan.solde >= 0 ? "text-menthe" : "text-corail"}`}>{bilan.solde >= 0 ? "+" : ""}{euros(bilan.solde)}</p><Evolution valeur={bilan.solde} precedent={bilan.soldePrec} /></div>
+        <div className="min-w-0 rounded-v3-m bg-menthe-pale p-2.5 sm:p-3 shadow-v3-soft"><p className="truncate text-[10px] font-semibold uppercase tracking-wide text-menthe-texte">Revenus</p><p className="chiffres mt-1 truncate text-[clamp(.85rem,5vw,1.125rem)] font-bold leading-tight text-menthe-texte">{euros(bilan.actuel.revenus)}</p><Evolution valeur={bilan.actuel.revenus} precedent={bilan.precedent.revenus} /></div>
+        <div className="min-w-0 rounded-v3-m bg-corail-pale p-2.5 sm:p-3 shadow-v3-soft"><p className="truncate text-[10px] font-semibold uppercase tracking-wide text-corail-texte">Dépenses</p><p className="chiffres mt-1 truncate text-[clamp(.85rem,5vw,1.125rem)] font-bold leading-tight text-corail-texte">{euros(bilan.actuel.depenses)}</p><Evolution valeur={bilan.actuel.depenses} precedent={bilan.precedent.depenses} inverse /></div>
+        <div className="min-w-0 rounded-v3-m bg-ui-surface-floating p-2.5 sm:p-3 shadow-v3-soft"><p className="truncate text-[10px] font-semibold uppercase tracking-wide text-ui-text-secondary">Solde</p><p className={`chiffres mt-1 truncate text-[clamp(.85rem,5vw,1.125rem)] font-bold leading-tight ${bilan.solde >= 0 ? "text-menthe" : "text-corail"}`}>{bilan.solde >= 0 ? "+" : ""}{euros(bilan.solde)}</p><Evolution valeur={bilan.solde} precedent={bilan.soldePrec} /></div>
       </section>
 
       <section className="space-y-3">

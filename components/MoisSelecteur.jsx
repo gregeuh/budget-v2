@@ -28,14 +28,14 @@ export default function MoisSelecteur({ mois, onChanger, revenus, depenses }) {
       </div>
 
       {avecChiffres && (
-        <div key={mois} className="fade-in flex items-center justify-between border-t border-bordure px-4 py-2.5 text-sm">
-          <span className="flex items-baseline gap-1.5">
+        <div key={mois} className="fade-in flex items-center justify-between gap-2 border-t border-bordure px-3 sm:px-4 py-2.5 text-sm">
+          <span className="flex min-w-0 items-baseline gap-1.5">
             <span className="text-xs text-sourdine">Entrées</span>
-            <span className="chiffres font-semibold text-menthe">{euros(revenus)}</span>
+            <span className="chiffres truncate font-semibold text-menthe">{euros(revenus)}</span>
           </span>
-          <span className="flex items-baseline gap-1.5">
+          <span className="flex min-w-0 items-baseline justify-end gap-1.5">
             <span className="text-xs text-sourdine">Sorties</span>
-            <span className="chiffres font-semibold text-corail">{euros(depenses)}</span>
+            <span className="chiffres truncate font-semibold text-corail">{euros(depenses)}</span>
           </span>
         </div>
       )}

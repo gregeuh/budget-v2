@@ -35,6 +35,12 @@ export default function RechercheSheet({ onFermer }) {
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sourdine">🔍</span>
           <input
             autoFocus
+            type="search"
+            inputMode="search"
+            enterKeyHint="search"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Commerçant, montant (>50), catégorie, lieu…"
@@ -60,9 +66,9 @@ export default function RechercheSheet({ onFermer }) {
 
         {/* Récap des résultats */}
         {q && (
-          <div className="tnum flex items-center justify-between rounded-ios bg-carte px-3.5 py-2.5 text-sm shadow-carte">
-            <span className="font-semibold">{total.nb} résultat{total.nb > 1 ? "s" : ""}</span>
-            <span className="text-sourdine">
+          <div className="tnum flex min-w-0 items-center justify-between gap-3 rounded-ios bg-carte px-3.5 py-2.5 text-sm shadow-carte">
+            <span className="shrink-0 font-semibold">{total.nb} résultat{total.nb > 1 ? "s" : ""}</span>
+            <span className="min-w-0 truncate text-right text-sourdine">
               {total.depenses > 0 && <span className="text-corail">−{euros(total.depenses)}</span>}
               {total.depenses > 0 && total.revenus > 0 && " · "}
               {total.revenus > 0 && <span className="text-menthe">+{euros(total.revenus)}</span>}

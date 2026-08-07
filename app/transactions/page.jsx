@@ -145,6 +145,11 @@ export default function Transactions() {
         <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sourdine">🔍</span>
         <input
           type="search"
+          inputMode="search"
+          enterKeyHint="search"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           placeholder="Rechercher (Carrefour, Netflix, courses…)"
           value={recherche}
           onChange={(e) => setRecherche(e.target.value)}
@@ -158,10 +163,10 @@ export default function Transactions() {
       <div className="flex items-center gap-2">
         <button
           onClick={() => setFiltresOuverts((ouvert) => !ouvert)}
-          className={`flex flex-1 items-center justify-between rounded-ios border px-3.5 py-2.5 text-sm font-semibold transition ${filtresActifs ? "border-marque bg-marque-pale text-marque-texte" : "border-bordure bg-carte"}`}
+          className={`flex min-w-0 flex-1 items-center justify-between gap-2 rounded-ios border px-3.5 py-2.5 text-sm font-semibold transition ${filtresActifs ? "border-marque bg-marque-pale text-marque-texte" : "border-bordure bg-carte"}`}
         >
-          <span>☷ Filtres avancés</span>
-          <span className="text-xs">{filtresOuverts ? "Masquer" : filtresActifs ? "Actifs" : "Afficher"}</span>
+          <span className="truncate">☷ Filtres avancés</span>
+          <span className="shrink-0 text-xs">{filtresOuverts ? "Masquer" : filtresActifs ? "Actifs" : "Afficher"}</span>
         </button>
         {(recherche || filtresActifs || compteId !== "tous") && (
           <button onClick={effacerFiltres} className="rounded-ios bg-voile px-3 py-2.5 text-xs font-semibold text-sourdine">Réinitialiser</button>
@@ -229,17 +234,15 @@ export default function Transactions() {
 
       {/* Reste à vivre projeté */}
       {!recherche && !filtresActifs && (
-        <div className={`relative overflow-hidden rounded-v3-m p-5 text-white shadow-v3-medium ${projection.reste < 0 ? "bg-[linear-gradient(145deg,var(--corail),var(--corail-bouton))]" : "bg-[linear-gradient(145deg,var(--marque),var(--marque-texte))]"}`}>
+        <div className={`relative overflow-hidden rounded-v3-m p-4 sm:p-5 text-white shadow-v3-medium ${projection.reste < 0 ? "bg-[linear-gradient(145deg,var(--corail),var(--corail-bouton))]" : "bg-[linear-gradient(145deg,var(--marque),var(--marque-texte))]"}`}>
           <div className="reflet opacity-60" />
           <div className="relative">
-          <div className="flex items-baseline justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-white/75">
-              Reste à vivre
-              <span className="ml-1.5 font-medium text-white/65">
-                {salaireISO ? `jusqu'au salaire (${dateCourte(salaireISO)})` : "sur 30 jours"}
-              </span>
-            </h2>
-            <span className="rounded-pill bg-white/15 px-2.5 py-1 text-xs font-semibold">{projection.jours} j</span>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-white/75">Reste à vivre</h2>
+              <p className="mt-0.5 text-xs font-medium text-white/65">{salaireISO ? `Jusqu’au salaire · ${dateCourte(salaireISO)}` : "Projection sur 30 jours"}</p>
+            </div>
+            <span className="shrink-0 rounded-pill bg-white/15 px-2.5 py-1 text-xs font-semibold">{projection.jours} j</span>
           </div>
           <div className="chiffres mt-2 text-4xl font-bold">
             {euros(projection.reste)}

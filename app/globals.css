@@ -215,6 +215,8 @@ html.sombre body {
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 body {
@@ -228,6 +230,19 @@ body {
     linear-gradient(180deg, color-mix(in srgb, var(--c-fond) 92%, white) 0%, var(--c-fond) 52%);
   background-attachment: fixed;
   transition: background-color var(--v3-duration-normal) var(--v3-ease-standard), color var(--v3-duration-normal) var(--v3-ease-standard);
+}
+
+/* Fondations mobiles : aucune largeur rigide ne doit créer un débordement ou
+   coincer une interface derrière la navigation fixe. */
+.app-shell { width: min(100%, 28rem); }
+
+@media (max-width: 374px) {
+  .app-shell > main { padding-top: 18px; padding-bottom: calc(var(--safe-bottom) + 7rem) !important; }
+  .tabbar { padding-inline: 8px; }
+  .tabbar__surface { border-radius: 22px; padding: 6px 3px; }
+  .tabbar__item { gap: 2px; font-size: 9px; letter-spacing: -0.02em; }
+  .tabbar__item svg { height: 19px; width: 19px; }
+  .tabbar__add { height: 52px; width: 52px; margin-top: -12px; }
 }
 
 img, svg, video, canvas { max-width: 100%; }
