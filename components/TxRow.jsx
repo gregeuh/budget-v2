@@ -1,10 +1,14 @@
 "use client";
 
 import { useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { useBudget } from "@/lib/store";
 import { euros, dateCourte } from "@/lib/format";
-import EditTxSheet from "./EditTxSheet";
 import LogoCommercant from "./LogoCommercant";
+
+// Le formulaire complet d'édition (cartes, catégories, lieu et icônes) ne
+// doit pas retarder l'affichage de la liste sur un réseau mobile.
+const EditTxSheet = dynamic(() => import("./EditTxSheet"), { ssr: false });
 
 const LARGEUR_ACTION = 88;   // largeur du bouton Supprimer révélé
 const SEUIL_OUVERTURE = 44;  // au-delà, la ligne reste ouverte au relâchement
