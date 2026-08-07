@@ -100,7 +100,7 @@ export default function AppShell({ children }) {
   if (!profil.onboarde && comptes.length === 0) return <Onboarding />;
 
   return (
-    <div className="app-shell mx-auto min-h-dvh max-w-md" style={{ paddingTop: "var(--safe-top)" }}>
+    <div className="app-shell mx-auto min-h-dvh w-full max-w-md overflow-x-clip" style={{ paddingTop: "var(--safe-top)" }}>
       <a href="#contenu-principal" className="lien-echappement">Aller au contenu</a>
       <div aria-hidden="true" className="app-shell__ambient" />
       <TirerPourRafraichir />
@@ -115,7 +115,7 @@ export default function AppShell({ children }) {
           ⚠️ {erreurInit}
         </div>
       )}
-      <main id="contenu-principal" key={chemin} tabIndex={-1} className={`relative z-10 ${sens} px-4 pb-40 pt-6`}>{children}</main>
+      <main id="contenu-principal" key={chemin} tabIndex={-1} className={`relative z-10 ${sens} px-4 pt-6`} style={{ paddingBottom: "calc(var(--safe-bottom) + 7.5rem)" }}>{children}</main>
       <TabBar onAjouter={() => setAjoutOuvert(true)} ajoutOuvert={ajoutOuvert} />
       {ajoutOuvert && <AddSheet onFermer={() => setAjoutOuvert(false)} />}
       {reglagesOuverts && <DrawerReglages />}

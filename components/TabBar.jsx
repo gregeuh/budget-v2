@@ -27,10 +27,10 @@ export default function TabBar({ onAjouter, ajoutOuvert = false }) {
   return (
     <nav
       aria-label="Navigation principale"
-      className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-4"
+      className="tabbar fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-4"
       style={{ paddingBottom: "calc(var(--safe-bottom) + 10px)" }}
     >
-      <div className="grid grid-cols-5 items-center rounded-v3-l border border-ui-hairline bg-ui-surface-glass px-2 py-2 shadow-v3-floating backdrop-blur-v3-glass">
+      <div className="tabbar__surface grid grid-cols-5 items-center rounded-v3-l border border-ui-hairline bg-ui-surface-glass px-2 py-2 shadow-v3-floating backdrop-blur-v3-glass">
         {ONGLETS.map((o) =>
           o.href === "AJOUT" ? (
             <button
@@ -38,7 +38,7 @@ export default function TabBar({ onAjouter, ajoutOuvert = false }) {
               onClick={onAjouter}
               data-bouton-ajout
               aria-label="Ajouter une opération"
-              className="mx-auto -mt-4 flex h-14 w-14 items-center justify-center rounded-full text-2xl font-light text-white shadow-bouton ring-4 ring-[var(--v3-surface-1)] transition-transform duration-v3-normal ease-v3-spring active:scale-95"
+              className="tabbar__add mx-auto -mt-4 flex h-14 w-14 items-center justify-center rounded-full text-2xl font-light text-white shadow-bouton ring-4 ring-[var(--v3-surface-1)] transition-transform duration-v3-normal ease-v3-spring active:scale-95"
               style={{ background: "linear-gradient(145deg, var(--marque), var(--marque-texte))" }}
             >
               <span className={`transition-transform duration-v3-normal ease-v3-standard ${ajoutOuvert ? "rotate-45" : ""}`}>+</span>
@@ -53,7 +53,7 @@ export default function TabBar({ onAjouter, ajoutOuvert = false }) {
                 if (chemin === o.href) window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               aria-current={actif ? "page" : undefined}
-              className={`relative flex min-h-12 flex-col items-center justify-center gap-1 rounded-v3-s py-1 text-[10px] font-semibold transition-all duration-v3-normal ease-v3-standard ${
+              className={`tabbar__item relative flex min-h-12 flex-col items-center justify-center gap-1 rounded-v3-s py-1 text-[10px] font-semibold transition-all duration-v3-normal ease-v3-standard ${
                 actif ? "shadow-sm" : "text-ui-text-secondary"
               }`}
               style={actif ? { color: o.couleur, backgroundColor: o.pale } : undefined}

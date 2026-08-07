@@ -157,6 +157,12 @@ describe("Recherche", () => {
   it("trouve par texte", () => expect(rechercher("carrefour", txs, comptes).length).toBe(2));
   it("filtre par montant supérieur", () => expect(rechercher("> 50", txs, comptes).length).toBe(2));
   it("filtre par montant exact", () => expect(rechercher("=15,15", txs, comptes).length).toBeLessThanOrEqual(1));
+  it("combine un libellé et un filtre montant", () => expect(rechercher("Carrefour >50", txs, comptes).map((t) => t.id)).toEqual(["1"]));
+  it("cherche aussi dans une catégorie personnalisée", () => {
+    const perso = { bienetre: { label: "Bien-être" } };
+    const txPerso = [{ id: "p", libelle: "Studio", montant: -35, categorie: "bienetre", date: "2026-07-09", compteId: "cc" }];
+    expect(rechercher("bien etre", txPerso, comptes, perso).map((t) => t.id)).toEqual(["p"]);
+  });
   it("filtre par type", () => expect(rechercher("revenu", txs, comptes).length).toBe(1));
   it("trouve par lieu", () => expect(rechercher("bordeaux", txs, comptes).length).toBe(1));
   it("exclut les virements", () => expect(rechercher("virement", txs, comptes).length).toBe(0));
