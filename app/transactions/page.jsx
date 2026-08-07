@@ -126,6 +126,7 @@ export default function Transactions() {
       <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
         <button
           onClick={() => setCompteId("tous")}
+          aria-pressed={compteId === "tous"}
           className={`shrink-0 rounded-pill border px-3 py-2 text-sm font-medium transition-all duration-v3-normal ${compteId === "tous" ? "border-ui-primary bg-ui-primary text-white shadow-v3-soft" : "border-ui-hairline bg-ui-surface-floating text-ui-text-secondary"}`}
         >
           Tous les comptes
@@ -134,6 +135,7 @@ export default function Transactions() {
           <button
             key={c.id}
             onClick={() => setCompteId(c.id)}
+            aria-pressed={compteId === c.id}
             className={`shrink-0 rounded-pill border px-3 py-2 text-sm font-medium transition-all duration-v3-normal ${compteId === c.id ? "border-ui-primary bg-ui-primary text-white shadow-v3-soft" : "border-ui-hairline bg-ui-surface-floating text-ui-text-secondary"}`}
           >
             {c.nom}
@@ -163,6 +165,8 @@ export default function Transactions() {
       <div className="flex items-center gap-2">
         <button
           onClick={() => setFiltresOuverts((ouvert) => !ouvert)}
+          aria-expanded={filtresOuverts}
+          aria-controls="filtres-transactions"
           className={`flex min-w-0 flex-1 items-center justify-between gap-2 rounded-ios border px-3.5 py-2.5 text-sm font-semibold transition ${filtresActifs ? "border-marque bg-marque-pale text-marque-texte" : "border-bordure bg-carte"}`}
         >
           <span className="truncate">☷ Filtres avancés</span>
@@ -174,12 +178,12 @@ export default function Transactions() {
       </div>
 
       {filtresOuverts && (
-        <div className="fade-in space-y-3 rounded-v3-m border border-bordure bg-carte p-3.5 shadow-carte">
+        <div id="filtres-transactions" className="fade-in space-y-3 rounded-v3-m border border-bordure bg-carte p-3.5 shadow-carte">
           <div>
             <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-sourdine">Période</p>
             <div className="grid grid-cols-3 gap-1.5">
               {[["mois", "Ce mois"], ["3mois", "3 mois"], ["tout", "Tout"]].map(([id, label]) => (
-                <button key={id} onClick={() => setPeriode(id)} className={`rounded-pill px-2 py-2 text-xs font-semibold ${periode === id ? "bg-encre text-contraste" : "bg-fond text-sourdine"}`}>{label}</button>
+                <button key={id} onClick={() => setPeriode(id)} aria-pressed={periode === id} className={`rounded-pill px-2 py-2 text-xs font-semibold ${periode === id ? "bg-encre text-contraste" : "bg-fond text-sourdine"}`}>{label}</button>
               ))}
             </div>
           </div>
@@ -187,7 +191,7 @@ export default function Transactions() {
             <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-sourdine">Type</p>
             <div className="grid grid-cols-3 gap-1.5">
               {[["tous", "Tous"], ["depenses", "Dépenses"], ["revenus", "Revenus"]].map(([id, label]) => (
-                <button key={id} onClick={() => setTypeFiltre(id)} className={`rounded-pill px-2 py-2 text-xs font-semibold ${typeFiltre === id ? "bg-encre text-contraste" : "bg-fond text-sourdine"}`}>{label}</button>
+                <button key={id} onClick={() => setTypeFiltre(id)} aria-pressed={typeFiltre === id} className={`rounded-pill px-2 py-2 text-xs font-semibold ${typeFiltre === id ? "bg-encre text-contraste" : "bg-fond text-sourdine"}`}>{label}</button>
               ))}
             </div>
           </div>
@@ -195,7 +199,7 @@ export default function Transactions() {
             <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-sourdine">Montant minimum</span>
             <div className="champ flex items-center px-3">
               <span className="text-sourdine">≥</span>
-              <input inputMode="decimal" value={montantMin} onChange={(e) => setMontantMin(e.target.value)} placeholder="Ex. 50" className="min-w-0 flex-1 bg-transparent px-2 py-2.5 text-sm outline-none" />
+              <input inputMode="decimal" enterKeyHint="done" value={montantMin} onChange={(e) => setMontantMin(e.target.value)} placeholder="Ex. 50" className="min-w-0 flex-1 bg-transparent px-2 py-2.5 text-sm outline-none" />
               <span className="text-sm text-sourdine">€</span>
             </div>
           </label>

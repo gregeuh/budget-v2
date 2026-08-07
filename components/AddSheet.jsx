@@ -80,7 +80,10 @@ export default function AddSheet({ onFermer }) {
   const [suggestionsLieu, setSuggestionsLieu] = useState([]);
   const [chercheLieu, setChercheLieu] = useState(false);
   const rechercheLieuRef = useRef(null);
+  const libelleRef = useRef(null);
   const [autoApplique, setAutoApplique] = useState(null); // ce que l'app a deviné toute seule
+  const [confirmationDoublon, setConfirmationDoublon] = useState(false);
+  const [erreurFormulaire, setErreurFormulaire] = useState("");
 
   const secouer = () => setSecousse((s) => s + 1);
 
@@ -273,6 +276,16 @@ export default function AddSheet({ onFermer }) {
     ) || null;
   }, [transactions, mode, valeur, compteId, date]);
 
+  useEffect(() => {
+    setConfirmationDoublon(false);
+  }, [doublon?.id]);
+
+  useEffect(() => {
+    if (etape !== 2 || mode === "virement") return;
+    const timer = window.setTimeout(() => libelleRef.current?.focus(), 180);
+    return () => window.clearTimeout(timer);
+  }, [etape, mode]);
+
   const cats = Object.entries(categories).filter(([, c]) =>
     mode === "revenu" ? c.type === "revenu" : c.type !== "revenu" && c.type !== "virement"
   );
@@ -283,11 +296,22 @@ export default function AddSheet({ onFermer }) {
   }, [iconeSuggeree, iconeManuelle, iconeMemorisee]);
 
   const valider = async () => {
-    if (!valeur || valeur <= 0 || !compteId) return;
+    if (!valeur || valeur <= 0 || !compteId) {
+      setErreurFormulaire("Indique un montant et le compte concerné.");
+      return;
+    }
     if (mode === "virement") {
-      if (!versId || versId === compteId) return;
+      if (!versId || versId === compteId) {
+        setErreurFormulaire("Choisis deux comptes différents pour le virement.");
+        return;
+      }
       await virement(compteId, versId, valeur, date);
     } else {
+      if (doublon && !confirmationDoublon) {
+        setConfirmationDoublon(true);
+        setErreurFormulaire("Une opération similaire existe déjà. Confirme si tu souhaites vraiment l’ajouter.");
+        return;
+      }
       const base = {
         compteId,
         montant: mode === "depense" ? -valeur : valeur,
@@ -309,6 +333,7 @@ export default function AddSheet({ onFermer }) {
 
   return (
     <Sheet titre="Nouvelle opération" onFermer={onFermer}>
+      <p role="status" aria-live="polite" className="sr-only">{erreurFormulaire}</p>
       {etape === 1 ? (
         <div key="e1" data-add-step className="pop-in">
           {/* Saisie en langage naturel */}
@@ -321,7 +346,9 @@ export default function AddSheet({ onFermer }) {
               return (
                 <button
                   key={m.id}
+                  type="button"
                   onClick={() => { setMode(m.id); setCategorie(m.id === "revenu" ? "salaire" : "courses"); }}
+                  aria-pressed={actif}
                   className={`tappable flex flex-col items-center justify-center gap-1.5 rounded-full py-3 text-sm font-semibold transition-all duration-200 ${
                     actif ? "text-white shadow-bouton" : "bg-ui-surface-floating text-ui-text-secondary shadow-v3-soft"
                   }`}
@@ -357,7 +384,7 @@ export default function AddSheet({ onFermer }) {
               </button>
               {choixCompteOuvert && (
                 <div className="absolute left-1/2 z-20 mt-2 w-52 -translate-x-1/2 overflow-hidden rounded-2xl bg-ui-surface-floating p-1.5 text-left shadow-v3-floating ring-1 ring-ui-hairline">
-                  {comptes.map((c) => <button key={c.id} type="button" onClick={() => { setCompteId(c.id); setChoixCompteOuvert(false); }} className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm ${c.id === compteId ? "bg-marque-pale font-semibold text-marque-texte" : "text-ui-text-primary"}`}><span className="flex min-w-0 items-center gap-2"><CompteLogo type={c.type} taille={28} /><span className="truncate">{c.nom}</span></span>{c.id === compteId && <span>✓</span>}</button>)}
+                {comptes.map((c) => <button key={c.id} type="button" onClick={() => { setCompteId(c.id); setChoixCompteOuvert(false); }} className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm ${c.id === compteId ? "bg-marque-pale font-semibold text-marque-texte" : "text-ui-text-primary"}`}><span className="flex min-w-0 items-center gap-2"><CompteLogo type={c.type} taille={28} /><span className="truncate">{c.nom}</span></span>{c.id === compteId && <span>✓</span>}</button>)}
                 </div>
               )}
               </div>
@@ -417,6 +444,7 @@ export default function AddSheet({ onFermer }) {
           ) : (
             <button
               onClick={() => (valeur > 0 ? setEtape(2) : secouer())}
+              type="button"
               className={`sticky bottom-0 z-10 mt-5 w-full rounded-ios bg-marque-bouton py-3.5 font-semibold text-surMarque shadow-bouton active:scale-[0.99] transition-transform ${valeur <= 0 ? "opacity-40" : ""}`}
             >
               Continuer
@@ -434,6 +462,7 @@ export default function AddSheet({ onFermer }) {
               value={phrase}
               inputMode="text"
               enterKeyHint="done"
+              aria-label="Décrire une opération en langage naturel"
               onChange={(e) => setPhrase(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && interpreter()}
               placeholder="« 15€ courses Carrefour hier »"
@@ -451,6 +480,7 @@ export default function AddSheet({ onFermer }) {
         </div>
       ) : (
         <div key="e2" className="pop-in space-y-3">
+          {erreurFormulaire && <p className="rounded-ios bg-corail-pale px-3 py-2 text-xs font-medium text-corail-texte" role="alert">{erreurFormulaire}</p>}
           {/* Rappel du montant, tap = retour */}
           <button onClick={() => setEtape(1)} className="flex w-full items-center gap-3 rounded-ios bg-voile px-3.5 py-2.5">
             <span className="text-sourdine">‹</span>
@@ -461,8 +491,11 @@ export default function AddSheet({ onFermer }) {
           {mode !== "virement" && (
             <>
               <input
+                ref={libelleRef}
                 placeholder="Libellé (ex : Carrefour, Loyer…)"
                 value={libelle}
+                enterKeyHint="next"
+                autoCapitalize="words"
                 onChange={(e) => { setLibelle(e.target.value); setAutoApplique(null); setIconeMemorisee(false); }}
                 onBlur={(e) => appliquerHabitude(e.target.value)}
                 className="w-full champ px-4 py-3 outline-none"
@@ -593,6 +626,7 @@ export default function AddSheet({ onFermer }) {
               <div className="flex flex-wrap gap-1.5">
                 {cats.map(([id, c]) => (
                   <button key={id} onClick={() => setCategorie(id)}
+                    aria-pressed={categorie === id}
                     className={`rounded-pill border px-2.5 py-1.5 text-[13px] font-medium ${categorie === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte text-encre"}`}>
                     {c.icone} {c.label}
                   </button>
@@ -666,8 +700,8 @@ export default function AddSheet({ onFermer }) {
           )}
 
           {doublon && (
-            <div className="fade-in rounded-ios bg-beurre-pale px-3.5 py-2.5 text-xs text-beurre-texte">
-              ⚠️ Une opération identique existe déjà ce jour-là ({doublon.libelle || "sans libellé"}, {euros(doublon.montant, { precis: true })}). Doublon ?
+            <div className="fade-in rounded-ios bg-beurre-pale px-3.5 py-2.5 text-xs text-beurre-texte" role="alert">
+              ⚠️ Une opération similaire existe déjà ce jour-là ({doublon.libelle || "sans libellé"}, {euros(doublon.montant, { precis: true })}). {confirmationDoublon ? "Appuie une seconde fois sur Ajouter pour confirmer." : "Vérifie avant de l’ajouter."}
             </div>
           )}
 
@@ -675,14 +709,15 @@ export default function AddSheet({ onFermer }) {
             key={`btn-${secousse}`}
             onClick={() => {
               const invalide = !valeur || !compteId || (mode === "virement" && (!versId || versId === compteId));
-              if (invalide) return secouer();
+              if (invalide) secouer();
+              setErreurFormulaire("");
               valider();
             }}
             className={`w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque active:scale-[0.99] transition-transform ${
               !valeur || !compteId || (mode === "virement" && (!versId || versId === compteId)) ? "opacity-40" : ""
             } ${secousse ? "secousse" : ""}`}
           >
-            Ajouter {euros(valeur, { precis: true })}
+            {doublon && confirmationDoublon ? "Ajouter quand même" : "Ajouter"} {euros(valeur, { precis: true })}
           </button>
         </div>
       )}
