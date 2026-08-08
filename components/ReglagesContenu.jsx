@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useBudget } from "@/lib/store";
 import { MODES_SALAIRE } from "@/lib/joursOuvres";
 import { ACCENTS, ACCENT_DEFAUT, appliquerAccent } from "@/lib/themes";
@@ -14,6 +14,7 @@ import CategoriserSheet from "@/components/CategoriserSheet";
 import JournalSheet from "@/components/JournalSheet";
 import { toutesCategories as CATEGORIES, FREQUENCES, euros, dateCourte, isoLocal, prochaineDateSalaire } from "@/lib/format";
 import { estSauvegardePecule, resumeSauvegarde } from "@/lib/sauvegarde";
+import { analyserQualiteDonnees } from "@/lib/qualiteDonnees";
 
 const THEMES = [
   { id: "auto", label: "Automatique", detail: "Suit le réglage de l'iPhone", icone: "🌗" },
@@ -434,9 +435,40 @@ function Rangee({ icone, label, detail, onClick, danger = false, dernier = false
   );
 }
 
+function QualiteDonneesSheet({ onFermer }) {
+  const { transactions, categories } = useBudget();
+  const bilan = useMemo(() => analyserQualiteDonnees(transactions, categories), [transactions, categories]);
+  const lignes = [
+    ["🏷️", "Catégories à confirmer", bilan.sansCategorie.length, "Les opérations « Autre » ou sans catégorie."],
+    ["✍️", "Libellés à compléter", bilan.sansLibelle.length, "Les lignes importées sans intitulé exploitable."],
+    ["⛓️", "Doublons possibles", bilan.doublons.length, "Même date, montant, compte et libellé."],
+  ];
+  return (
+    <Sheet titre="Qualité des données" onFermer={onFermer}>
+      <div className="space-y-4">
+        <div className={`rounded-ios p-4 ${bilan.points ? "bg-beurre-pale" : "bg-menthe-pale"}`}>
+          <p className={`text-sm font-semibold ${bilan.points ? "text-beurre-texte" : "text-menthe-texte"}`}>{bilan.points ? `${bilan.points} point${bilan.points > 1 ? "s" : ""} à regarder` : "Tes données sont bien rangées"}</p>
+          <p className="mt-1 text-xs text-sourdine">Cette vérification ne modifie rien automatiquement.</p>
+        </div>
+        <div className="overflow-hidden rounded-ios bg-carte shadow-carte">
+          {lignes.map(([icone, titre, nombre, detail], index) => (
+            <a key={titre} href={nombre ? "/transactions" : undefined} className={`flex items-center gap-3 px-4 py-3 ${index < lignes.length - 1 ? "border-b border-bordure" : ""} ${nombre ? "tappable" : ""}`}>
+              <span className="text-xl">{icone}</span>
+              <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{titre}</span><span className="block text-xs text-sourdine">{detail}</span></span>
+              <span className={`tnum text-lg font-bold ${nombre ? "text-corail" : "text-menthe"}`}>{nombre}</span>
+            </a>
+          ))}
+        </div>
+        <p className="text-xs leading-relaxed text-sourdine">Pour corriger une opération, ouvre-la dans l’onglet Opérations. Les doublons restent une suggestion : Pécule ne supprime jamais une ligne seul.</p>
+        <a href="/transactions" className="block w-full rounded-ios bg-marque-bouton py-3 text-center text-sm font-semibold text-surMarque">Ouvrir les opérations</a>
+      </div>
+    </Sheet>
+  );
+}
+
 /* ---- Panneau principal (style épuré) ---- */
 export default function ReglagesContenu() {
-  const { profil, modeLocal, user, recurrentes, categoriesPerso, reinitialiserDemo } = useBudget();
+  const { profil, modeLocal, user, recurrentes, categoriesPerso, reinitialiserDemo, transactions, categories } = useBudget();
   const [fiche, setFiche] = useState(null);
   const [confirmeEffacer, setConfirmeEffacer] = useState(false);
 
@@ -451,6 +483,7 @@ export default function ReglagesContenu() {
   const detailProfil = profil.revenuMensuel
     ? `${euros(profil.revenuMensuel)} / mois${prochainePaie ? ` · prochaine paie ${dateCourte(prochainePaie)}` : ""}`
     : "Revenu, jour de paie et préférences";
+  const pointsQualite = useMemo(() => analyserQualiteDonnees(transactions, categories).points, [transactions, categories]);
 
   return (
     <div className="flex min-h-full flex-col">
@@ -462,7 +495,7 @@ export default function ReglagesContenu() {
 
       <section className="mb-5"><h2 className="mb-2 px-1 text-v3-caption font-semibold uppercase tracking-wide text-ui-text-secondary">Organisation</h2><nav className="overflow-hidden rounded-v3-m bg-ui-surface-floating shadow-v3-soft"><Rangee icone="🔁" label="Récurrentes" detail={nbRecurrentes > 0 ? `${nbRecurrentes} opérations actives` : "Anticiper les prochaines échéances"} onClick={() => setFiche("recurrentes")} /><Rangee icone="💼" label="Salaire & charges fixes" detail="Projection et reste à vivre" onClick={() => setFiche("assistant")} /><Rangee icone="📥" label="Importer un relevé bancaire" detail="Ajouter un fichier CSV" onClick={() => setFiche("import")} /><Rangee icone="✨" label="Nettoyer les libellés" detail="Uniformiser les intitulés" onClick={() => setFiche("renommer")} /><Rangee icone="🏷️" label="Ranger mes opérations" detail="Catégoriser les transactions" onClick={() => setFiche("categoriser")} dernier /></nav></section>
 
-      <section><h2 className="mb-2 px-1 text-v3-caption font-semibold uppercase tracking-wide text-ui-text-secondary">Données</h2><nav className="overflow-hidden rounded-v3-m bg-ui-surface-floating shadow-v3-soft"><Rangee icone="💾" label="Sauvegarde & données" detail="Exporter ou restaurer mes informations" onClick={() => setFiche("donnees")} /><Rangee icone="🩺" label="Journal technique" detail="Diagnostic de l’application" onClick={() => setFiche("journal")} dernier /></nav></section>
+      <section><h2 className="mb-2 px-1 text-v3-caption font-semibold uppercase tracking-wide text-ui-text-secondary">Données</h2><nav className="overflow-hidden rounded-v3-m bg-ui-surface-floating shadow-v3-soft"><Rangee icone="🧹" label="Qualité des données" detail={pointsQualite ? `${pointsQualite} point${pointsQualite > 1 ? "s" : ""} à vérifier` : "Tout est bien rangé"} onClick={() => setFiche("qualite")} /><Rangee icone="💾" label="Sauvegarde & données" detail="Exporter ou restaurer mes informations" onClick={() => setFiche("donnees")} /><Rangee icone="🩺" label="Journal technique" detail="Diagnostic de l’application" onClick={() => setFiche("journal")} dernier /></nav></section>
 
       {/* Zone de sortie, séparée par une bande */}
       <div className="my-5 h-px bg-ui-hairline" />
@@ -498,6 +531,7 @@ export default function ReglagesContenu() {
       {fiche === "categories" && <CategoriesSheet onFermer={() => setFiche(null)} />}
       {fiche === "recurrentes" && <RecurrentesSheet onFermer={() => setFiche(null)} />}
       {fiche === "donnees" && <DonneesSheet onFermer={() => setFiche(null)} />}
+      {fiche === "qualite" && <QualiteDonneesSheet onFermer={() => setFiche(null)} />}
       {fiche === "assistant" && <AssistantConfig onFermer={() => setFiche(null)} />}
       {fiche === "import" && <ImportCSV onFermer={() => setFiche(null)} />}
       {fiche === "renommer" && <RenommerSheet onFermer={() => setFiche(null)} />}

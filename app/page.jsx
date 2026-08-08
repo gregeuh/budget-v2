@@ -21,7 +21,7 @@ import CourbeProjection from "@/components/CourbeProjection";
 const RechercheSheet = dynamic(() => import("@/components/RechercheSheet"), { ssr: false });
 
 export default function Accueil() {
-  const { comptes, transactions, soldes, profil, credits, projets, recurrentes, setReglagesOuverts } = useBudget();
+  const { comptes, transactions, soldes, profil, credits, projets, recurrentes, budgets, categories, setReglagesOuverts } = useBudget();
   const [mois, setMois] = useState(cleMois(aujourdhui()));
   const [compteActif, setCompteActif] = useState(null);
   const [compact, setCompact] = useState(false);
@@ -62,6 +62,34 @@ export default function Accueil() {
   const progressionProjet = projetPhare?.objectif > 0
     ? Math.min(100, Math.round((projetPhare.montantActuel / projetPhare.objectif) * 100))
     : null;
+  const budgetVigilance = Object.entries(budgets || {})
+    .map(([id, limite]) => ({ id, limite, depense: s.parCategorie[id] || 0, ratio: limite > 0 ? (s.parCategorie[id] || 0) / limite : 0 }))
+    .filter((b) => b.limite > 0 && b.ratio >= 0.8)
+    .sort((a, b) => b.ratio - a.ratio)[0];
+  const prochaineEcheance = [...(projection.aVenir || [])].sort((a, b) => a.date.localeCompare(b.date))[0];
+  const actionsDuJour = [
+    budgetVigilance && {
+      href: "/budgets",
+      icone: categories[budgetVigilance.id]?.icone || "🎯",
+      titre: budgetVigilance.ratio >= 1 ? `Budget ${categories[budgetVigilance.id]?.label || ""} dépassé` : `Surveiller ${categories[budgetVigilance.id]?.label || "ce budget"}`,
+      detail: budgetVigilance.ratio >= 1 ? `Dépassement de ${euros(budgetVigilance.depense - budgetVigilance.limite)}` : `${Math.round(budgetVigilance.ratio * 100)} % déjà utilisé`,
+      ton: "corail",
+    },
+    prochaineEcheance && {
+      href: "/transactions",
+      icone: "🗓️",
+      titre: prochaineEcheance.libelle || "Échéance à venir",
+      detail: `Prévu le ${new Date(prochaineEcheance.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })} · ${euros(Math.abs(prochaineEcheance.montant))}`,
+      ton: "marque",
+    },
+    projetPhare && progressionProjet !== null && progressionProjet < 100 && {
+      href: "/budgets",
+      icone: projetPhare.icone || "🎯",
+      titre: `Faire avancer ${projetPhare.nom}`,
+      detail: `Encore ${euros(Math.max(0, projetPhare.objectif - projetPhare.montantActuel))}`,
+      ton: "menthe",
+    },
+  ].filter(Boolean).slice(0, 3);
 
   return (
     <div className="dashboard-v3 space-y-5 sm:space-y-6">
@@ -125,6 +153,21 @@ export default function Accueil() {
       </section>
 
       {(avantages > 0 || totalCredits > 0) && <p className="px-1 text-v3-caption text-ui-text-secondary">{avantages > 0 && `Hors titres-resto (${euros(avantages)})`}{avantages > 0 && totalCredits > 0 && " · "}{totalCredits > 0 && `Hors crédits (−${euros(totalCredits)})`}</p>}
+
+      {actionsDuJour.length > 0 && (
+        <section className="space-y-2">
+          <div className="flex items-center justify-between px-1"><h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">À faire aujourd’hui</h2><Link href="/conseils" className="text-sm font-medium text-marque">Voir le coach</Link></div>
+          <div className="overflow-hidden rounded-v3-m bg-ui-surface-floating shadow-v3-soft">
+            {actionsDuJour.map((action, index) => (
+              <Link key={`${action.titre}-${index}`} href={action.href} className={`tappable flex items-center gap-3 px-4 py-3.5 ${index ? "border-t border-ui-hairline" : ""}`}>
+                <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg ${action.ton === "corail" ? "bg-corail-pale" : action.ton === "menthe" ? "bg-menthe-pale" : "bg-marque-pale"}`}>{action.icone}</span>
+                <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold">{action.titre}</span><span className="block truncate text-xs text-sourdine">{action.detail}</span></span>
+                <span className="text-sourdine">›</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <button
         onClick={() => setRechercheOuverte(true)}

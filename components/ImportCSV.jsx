@@ -149,6 +149,7 @@ export default function ImportCSV({ onFermer }) {
   const nbDoublons = operations.filter((o) => o.doublon).length;
   const nbAVerifier = operations.filter((o) => o.aVerifier).length;
   const nbApprises = operations.filter((o) => o.appris).length;
+  const nbNouvelles = operations.length - nbDoublons;
   const operationsVisibles = operations
     .map((o, i) => ({ ...o, _i: i }))
     .filter((o) => filtre === "toutes" || filtre === "aVerifier" ? o.aVerifier || (filtre === "toutes") : filtre === "doublons" ? o.doublon : o.appris);
@@ -217,7 +218,9 @@ export default function ImportCSV({ onFermer }) {
               {nbAVerifier > 0 && <span className="rounded-pill bg-beurre-pale px-2 py-1 font-medium text-beurre-texte">⚠️ {nbAVerifier} à vérifier</span>}
               {nbDoublons > 0 && <span className="rounded-pill bg-corail-pale px-2 py-1 font-medium text-corail-texte">⛓️ {nbDoublons} doublon{nbDoublons > 1 ? "s" : ""}</span>}
             </div>
-            <p className="mt-2 text-xs text-sourdine">Les doublons probables sont décochés par sécurité. Les réglages appris pour tes commerçants sont déjà appliqués.</p>
+            <p className="mt-2 text-xs text-sourdine">
+              {nbNouvelles} nouvelle{nbNouvelles > 1 ? "s" : ""} ligne{nbNouvelles > 1 ? "s" : ""} prête{nbNouvelles > 1 ? "s" : ""} à être ajoutée{nbNouvelles > 1 ? "s" : ""}. Les doublons probables sont décochés par sécurité et tes préférences mémorisées sont déjà appliquées.
+            </p>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {[["toutes", "Toutes"], ["aVerifier", "À vérifier"], ["doublons", "Doublons"], ["apprises", "Reconnues"]].map(([id, label]) => (
