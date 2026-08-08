@@ -356,9 +356,16 @@ html.sombre .reflet {
 .carte-compte:active { transform: scale(0.975) !important; }
 
 /* Enfoncement générique des éléments tappables (rangées, tuiles).
-   Un retour tactile discret qui fait « réactif » sans être visible. */
-.tappable { transition: transform 0.14s ease, background-color 0.14s ease; }
-.tappable:active { transform: scale(0.985); }
+   Le mouvement est court et reste sous le doigt : il confirme l'action sans
+   déplacer brutalement le contenu autour. */
+.tappable {
+  will-change: transform;
+  transition: transform var(--v3-duration-fast) var(--v3-ease-standard), background-color var(--v3-duration-fast) ease, box-shadow var(--v3-duration-fast) ease, opacity var(--v3-duration-fast) ease;
+}
+.tappable:active { transform: scale(0.982) translateY(1px); opacity: 0.9; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .tappable:hover { transform: translateY(-1px); }
+}
 
 /* Champ de saisie premium façon iOS : bordure douce, halo au focus en fondu.
    L'anneau apparaît progressivement au lieu du saut de bordure sec. */
@@ -393,10 +400,10 @@ html.sombre .reflet {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
 }
-.sheet-in { animation: sheet-ressort 0.42s cubic-bezier(0.34, 1.28, 0.64, 1); }
+.sheet-in { animation: sheet-ressort 0.36s var(--v3-ease-standard) both; }
 @keyframes sheet-ressort {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from { opacity: 0; transform: translateY(9%); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes drawer-left {
@@ -444,6 +451,24 @@ html.sombre .reflet {
 }
 .page-droite { animation: page-droite 0.28s cubic-bezier(0.32, 0.72, 0, 1) both; }
 .page-gauche { animation: page-gauche 0.28s cubic-bezier(0.32, 0.72, 0, 1) both; }
+
+/* Chaque écran se pose par étapes : la structure est visible tout de suite,
+   puis ses sections entrent avec un décalage imperceptible. Cela donne du
+   rythme à l'app sans retarder l'accès au contenu. */
+@keyframes section-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .page-content > * { animation: section-in 0.38s var(--v3-ease-standard) both; }
+  .page-content > :nth-child(1) { animation-delay: 20ms; }
+  .page-content > :nth-child(2) { animation-delay: 55ms; }
+  .page-content > :nth-child(3) { animation-delay: 90ms; }
+  .page-content > :nth-child(4) { animation-delay: 125ms; }
+  .page-content > :nth-child(5) { animation-delay: 160ms; }
+  .page-content > :nth-child(6) { animation-delay: 195ms; }
+  .page-content > :nth-child(n + 7) { animation-delay: 220ms; }
+}
 
 /* Jauge qui se remplit de gauche à droite */
 @keyframes jauge-in {
@@ -620,8 +645,30 @@ html.sombre .voile-feuille {
 }
 .pop-in { animation: pop-in 0.3s cubic-bezier(0.32, 0.72, 0, 1) both; }
 
+/* L'onglet sélectionné gagne un repère qui s'ouvre doucement : l'état actif
+   reste immédiatement identifiable, sans le saut trop marqué de l'icône. */
+.tabbar__item::after {
+  content: "";
+  position: absolute;
+  bottom: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity var(--v3-duration-fast) ease, transform var(--v3-duration-fast) var(--v3-ease-spring);
+}
+.tabbar__item[aria-current="page"]::after { opacity: 1; transform: scale(1); }
+.tabbar__icon-active { animation: tab-icon-in 0.3s var(--v3-ease-spring) both; }
+@keyframes tab-icon-in {
+  from { opacity: 0.45; transform: translateY(3px) scale(0.88); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.tabbar__add { will-change: transform; }
+
 @media (prefers-reduced-motion: reduce) {
-  .sheet-in, .fade-in, .pop-in, .drawer-in, .page-in, .page-droite, .page-gauche, .pulse-doux, .tourne, .ligne-in, .curseur, .jauge-in, .trace-in, .apparait-tard, .donut-in, .point-saut, .dashboard-in, .dashboard-ring { animation: none; }
+  .sheet-in, .fade-in, .pop-in, .drawer-in, .page-in, .page-droite, .page-gauche, .pulse-doux, .tourne, .ligne-in, .curseur, .jauge-in, .trace-in, .apparait-tard, .donut-in, .point-saut, .dashboard-in, .dashboard-ring, .page-content > *, .tabbar__icon-active { animation: none; }
   .trace-in { stroke-dasharray: none; }
   .squelette-v3 { animation: none; }
 }

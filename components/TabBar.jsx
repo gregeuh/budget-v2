@@ -58,7 +58,7 @@ export default function TabBar({ onAjouter, ajoutOuvert = false }) {
               }`}
               style={actif ? { color: o.couleur, backgroundColor: o.pale } : undefined}
             >
-              <span key={actif ? "actif" : "inactif"} className={actif ? "saut-onglet" : "opacity-70"}><IconeOnglet nom={o.icone} /></span>
+              <span key={actif ? "actif" : "inactif"} className={actif ? "tabbar__icon-active" : "opacity-70"}><IconeOnglet nom={o.icone} /></span>
               {o.label}
             </Link>;
             })()

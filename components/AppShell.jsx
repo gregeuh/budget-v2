@@ -115,7 +115,9 @@ export default function AppShell({ children }) {
           ⚠️ {erreurInit}
         </div>
       )}
-      <main id="contenu-principal" key={chemin} tabIndex={-1} className={`relative z-10 ${sens} px-4 pt-6`} style={{ paddingBottom: "calc(var(--safe-bottom) + 7.5rem)" }}>{children}</main>
+      <main id="contenu-principal" key={chemin} tabIndex={-1} className={`relative z-10 ${sens} px-4 pt-6`} style={{ paddingBottom: "calc(var(--safe-bottom) + 7.5rem)" }}>
+        <div className="page-content">{children}</div>
+      </main>
       <TabBar onAjouter={() => setAjoutOuvert(true)} ajoutOuvert={ajoutOuvert} />
       {ajoutOuvert && <AddSheet onFermer={() => setAjoutOuvert(false)} />}
       {reglagesOuverts && <DrawerReglages />}
