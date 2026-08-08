@@ -10,6 +10,7 @@ import TxRow from "@/components/TxRow";
 import Sheet from "@/components/Sheet";
 import EtatVide from "@/components/EtatVide";
 import { rechercher } from "@/lib/recherche";
+import CalendrierFinancier from "@/components/CalendrierFinancier";
 
 const ImportCSV = dynamic(() => import("@/components/ImportCSV"), { ssr: false });
 
@@ -314,6 +315,8 @@ export default function Transactions() {
           </div>
         </div>
       )}
+
+      {!recherche && !filtresActifs && <CalendrierFinancier projection={projection} categories={categories} />}
 
       {/* À venir */}
       {!recherche && !filtresActifs && aVenirAffiche.length > 0 && (

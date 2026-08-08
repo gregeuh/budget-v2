@@ -11,6 +11,7 @@ import DonutCat from "@/components/DonutCat";
 import Tendances from "@/components/Tendances";
 import PatrimoineChart from "@/components/PatrimoineChart";
 import CalendrierDepenses from "@/components/CalendrierDepenses";
+import VariationsActionnables from "@/components/VariationsActionnables";
 
 function Evolution({ valeur, precedent, inverse = false }) {
   if (!precedent) return <span className="text-[11px] text-ui-text-secondary"><span className="hidden min-[360px]:inline">Premier mois comparable</span><span className="min-[360px]:hidden" aria-label="Premier mois comparable">—</span></span>;
@@ -26,7 +27,7 @@ const moisPrecedent = (mois) => {
 };
 
 export default function Statistiques() {
-  const { transactions, comptes, profil } = useBudget();
+  const { transactions, comptes, profil, categories } = useBudget();
   const [mois, setMois] = useState(cleMois(aujourdhui()));
   const bilan = useMemo(() => {
     const actuel = statsMoisBudgetaire(transactions, mois, profil.jourSalaire);
@@ -65,6 +66,8 @@ export default function Statistiques() {
         <SpendChart transactions={transactions} jourSalaire={profil.jourSalaire} />
         <Tendances nbMois={6} />
       </section>
+
+      <VariationsActionnables actuel={bilan.actuel} precedent={bilan.precedent} categories={categories} />
 
       <section className="space-y-3">
         <div className="px-1"><h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">Où part ton argent</h2><p className="mt-0.5 text-xs text-ui-text-secondary">Répartition et rythme de tes dépenses sur le mois choisi.</p></div>
