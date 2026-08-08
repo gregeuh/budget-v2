@@ -11,6 +11,7 @@ import { construireMemoire, devinerDepuisHistorique, lieuxConnus, proposerLibell
 import { chercherLieux } from "@/lib/lieux";
 import { lieuPersoProche, enregistrerLieuPerso } from "@/lib/lieuxPerso";
 import { suggererIcone } from "@/lib/icones";
+import { appliquerReglesAuto } from "@/lib/reglesAuto";
 import IconePicker from "./IconePicker";
 import CompteLogo from "./CompteLogo";
 
@@ -205,6 +206,13 @@ export default function AddSheet({ onFermer }) {
 
   // Quand tu tapes un libellé déjà connu : catégorie et lieu proposés automatiquement
   const appliquerHabitude = (valeurLibelle) => {
+    const regle = appliquerReglesAuto(valeurLibelle, profil.reglesAuto || [], categories);
+    if (regle) {
+      setCategorie(regle.categorie);
+      if (regle.icone && !iconeManuelle) setIcone(regle.icone);
+      setAutoApplique({ categorie: categories[regle.categorie]?.label, icone: regle.icone, regle: regle.nom });
+      return;
+    }
     const trouve = devinerDepuisHistorique(valeurLibelle, memoire);
     if (!trouve) { setAutoApplique(null); setIconeMemorisee(false); return; }
     let applique = null;

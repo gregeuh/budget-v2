@@ -121,6 +121,11 @@ export default function Transactions() {
     [comptes, soldes, transactions, recurrentes, profil]
   );
   const { salaireISO, aVenir } = projection;
+  const pointBas = useMemo(
+    () => projection.evolution.reduce((min, point) => point.solde < min.solde ? point : min, projection.evolution[0] || { solde: projection.dispo, date: aujourdhui() }),
+    [projection]
+  );
+  const prochaineSortie = useMemo(() => aVenir.find((t) => t.montant < 0), [aVenir]);
 
   const aVenirAffiche = useMemo(
     () => aVenir.filter((t) => compteId === "tous" || t.compteId === compteId || t.versId === compteId),
@@ -299,6 +304,12 @@ export default function Transactions() {
           </p>
           {!salaireISO && (
             <p className="mt-2 text-xs text-white/75">Renseigne ton jour de salaire dans ⚙️ → Mon profil pour caler la projection sur ta paie.</p>
+          )}
+          {(prochaineSortie || pointBas.solde < projection.dispo) && (
+            <div className="mt-3 grid grid-cols-2 gap-2 border-t border-white/20 pt-3 text-xs">
+              <span><span className="block text-white/60">Prochaine sortie</span><strong className="block truncate">{prochaineSortie ? `${prochaineSortie.libelle} · ${euros(Math.abs(prochaineSortie.montant))}` : "Aucune prévue"}</strong></span>
+              <span><span className="block text-white/60">Point bas prévu</span><strong className="block">{euros(pointBas.solde)} · {dateCourte(pointBas.date)}</strong></span>
+            </div>
           )}
           </div>
         </div>

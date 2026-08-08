@@ -6,6 +6,7 @@ import { euros, dateCourte } from "@/lib/format";
 import Sheet from "./Sheet";
 import { analyserCSV } from "@/lib/csv";
 import { construireMemoire, devinerDepuisHistorique } from "@/lib/habitudes";
+import { appliquerReglesAuto } from "@/lib/reglesAuto";
 import PointsSautillants from "./PointsSautillants";
 import Rapprochement from "./Rapprochement";
 
@@ -32,7 +33,7 @@ import Rapprochement from "./Rapprochement";
 
 
 export default function ImportCSV({ onFermer }) {
-  const { comptes, transactions, soldes, categories, ajouterTransactionsLot, fusionnerTransactions, annulerImport } = useBudget();
+  const { comptes, transactions, soldes, categories, profil, ajouterTransactionsLot, fusionnerTransactions, annulerImport } = useBudget();
   const [compteId, setCompteId] = useState(comptes[0]?.id || "");
   const [resultat, setResultat] = useState(null); // { operations } | { erreur }
   const [selection, setSelection] = useState({});
@@ -59,11 +60,14 @@ export default function ImportCSV({ onFermer }) {
         // si tu as déjà classé "Carrefour" en Courses, l'import le fait aussi.
         const memoire = construireMemoire(transactions);
         for (const o of res.operations) {
+          const regle = appliquerReglesAuto(o.libelle, profil.reglesAuto || [], categories);
           const appris = devinerDepuisHistorique(o.libelle, memoire);
-          if (appris?.categorie && categories[appris.categorie]) o.categorie = appris.categorie;
+          if (regle?.categorie) o.categorie = regle.categorie;
+          else if (appris?.categorie && categories[appris.categorie]) o.categorie = appris.categorie;
           if (appris?.lieu && !o.lieu) o.lieu = appris.lieu;
-          if (appris?.icone && !o.icone) o.icone = appris.icone;
-          o.appris = Boolean(appris?.categorie || appris?.lieu || appris?.icone);
+          if (regle?.icone) o.icone = regle.icone;
+          else if (appris?.icone && !o.icone) o.icone = appris.icone;
+          o.appris = Boolean(regle || appris?.categorie || appris?.lieu || appris?.icone);
           // Une catégorie « Autre » non apprise mérite une décision explicite
           // avant de passer au rapprochement.
           o.aVerifier = !o.appris && o.categorie === "autre";

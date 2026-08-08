@@ -14,6 +14,7 @@ export default function FicheProjet({ projet, onFermer }) {
   const [icone, setIcone] = useState(projet?.icone || "🎯");
   const [objectif, setObjectif] = useState(projet ? String(projet.objectif) : "");
   const [echeance, setEcheance] = useState(projet?.echeance || "");
+  const [versementMensuel, setVersementMensuel] = useState(projet?.versementMensuel ? String(projet.versementMensuel) : "");
   const [contribution, setContribution] = useState("");
   const [confirmeSuppr, setConfirmeSuppr] = useState(false);
 
@@ -23,6 +24,7 @@ export default function FicheProjet({ projet, onFermer }) {
       icone,
       objectif: parseFloat(String(objectif).replace(",", ".")) || 0,
       echeance,
+      versementMensuel: parseFloat(String(versementMensuel).replace(",", ".")) || 0,
     };
     if (edition) await modifierProjet(projet.id, donnees);
     else await ajouterProjet(donnees);
@@ -42,6 +44,9 @@ export default function FicheProjet({ projet, onFermer }) {
     const moisRestants = Math.max(1, Math.round((new Date(echeance) - new Date()) / (30.44 * 86400000)));
     rythme = { parMois: (projet.objectif - projet.montantActuel) / moisRestants, mois: moisRestants };
   }
+  const versement = parseFloat(String(versementMensuel).replace(",", ".")) || 0;
+  const resteProjet = Math.max(0, (Number(objectif) || projet?.objectif || 0) - (projet?.montantActuel || 0));
+  const moisAvecPlan = versement > 0 ? Math.ceil(resteProjet / versement) : null;
 
   return (
     <Sheet titre={edition ? projet.nom : "Nouveau projet"} onFermer={onFermer}>
@@ -92,6 +97,12 @@ export default function FicheProjet({ projet, onFermer }) {
               className="w-full champ px-3 py-3 outline-none" />
           </label>
         </div>
+        <label className="block">
+          <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Versement mensuel prévu (optionnel)</span>
+          <div className="champ flex items-center px-3"><input inputMode="decimal" placeholder="Ex. 120" value={versementMensuel} onChange={(e) => setVersementMensuel(e.target.value)} className="tnum min-w-0 flex-1 bg-transparent py-3 outline-none" /><span className="text-sm text-sourdine">€/mois</span></div>
+          {moisAvecPlan && <span className="mt-1.5 block text-xs text-menthe-texte">À ce rythme, l’objectif sera atteint dans environ {moisAvecPlan} mois.</span>}
+          {!moisAvecPlan && rythme && <button type="button" onClick={() => setVersementMensuel(String(Math.ceil(rythme.parMois)))} className="mt-1.5 text-xs font-semibold text-marque">Utiliser la suggestion : {euros(rythme.parMois)} / mois</button>}
+        </label>
         <button onClick={valider} disabled={!objectif} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque disabled:opacity-40">
           {edition ? "Enregistrer" : "Créer le projet"}
         </button>

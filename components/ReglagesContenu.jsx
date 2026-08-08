@@ -9,12 +9,52 @@ import Sheet from "@/components/Sheet";
 import CategoriesSheet from "@/components/CategoriesSheet";
 import AssistantConfig from "@/components/AssistantConfig";
 import ImportCSV from "@/components/ImportCSV";
+import AuditDepenses from "@/components/AuditDepenses";
 import RenommerSheet from "@/components/RenommerSheet";
 import CategoriserSheet from "@/components/CategoriserSheet";
 import JournalSheet from "@/components/JournalSheet";
 import { toutesCategories as CATEGORIES, FREQUENCES, euros, dateCourte, isoLocal, prochaineDateSalaire } from "@/lib/format";
 import { estSauvegardePecule, resumeSauvegarde } from "@/lib/sauvegarde";
 import { analyserQualiteDonnees } from "@/lib/qualiteDonnees";
+
+function ReglesAutoSheet({ onFermer }) {
+  const { profil, categories, sauverApp } = useBudget();
+  const [regles, setRegles] = useState(profil.reglesAuto || []);
+  const [mot, setMot] = useState("");
+  const [categorie, setCategorie] = useState("courses");
+  const [icone, setIcone] = useState("");
+  const ajouter = () => {
+    if (mot.trim().length < 2) return;
+    setRegles((liste) => [...liste, { id: `regle-${Date.now().toString(36)}`, mot: mot.trim(), categorie, icone }]);
+    setMot(""); setIcone("");
+  };
+  const enregistrer = async () => { await sauverApp(undefined, { ...profil, reglesAuto: regles }); onFermer(); };
+  const cats = Object.entries(categories).filter(([, c]) => c.type !== "virement");
+  return <Sheet titre="Règles automatiques" onFermer={onFermer}><div className="space-y-4">
+    <p className="text-sm text-sourdine">Exemple : « Uber » devient toujours Transport. Tes règles s’appliquent à la saisie et aux prochains imports.</p>
+    <div className="rounded-ios bg-fond p-3 space-y-2">
+      <input value={mot} onChange={(e) => setMot(e.target.value)} placeholder="Mot à reconnaître (ex. Uber)" className="w-full champ px-3 py-3 outline-none" />
+      <div className="grid grid-cols-[1fr_auto] gap-2"><select value={categorie} onChange={(e) => setCategorie(e.target.value)} className="champ min-w-0 px-3 py-3 outline-none">{cats.map(([id, c]) => <option key={id} value={id}>{c.icone} {c.label}</option>)}</select><input value={icone} onChange={(e) => setIcone(e.target.value)} placeholder="Icône" aria-label="Icône optionnelle" className="champ w-20 px-2 py-3 text-center outline-none" /></div>
+      <button onClick={ajouter} disabled={mot.trim().length < 2} className="w-full rounded-pill bg-marque-pale py-2.5 text-sm font-semibold text-marque-texte disabled:opacity-40">Ajouter la règle</button>
+    </div>
+    {regles.length ? <ul className="overflow-hidden rounded-ios bg-carte shadow-carte">{[...regles].reverse().map((r, index) => <li key={r.id || `${r.mot}-${index}`} className="flex items-center gap-3 border-b border-bordure px-3 py-3 last:border-0"><span className="text-lg">{r.icone || categories[r.categorie]?.icone || "🏷️"}</span><span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold">Si le libellé contient « {r.mot} »</span><span className="block text-xs text-sourdine">→ {categories[r.categorie]?.label || "Catégorie inconnue"}</span></span><button onClick={() => setRegles((liste) => liste.filter((x) => x !== r))} className="tappable rounded-full bg-corail-pale px-2.5 py-1 text-xs font-semibold text-corail-texte">Retirer</button></li>)}</ul> : <p className="rounded-ios bg-carte p-4 text-center text-sm text-sourdine shadow-carte">Aucune règle personnelle pour le moment.</p>}
+    <button onClick={enregistrer} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque">Enregistrer les règles</button>
+  </div></Sheet>;
+}
+
+function ConfidentialiteSheet({ onFermer }) {
+  const partager = async () => {
+    const donnees = { title: "Pécule", text: "Mon budget avec Pécule", url: window.location.origin };
+    if (navigator.share) { await navigator.share(donnees).catch(() => {}); return; }
+    await navigator.clipboard?.writeText(window.location.origin).catch(() => {});
+  };
+  return <Sheet titre="Confidentialité & iPhone" onFermer={onFermer}><div className="space-y-4">
+    <div className="rounded-ios bg-menthe-pale p-4"><p className="text-sm font-semibold text-menthe-texte">Tes données restent sous ton contrôle</p><p className="mt-1 text-xs leading-relaxed text-menthe-texte/85">Pécule ne connaît ni tes identifiants bancaires ni tes mots de passe. Tes données sont enregistrées dans ton espace sécurisé ou sur cet appareil en mode test.</p></div>
+    <div className="overflow-hidden rounded-ios bg-carte shadow-carte"><div className="px-4 py-3 border-b border-bordure"><p className="text-sm font-semibold">Installer l’app sur iPhone</p><p className="mt-1 text-xs text-sourdine">Dans Safari : Partager → « Sur l’écran d’accueil ». Pécule s’ouvrira comme une app et gardera les pages consultées hors ligne.</p></div><div className="px-4 py-3"><p className="text-sm font-semibold">Verrouillage de l’app</p><p className="mt-1 text-xs text-sourdine">Face ID nécessite une application native. Sur le web, protège ton iPhone par code / Face ID et déconnecte-toi sur un appareil partagé.</p></div></div>
+    <button onClick={partager} className="w-full rounded-ios bg-marque-bouton py-3 text-sm font-semibold text-surMarque">Partager / installer Pécule</button>
+    <p className="text-center text-[11px] text-sourdine">Conseil : exporte régulièrement une sauvegarde depuis Réglages → Sauvegarde & données.</p>
+  </div></Sheet>;
+}
 
 const THEMES = [
   { id: "auto", label: "Automatique", detail: "Suit le réglage de l'iPhone", icone: "🌗" },
@@ -493,9 +533,9 @@ export default function ReglagesContenu() {
 
       <section className="mb-5"><h2 className="mb-2 px-1 text-v3-caption font-semibold uppercase tracking-wide text-ui-text-secondary">Personnalisation</h2><nav className="overflow-hidden rounded-v3-m bg-ui-surface-floating shadow-v3-soft"><Rangee icone="🌗" label="Apparence" detail="Thème, accent et montants" onClick={() => setFiche("apparence")} /><Rangee icone="🏷️" label="Catégories" detail={nbCategories > 0 ? `${nbCategories} catégories personnalisées` : "Organiser mes dépenses"} onClick={() => setFiche("categories")} dernier /></nav></section>
 
-      <section className="mb-5"><h2 className="mb-2 px-1 text-v3-caption font-semibold uppercase tracking-wide text-ui-text-secondary">Organisation</h2><nav className="overflow-hidden rounded-v3-m bg-ui-surface-floating shadow-v3-soft"><Rangee icone="🔁" label="Récurrentes" detail={nbRecurrentes > 0 ? `${nbRecurrentes} opérations actives` : "Anticiper les prochaines échéances"} onClick={() => setFiche("recurrentes")} /><Rangee icone="💼" label="Salaire & charges fixes" detail="Projection et reste à vivre" onClick={() => setFiche("assistant")} /><Rangee icone="📥" label="Importer un relevé bancaire" detail="Ajouter un fichier CSV" onClick={() => setFiche("import")} /><Rangee icone="✨" label="Nettoyer les libellés" detail="Uniformiser les intitulés" onClick={() => setFiche("renommer")} /><Rangee icone="🏷️" label="Ranger mes opérations" detail="Catégoriser les transactions" onClick={() => setFiche("categoriser")} dernier /></nav></section>
+      <section className="mb-5"><h2 className="mb-2 px-1 text-v3-caption font-semibold uppercase tracking-wide text-ui-text-secondary">Organisation</h2><nav className="overflow-hidden rounded-v3-m bg-ui-surface-floating shadow-v3-soft"><Rangee icone="🔁" label="Récurrentes" detail={nbRecurrentes > 0 ? `${nbRecurrentes} opérations actives` : "Anticiper les prochaines échéances"} onClick={() => setFiche("recurrentes")} /><Rangee icone="✨" label="Règles automatiques" detail={(profil.reglesAuto || []).length ? `${profil.reglesAuto.length} règle${profil.reglesAuto.length > 1 ? "s" : ""} active${profil.reglesAuto.length > 1 ? "s" : ""}` : "Classer automatiquement tes commerçants"} onClick={() => setFiche("regles")} /><Rangee icone="💼" label="Salaire & charges fixes" detail="Projection et reste à vivre" onClick={() => setFiche("assistant")} /><Rangee icone="📥" label="Importer un relevé bancaire" detail="Ajouter un fichier CSV" onClick={() => setFiche("import")} /><Rangee icone="📺" label="Centre d’abonnements" detail="Coût mensuel, doublons et économies" onClick={() => setFiche("abonnements")} /><Rangee icone="✨" label="Nettoyer les libellés" detail="Uniformiser les intitulés" onClick={() => setFiche("renommer")} /><Rangee icone="🏷️" label="Ranger mes opérations" detail="Catégoriser les transactions" onClick={() => setFiche("categoriser")} dernier /></nav></section>
 
-      <section><h2 className="mb-2 px-1 text-v3-caption font-semibold uppercase tracking-wide text-ui-text-secondary">Données</h2><nav className="overflow-hidden rounded-v3-m bg-ui-surface-floating shadow-v3-soft"><Rangee icone="🧹" label="Qualité des données" detail={pointsQualite ? `${pointsQualite} point${pointsQualite > 1 ? "s" : ""} à vérifier` : "Tout est bien rangé"} onClick={() => setFiche("qualite")} /><Rangee icone="💾" label="Sauvegarde & données" detail="Exporter ou restaurer mes informations" onClick={() => setFiche("donnees")} /><Rangee icone="🩺" label="Journal technique" detail="Diagnostic de l’application" onClick={() => setFiche("journal")} dernier /></nav></section>
+      <section><h2 className="mb-2 px-1 text-v3-caption font-semibold uppercase tracking-wide text-ui-text-secondary">Données</h2><nav className="overflow-hidden rounded-v3-m bg-ui-surface-floating shadow-v3-soft"><Rangee icone="🔐" label="Confidentialité & iPhone" detail="Installation, hors-ligne et bonnes pratiques" onClick={() => setFiche("confidentialite")} /><Rangee icone="🧹" label="Qualité des données" detail={pointsQualite ? `${pointsQualite} point${pointsQualite > 1 ? "s" : ""} à vérifier` : "Tout est bien rangé"} onClick={() => setFiche("qualite")} /><Rangee icone="💾" label="Sauvegarde & données" detail="Exporter ou restaurer mes informations" onClick={() => setFiche("donnees")} /><Rangee icone="🩺" label="Journal technique" detail="Diagnostic de l’application" onClick={() => setFiche("journal")} dernier /></nav></section>
 
       {/* Zone de sortie, séparée par une bande */}
       <div className="my-5 h-px bg-ui-hairline" />
@@ -532,7 +572,10 @@ export default function ReglagesContenu() {
       {fiche === "recurrentes" && <RecurrentesSheet onFermer={() => setFiche(null)} />}
       {fiche === "donnees" && <DonneesSheet onFermer={() => setFiche(null)} />}
       {fiche === "qualite" && <QualiteDonneesSheet onFermer={() => setFiche(null)} />}
+      {fiche === "confidentialite" && <ConfidentialiteSheet onFermer={() => setFiche(null)} />}
       {fiche === "assistant" && <AssistantConfig onFermer={() => setFiche(null)} />}
+      {fiche === "regles" && <ReglesAutoSheet onFermer={() => setFiche(null)} />}
+      {fiche === "abonnements" && <AuditDepenses onFermer={() => setFiche(null)} />}
       {fiche === "import" && <ImportCSV onFermer={() => setFiche(null)} />}
       {fiche === "renommer" && <RenommerSheet onFermer={() => setFiche(null)} />}
       {fiche === "categoriser" && <CategoriserSheet onFermer={() => setFiche(null)} />}
