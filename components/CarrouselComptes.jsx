@@ -10,7 +10,7 @@ import Montant from "./Montant";
 import CompteLogo from "./CompteLogo";
 
 export default function CarrouselComptes({ onChange }) {
-  const { comptes, soldes } = useBudget();
+  const { comptes, soldes, transactions } = useBudget();
   const rail = useRef(null);
   const [actif, setActif] = useState(0);
   const [fiche, setFiche] = useState(null);
@@ -52,6 +52,9 @@ export default function CarrouselComptes({ onChange }) {
           const t = estTous ? null : TYPES_COMPTE[c.type] || TYPES_COMPTE.autre;
           const coul = estTous ? null : COULEURS[t.couleur];
           const solde = estTous ? total : soldes[c.id] || 0;
+          const dernierMouvement = estTous ? null : [...transactions]
+            .filter((t) => t.compteId === c.id || t.versId === c.id)
+            .sort((a, b) => b.date.localeCompare(a.date))[0];
           const plafond = !estTous && c.type === "livretA" ? PLAFONDS.livretA : !estTous && c.type === "ldds" ? PLAFONDS.ldds : null;
           return (
             <div
@@ -113,6 +116,11 @@ export default function CarrouselComptes({ onChange }) {
                     </div>
                     <p className="mt-1 text-[11px] text-white/70">{Math.max(0, Math.round((solde / plafond) * 100))} % du plafond</p>
                   </div>
+                )}
+                {!estTous && dernierMouvement && (
+                  <p className="mt-3 truncate border-t border-white/15 pt-2 text-[11px] text-white/75">
+                    Dernier mouvement · {dernierMouvement.libelle || "Opération"}
+                  </p>
                 )}
               </div>
             </div>

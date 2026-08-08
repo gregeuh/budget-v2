@@ -108,11 +108,17 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
       lieu: lieu.trim() || null,
       ...(icone ? { icone } : {}),
     });
-    // Propagation aux opérations de même libellé d'origine
+    // La correction est mémorisée en harmonisant les opérations qui viennent
+    // du même libellé bancaire. Les prochaines saisies profitent ensuite de
+    // cette mémoire via construireMemoire().
     const nouveauLibelle = libelle.trim();
-    if (propager && nouveauLibelle && memesLibelles.length > 0) {
+    if (propager && memesLibelles.length > 0) {
       for (const t of memesLibelles) {
-        await modifierTransaction(t.id, { libelle: nouveauLibelle }, { silencieux: true });
+        await modifierTransaction(t.id, {
+          libelle: nouveauLibelle || t.libelle,
+          categorie,
+          icone: icone || null,
+        }, { silencieux: true });
       }
     }
     onFermer();
@@ -196,11 +202,11 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
           />
         )}
 
-        {memesLibelles.length > 0 && libelle.trim() && libelle.trim() !== (tx.libelle || "") && (
+        {memesLibelles.length > 0 && !estVirement && (
           <label className="flex items-center gap-2.5 rounded-ios bg-menthe-pale px-3.5 py-2.5">
             <input type="checkbox" checked={propager} onChange={(e) => setPropager(e.target.checked)} className="h-4 w-4 accent-menthe" />
             <span className="text-xs text-menthe-texte">
-              Appliquer aussi aux <strong>{memesLibelles.length}</strong> autre{memesLibelles.length > 1 ? "s" : ""} opération{memesLibelles.length > 1 ? "s" : ""} du même libellé
+              Mémoriser cette catégorie et cette icône pour les <strong>{memesLibelles.length}</strong> autre{memesLibelles.length > 1 ? "s" : ""} opération{memesLibelles.length > 1 ? "s" : ""} similaire{memesLibelles.length > 1 ? "s" : ""}
             </span>
           </label>
         )}

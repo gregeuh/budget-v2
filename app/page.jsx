@@ -117,6 +117,10 @@ export default function Accueil() {
             <div><p className="text-v3-caption text-white/65">Disponible</p><p className="tnum mt-0.5 text-sm font-semibold">{euros(projection.dispo)}</p></div>
             <div className="border-l border-white/20 pl-4"><p className="text-v3-caption text-white/65">À venir</p><p className="tnum mt-0.5 text-sm font-semibold">−{euros(projection.prevu)}</p></div>
           </div>
+          <Link href="/transactions" className="mt-4 flex items-center justify-between border-t border-white/20 pt-3 text-sm font-semibold text-white/90 active:text-white">
+            <span>Voir les prévisions</span>
+            <span aria-hidden="true">›</span>
+          </Link>
         </div>
       </section>
 
@@ -131,6 +135,25 @@ export default function Accueil() {
       </button>
 
       {rechercheOuverte && <RechercheSheet onFermer={() => setRechercheOuverte(false)} />}
+
+      <section>
+        <div className="mb-2 flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">
+            Dernières opérations
+            {compteAffiche && <span className="ml-1.5 text-sm font-medium text-sourdine">· {compteAffiche.nom}</span>}
+          </h2>
+          <Link href="/transactions" className="text-sm font-medium text-marque">Tout voir</Link>
+        </div>
+        {recentes.length === 0 ? (
+          <p className="rounded-ios bg-carte p-5 text-center text-sm text-sourdine shadow-carte">
+            {compteAffiche ? `Aucune opération sur ${compteAffiche.nom} pour l'instant.` : "Ajoute ta première opération avec le bouton +"}
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {recentes.slice(0, 3).map((t, i) => <TxRow key={t.id} tx={t} avecCompte retard={i} />)}
+          </ul>
+        )}
+      </section>
 
       <PremiersPas onAjouter={() => document.querySelector("[data-bouton-ajout]")?.click()} />
 
@@ -191,24 +214,6 @@ export default function Accueil() {
 
       <Analyses comptes={comptesPatrimoine} transactions={transactions} mois={mois} />
 
-      <section>
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">
-            Dernières opérations
-            {compteAffiche && <span className="ml-1.5 text-sm font-medium text-sourdine">· {compteAffiche.nom}</span>}
-          </h2>
-          <Link href="/transactions" className="text-sm font-medium text-marque">Tout voir</Link>
-        </div>
-        {recentes.length === 0 ? (
-          <p className="rounded-ios bg-carte p-5 text-center text-sm text-sourdine shadow-carte">
-            {compteAffiche ? `Aucune opération sur ${compteAffiche.nom} pour l'instant.` : "Ajoute ta première opération avec le bouton +"}
-          </p>
-        ) : (
-          <ul className="space-y-2">
-            {recentes.map((t, i) => <TxRow key={t.id} tx={t} avecCompte retard={i} />)}
-          </ul>
-        )}
-      </section>
     </div>
   );
 }

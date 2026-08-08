@@ -146,6 +146,8 @@ export default function Budgets() {
               const reel = s.parCategorie[cat] || 0;
               const pct = limite > 0 ? (reel / limite) * 100 : 0;
               const couleur = pct >= 100 ? "var(--corail)" : pct >= 80 ? "var(--beurre)" : "var(--menthe)";
+              const restant = limite - reel;
+              const couleurEtat = pct >= 100 ? "text-corail" : pct >= 80 ? "text-beurre-texte" : "text-menthe-texte";
               return (
                 <li key={cat}>
                   <button onClick={() => setFicheCat(cat)} className="tappable w-full rounded-v3-s bg-ui-surface-floating p-4 text-left shadow-v3-soft">
@@ -156,7 +158,12 @@ export default function Budgets() {
                   <div className="h-2.5 overflow-hidden rounded-full bg-voile">
                     <div className="jauge-in h-full rounded-full transition-all" style={{ width: `${Math.min(100, pct)}%`, background: couleur }} />
                   </div>
-                  {pct >= 100 && <p className="mt-1.5 text-xs font-medium text-corail">Dépassé de {euros(reel - limite)}</p>}
+                  <div className="mt-2 flex items-center justify-between gap-3 text-xs">
+                    <span className="tnum text-sourdine">{Math.round(pct)} % utilisé</span>
+                    <span className={`tnum truncate font-semibold ${couleurEtat}`}>
+                      {restant >= 0 ? `Reste ${euros(restant)}` : `Dépassé de ${euros(Math.abs(restant))}`}
+                    </span>
+                  </div>
                   </button>
                 </li>
               );
@@ -180,6 +187,7 @@ export default function Budgets() {
             {projets.map((p) => {
               const pct = p.objectif > 0 ? Math.min(100, (p.montantActuel / p.objectif) * 100) : 0;
               const atteint = pct >= 100;
+              const restant = Math.max(0, (p.objectif || 0) - (p.montantActuel || 0));
               return (
               <li key={p.id} className="overflow-hidden rounded-v3-m bg-ui-surface-floating p-4 shadow-v3-soft">
                   {/* Zone d'ouverture de la fiche (div cliquable : on ne peut pas imbriquer des boutons) */}
@@ -196,6 +204,12 @@ export default function Budgets() {
                     </div>
                     <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-voile">
                       <div className="jauge-in h-full rounded-full transition-all" style={{ width: `${pct}%`, background: atteint ? "var(--menthe)" : "var(--marque)" }} />
+                    </div>
+                    <div className="mt-1.5 flex items-center justify-between gap-3 text-xs">
+                      <span className="tnum text-sourdine">{Math.round(pct)} % atteint</span>
+                      <span className={`tnum truncate font-semibold ${atteint ? "text-menthe-texte" : "text-marque-texte"}`}>
+                        {atteint ? "Objectif atteint" : `Encore ${euros(restant)}`}
+                      </span>
                     </div>
                     {p.echeance && !atteint && (
                       <p className="mt-1.5 text-xs text-sourdine">

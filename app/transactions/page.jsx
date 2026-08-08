@@ -45,6 +45,22 @@ export default function Transactions() {
     setRecherche("");
   };
 
+  const appliquerRaccourci = (id) => {
+    setRecherche("");
+    if (id === "tout") {
+      setPeriode("tout");
+      setTypeFiltre("tous");
+      return;
+    }
+    if (id === "mois") {
+      setPeriode("mois");
+      setTypeFiltre("tous");
+      return;
+    }
+    setPeriode("tout");
+    setTypeFiltre(id);
+  };
+
   const parMois = useMemo(() => {
     const seuil = Number(String(montantMin).replace(",", "."));
     const base = recherche.trim() ? rechercher(recherche, transactions, comptes) : transactions;
@@ -177,6 +193,30 @@ export default function Transactions() {
         )}
       </div>
 
+      <div className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1" aria-label="Raccourcis de recherche">
+        {[
+          ["tout", "Tout"],
+          ["mois", "Ce mois"],
+          ["depenses", "Dépenses"],
+          ["revenus", "Revenus"],
+        ].map(([id, label]) => {
+          const actif = id === "tout"
+            ? periode === "tout" && typeFiltre === "tous"
+            : id === "mois" ? periode === "mois" && typeFiltre === "tous" : typeFiltre === id && periode === "tout";
+          return (
+            <button
+              key={id}
+              type="button"
+              onClick={() => appliquerRaccourci(id)}
+              aria-pressed={actif}
+              className={`shrink-0 rounded-pill px-3 py-1.5 text-xs font-semibold transition-colors ${actif ? "bg-encre text-contraste" : "bg-carte text-sourdine ring-1 ring-bordure"}`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+
       {filtresOuverts && (
         <div id="filtres-transactions" className="fade-in space-y-3 rounded-v3-m border border-bordure bg-carte p-3.5 shadow-carte">
           <div>
@@ -273,7 +313,17 @@ export default function Transactions() {
               t.virtuel ? (
                 <li
                   key={t.id}
-                  className="pop-in flex items-center gap-3 rounded-2xl border border-dashed border-bordure bg-carte/50 px-3 py-2 opacity-75"
+                  onClick={() => setRecurrenteEdition(recurrentes.find((r) => r.id === t.recurrenteId) || null)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setRecurrenteEdition(recurrentes.find((r) => r.id === t.recurrenteId) || null);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Gérer l'opération à venir ${t.libelle}`}
+                  className="tappable pop-in flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-bordure bg-carte/50 px-3 py-2 opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marque"
                   style={{ animationDelay: `${Math.min(i, 8) * 50}ms` }}
                 >
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-fond text-base">
@@ -283,12 +333,12 @@ export default function Transactions() {
                     <span className="block truncate text-sm font-semibold">{t.libelle}</span>
                     <span className="block text-xs text-sourdine">{dateCourte(t.date)} · 🔁 prévu</span>
                   </span>
-                  <span className={`tnum shrink-0 text-sm font-bold ${t.montant > 0 ? "text-menthe" : "text-encre"}`}>
+                  <span className={`tnum shrink-0 text-sm font-bold ${t.montant > 0 ? "text-menthe" : "text-corail-texte"}`}>
                     {t.montant > 0 ? "+" : ""}{euros(t.montant, { precis: true })}
                   </span>
                   <button
                     type="button"
-                    onClick={() => setRecurrenteEdition(recurrentes.find((r) => r.id === t.recurrenteId) || null)}
+                    onClick={(e) => { e.stopPropagation(); setRecurrenteEdition(recurrentes.find((r) => r.id === t.recurrenteId) || null); }}
                     aria-label={`Gérer la récurrence ${t.libelle}`}
                     className="tappable -mr-1 flex h-9 w-8 shrink-0 items-center justify-center rounded-full text-lg text-sourdine hover:bg-voile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marque"
                   >

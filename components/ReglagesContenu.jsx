@@ -447,12 +447,16 @@ export default function ReglagesContenu() {
 
   const nbRecurrentes = recurrentes.filter((r) => r.actif !== false).length;
   const nbCategories = Object.keys(categoriesPerso || {}).length;
+  const prochainePaie = prochaineDateSalaire(Number(profil.jourSalaire) || 0, profil.modeSalaire || "jour");
+  const detailProfil = profil.revenuMensuel
+    ? `${euros(profil.revenuMensuel)} / mois${prochainePaie ? ` · prochaine paie ${dateCourte(prochainePaie)}` : ""}`
+    : "Revenu, jour de paie et préférences";
 
   return (
     <div className="flex min-h-full flex-col">
       {/* Salutation */}
       <header className="px-1 pb-5 pt-2"><p className="text-v3-caption font-medium text-ui-text-secondary">Préférences & données</p><h1 className="mt-0.5 text-[26px] font-bold tracking-tight">Réglages</h1></header>
-      <button onClick={() => setFiche("profil")} className="surface-lift mb-6 flex w-full items-center gap-4 rounded-v3-m bg-[linear-gradient(145deg,var(--marque),var(--marque-texte))] p-5 text-left text-white shadow-v3-medium"><span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15 text-2xl backdrop-blur-v3-glass">{profil.prenom ? profil.prenom.slice(0, 1).toUpperCase() : "👤"}</span><span className="min-w-0 flex-1"><span className="block text-v3-caption text-white/70">Mon profil</span><span className="block truncate text-xl font-semibold">{profil.prenom || "Personnaliser mon profil"}</span><span className="mt-1 block text-v3-caption text-white/75">Revenu, jour de paie et préférences</span></span><span className="text-2xl text-white/70">›</span></button>
+      <button onClick={() => setFiche("profil")} className="surface-lift mb-6 flex w-full items-center gap-4 rounded-v3-m bg-[linear-gradient(145deg,var(--marque),var(--marque-texte))] p-5 text-left text-white shadow-v3-medium"><span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15 text-2xl backdrop-blur-v3-glass">{profil.prenom ? profil.prenom.slice(0, 1).toUpperCase() : "👤"}</span><span className="min-w-0 flex-1"><span className="block text-v3-caption text-white/70">Mon profil</span><span className="block truncate text-xl font-semibold">{profil.prenom || "Personnaliser mon profil"}</span><span className="mt-1 block truncate text-v3-caption text-white/75">{detailProfil}</span></span><span className="text-2xl text-white/70">›</span></button>
 
       <section className="mb-5"><h2 className="mb-2 px-1 text-v3-caption font-semibold uppercase tracking-wide text-ui-text-secondary">Personnalisation</h2><nav className="overflow-hidden rounded-v3-m bg-ui-surface-floating shadow-v3-soft"><Rangee icone="🌗" label="Apparence" detail="Thème, accent et montants" onClick={() => setFiche("apparence")} /><Rangee icone="🏷️" label="Catégories" detail={nbCategories > 0 ? `${nbCategories} catégories personnalisées` : "Organiser mes dépenses"} onClick={() => setFiche("categories")} dernier /></nav></section>
 

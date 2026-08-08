@@ -48,25 +48,25 @@ const MODES = [
   { id: "virement", label: "Virement" },
 ];
 
-const TOUCHES = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "⌫"];
 
 export default function AddSheet({ onFermer }) {
   const { comptes, transactions, categories, profil, sauverApp, ajouterTransaction, ajouterRecurrente, virement } = useBudget();
   const [etape, setEtape] = useState(1);
   const [mode, setMode] = useState("depense");
   const [montant, setMontant] = useState("");
-  const [impulsion, setImpulsion] = useState(0);
   const [libelle, setLibelle] = useState("");
   const [categorie, setCategorie] = useState("courses");
   const [icone, setIcone] = useState("");
   const [iconeManuelle, setIconeManuelle] = useState(false);
   const [iconeMemorisee, setIconeMemorisee] = useState(false);
+  const [personnalisationOuverte, setPersonnalisationOuverte] = useState(false);
   const [compteId, setCompteId] = useState(comptes[0]?.id || "");
   const [choixCompteOuvert, setChoixCompteOuvert] = useState(false);
   const [versId, setVersId] = useState(comptes[1]?.id || "");
   const [date, setDate] = useState(aujourdhui());
   const [frequence, setFrequence] = useState("unefois");
   const [horsSolde, setHorsSolde] = useState(false);
+  const [optionsOuvertes, setOptionsOuvertes] = useState(false);
   const [secousse, setSecousse] = useState(0);
   // Saisie en langage naturel
   const [phrase, setPhrase] = useState("");
@@ -137,24 +137,12 @@ export default function AddSheet({ onFermer }) {
 
   const valeur = parseFloat(String(montant).replace(",", ".")) || 0;
   const couleurMontant = mode === "depense" ? "text-corail" : mode === "revenu" ? "text-menthe" : "text-encre";
-
-  // ---- Pavé numérique ----
-  const taper = (t) => {
-    setMontant((m) => {
-      if (t === "⌫") return m.slice(0, -1);
-      if (t === ",") {
-        if (m.includes(",")) return m;
-        return m === "" ? "0," : m + ",";
-      }
-      // chiffre
-      const [ent, dec] = m.split(",");
-      if (dec !== undefined && dec.length >= 2) return m;       // 2 décimales max
-      if (dec === undefined && ent.length >= 7) return m;       // 9 999 999 max
-      if (m === "0") return t;                                   // pas de zéro en tête
-      return m + t;
-    });
-    setImpulsion((i) => i + 1);
-  };
+  const dateHier = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    const deuxChiffres = (nombre) => String(nombre).padStart(2, "0");
+    return `${d.getFullYear()}-${deuxChiffres(d.getMonth() + 1)}-${deuxChiffres(d.getDate())}`;
+  }, []);
 
   // ---- Suggestions (libellés fréquents) ----
   // Ce que l'app a appris de tes habitudes (catégorie + lieu par commerçant)
@@ -259,7 +247,7 @@ export default function AddSheet({ onFermer }) {
     setCategorie(sug.categorie);
     appliquerHabitude(sug.libelle);
     if (comptes.some((c) => c.id === sug.compteId)) setCompteId(sug.compteId);
-    if (!montant) { setMontant(String(Math.abs(sug.montant)).replace(".", ",")); setImpulsion((i) => i + 1); }
+    if (!montant) setMontant(String(Math.abs(sug.montant)).replace(".", ","));
     setEtape(2);
   };
 
@@ -368,11 +356,22 @@ export default function AddSheet({ onFermer }) {
           >
             <p className="relative sr-only" aria-live="polite">Montant {montant || "0"} euros</p>
             <div className="relative mt-1 flex h-[70px] items-center justify-center">
-              <span key={impulsion} className={`rebond chiffres flex items-center font-bold leading-none ${tailleMontant} ${montant ? "text-ui-text-primary" : "text-ui-text-secondary"}`}>
-                {montant && mode !== "virement" && <span className="mr-0.5 opacity-60" style={{ color: COULEUR_MODE[mode] }}>{mode === "depense" ? "−" : "+"}</span>}
-                {montant || "0"}
+              <span className={`rebond chiffres flex items-center font-bold leading-none ${tailleMontant} ${montant ? "text-ui-text-primary" : "text-ui-text-secondary"}`}>
+                {mode !== "virement" && <span className="mr-0.5 opacity-60" style={{ color: COULEUR_MODE[mode] }}>{mode === "depense" ? "−" : "+"}</span>}
+                <input
+                  value={montant}
+                  size={Math.max(1, montant.length)}
+                  inputMode="decimal"
+                  enterKeyHint="next"
+                  aria-label="Montant"
+                  placeholder="0"
+                  onChange={(e) => {
+                    const valeurSaisie = e.target.value.replace(".", ",");
+                    if (/^\d{0,7}(,\d{0,2})?$/.test(valeurSaisie)) setMontant(valeurSaisie);
+                  }}
+                  className="chiffres min-w-[3.2ch] max-w-[7ch] bg-transparent text-center text-[1em] font-bold leading-none outline-none placeholder:text-ui-text-secondary"
+                />
                 <span className="unite ml-1 text-[0.5em] text-sourdine">€</span>
-                {montant && <span className="curseur ml-0.5 inline-block h-[0.8em] w-[3px] rounded-full align-middle" style={{ background: COULEUR_MODE[mode] }} />}
               </span>
             </div>
             {comptes[0] && (
@@ -416,28 +415,6 @@ export default function AddSheet({ onFermer }) {
               </div>
             </div>
           )}
-
-          {/* Pavé numérique : touches en relief, tactiles */}
-          <div className="grid grid-cols-3 gap-2.5">
-            {TOUCHES.map((t, i) => {
-              const backspace = t === "⌫";
-              return (
-                <button
-                  key={t}
-                  onClick={() => taper(t)}
-                  style={{ animationDelay: `${i * 22}ms` }}
-                  className={`pop-in chiffres tappable h-14 rounded-2xl text-[26px] transition-all duration-100 active:scale-90 ${
-                    backspace
-                      ? "bg-ui-surface-3 text-ui-text-primary active:bg-ui-surface-2"
-                      : "bg-ui-surface-floating text-ui-text-primary shadow-v3-soft active:bg-ui-surface-2"
-                  }`}
-                  aria-label={backspace ? "Effacer" : t}
-                >
-                  {t}
-                </button>
-              );
-            })}
-          </div>
 
           {comptes.length === 0 ? (
             <p className="mt-3 text-center text-sm text-sourdine">Crée d'abord un compte dans l'onglet Comptes.</p>
@@ -526,14 +503,45 @@ export default function AddSheet({ onFermer }) {
                 </p>
               )}
 
-              <IconePicker
-                icone={icone}
-                suggestion={iconeSuggeree}
-                personnalisee={iconeManuelle || iconeMemorisee}
-                message={iconeMemorisee ? "Mémorisée pour ce commerçant" : undefined}
-                onChoisir={(emoji) => { setIcone(emoji); setIconeManuelle(true); setIconeMemorisee(false); }}
-                onChoisirAuto={() => { setIcone(iconeSuggeree); setIconeManuelle(false); setIconeMemorisee(false); }}
-              />
+              <section className="overflow-hidden rounded-ios border border-bordure bg-carte shadow-carte">
+                <button
+                  type="button"
+                  onClick={() => setPersonnalisationOuverte((ouverte) => !ouverte)}
+                  aria-expanded={personnalisationOuverte}
+                  className="tappable flex w-full items-center gap-3 px-3.5 py-3 text-left"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-voile text-xl">
+                    {icone || iconeSuggeree}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold">{categories[categorie]?.label || "Catégorie"}</span>
+                    <span className="block text-xs text-sourdine">Icône et catégorie</span>
+                  </span>
+                  <span aria-hidden="true" className={`text-lg text-sourdine transition-transform ${personnalisationOuverte ? "rotate-180" : ""}`}>⌄</span>
+                </button>
+
+                {personnalisationOuverte && (
+                  <div className="fade-in border-t border-bordure p-3">
+                    <IconePicker
+                      icone={icone}
+                      suggestion={iconeSuggeree}
+                      personnalisee={iconeManuelle || iconeMemorisee}
+                      message={iconeMemorisee ? "Mémorisée pour ce commerçant" : undefined}
+                      onChoisir={(emoji) => { setIcone(emoji); setIconeManuelle(true); setIconeMemorisee(false); }}
+                      onChoisirAuto={() => { setIcone(iconeSuggeree); setIconeManuelle(false); setIconeMemorisee(false); }}
+                    />
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {cats.map(([id, c]) => (
+                        <button key={id} onClick={() => { setCategorie(id); setPersonnalisationOuverte(false); }}
+                          aria-pressed={categorie === id}
+                          className={`rounded-pill border px-2.5 py-1.5 text-[13px] font-medium ${categorie === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte text-encre"}`}>
+                          {c.icone} {c.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </section>
 
               {/* Lieu, avec les lieux déjà utilisés */}
               <div>
@@ -623,25 +631,34 @@ export default function AddSheet({ onFermer }) {
                   </div>
                 )}
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {cats.map(([id, c]) => (
-                  <button key={id} onClick={() => setCategorie(id)}
-                    aria-pressed={categorie === id}
-                    className={`rounded-pill border px-2.5 py-1.5 text-[13px] font-medium ${categorie === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte text-encre"}`}>
-                    {c.icone} {c.label}
-                  </button>
-                ))}
-              </div>
             </>
           )}
 
           <div className="grid grid-cols-2 gap-3">
-            <label className="block min-w-0">
+            <div className="relative min-w-0">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">{mode === "virement" ? "Depuis" : "Compte"}</span>
-              <select value={compteId} onChange={(e) => setCompteId(e.target.value)} className="w-full min-w-0 champ px-3 py-3 outline-none">
-                {comptes.map((c) => <option key={c.id} value={c.id}>{c.nom}</option>)}
-              </select>
-            </label>
+              <button
+                type="button"
+                onClick={() => setChoixCompteOuvert((ouverte) => !ouverte)}
+                aria-expanded={choixCompteOuvert}
+                className="flex w-full min-w-0 items-center gap-2 champ px-2.5 py-2.5 text-left"
+              >
+                <CompteLogo type={comptes.find((c) => c.id === compteId)?.type || "autre"} taille={30} />
+                <span className="min-w-0 flex-1 truncate text-sm font-semibold">{comptes.find((c) => c.id === compteId)?.nom || "Choisir"}</span>
+                <span aria-hidden="true" className={`text-sm text-sourdine transition-transform ${choixCompteOuvert ? "rotate-180" : ""}`}>⌄</span>
+              </button>
+              {choixCompteOuvert && (
+                <div className="absolute left-0 z-30 mt-1.5 w-full min-w-48 overflow-hidden rounded-2xl bg-ui-surface-floating p-1.5 shadow-v3-floating ring-1 ring-ui-hairline">
+                  {comptes.map((c) => (
+                    <button key={c.id} type="button" onClick={() => { setCompteId(c.id); setChoixCompteOuvert(false); }} className={`flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm ${c.id === compteId ? "bg-marque-pale font-semibold text-marque-texte" : "text-ui-text-primary"}`}>
+                      <CompteLogo type={c.type} taille={28} />
+                      <span className="min-w-0 flex-1 truncate">{c.nom}</span>
+                      {c.id === compteId && <span aria-hidden="true">✓</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             {mode === "virement" ? (
               <label className="block min-w-0">
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Vers</span>
@@ -653,6 +670,10 @@ export default function AddSheet({ onFermer }) {
               <label className="block min-w-0">
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Date</span>
                 <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full min-w-0 champ px-2 py-3 text-[15px] outline-none" />
+                <div className="mt-1.5 flex gap-1.5">
+                  <button type="button" onClick={() => setDate(aujourdhui())} className={`rounded-pill px-2 py-1 text-[11px] font-medium ${date === aujourdhui() ? "bg-marque-pale text-marque-texte" : "bg-voile text-sourdine"}`}>Aujourd’hui</button>
+                  <button type="button" onClick={() => setDate(dateHier)} className={`rounded-pill px-2 py-1 text-[11px] font-medium ${date === dateHier ? "bg-marque-pale text-marque-texte" : "bg-voile text-sourdine"}`}>Hier</button>
+                </div>
               </label>
             )}
           </div>
@@ -661,36 +682,60 @@ export default function AddSheet({ onFermer }) {
             <label className="block min-w-0">
               <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Date</span>
               <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full min-w-0 champ px-2 py-3 text-[15px] outline-none" />
+              <div className="mt-1.5 flex gap-1.5">
+                <button type="button" onClick={() => setDate(aujourdhui())} className={`rounded-pill px-2 py-1 text-[11px] font-medium ${date === aujourdhui() ? "bg-marque-pale text-marque-texte" : "bg-voile text-sourdine"}`}>Aujourd’hui</button>
+                <button type="button" onClick={() => setDate(dateHier)} className={`rounded-pill px-2 py-1 text-[11px] font-medium ${date === dateHier ? "bg-marque-pale text-marque-texte" : "bg-voile text-sourdine"}`}>Hier</button>
+              </div>
             </label>
           )}
 
           {mode !== "virement" && (
-            <div>
-              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Répéter</span>
-              <div className="grid grid-cols-2 gap-1.5">
-                {[["unefois", "Une seule fois"], ...Object.entries(FREQUENCES).map(([id, f]) => [id, f.label])].map(([id, label]) => (
-                  <button key={id} onClick={() => setFrequence(id)}
-                    className={`truncate rounded-pill border px-2.5 py-1.5 text-[13px] font-medium ${frequence === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte"}`}>
-                    {label}
-                  </button>
-                ))}
-              </div>
-              {frequence !== "unefois" && (
-                <p className="mt-1.5 text-xs text-sourdine">
-                  🔁 Sera ajoutée automatiquement {FREQUENCES[frequence].label.toLowerCase()} à partir du {new Date(date).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}.
-                </p>
-              )}
-            </div>
-          )}
+            <section className="overflow-hidden rounded-ios border border-bordure bg-carte">
+              <button
+                type="button"
+                onClick={() => setOptionsOuvertes((ouvertes) => !ouvertes)}
+                aria-expanded={optionsOuvertes}
+                className="tappable flex w-full items-center gap-3 px-3.5 py-3 text-left"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-voile text-base">⚙️</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold">Options</span>
+                  <span className="block text-xs text-sourdine">
+                    {frequence === "unefois" ? "Une seule fois" : `Répète ${FREQUENCES[frequence].label.toLowerCase()}`}
+                    {horsSolde ? " · hors solde" : ""}
+                  </span>
+                </span>
+                <span aria-hidden="true" className={`text-lg text-sourdine transition-transform ${optionsOuvertes ? "rotate-180" : ""}`}>⌄</span>
+              </button>
 
-          {mode !== "virement" && (
-            <button onClick={() => setHorsSolde(!horsSolde)}
-              className={`flex w-full items-center justify-between rounded-ios border px-3.5 py-2.5 text-left transition-colors ${horsSolde ? "border-menthe bg-menthe-pale" : "border-bordure bg-carte"}`}>
-              <span className="text-sm font-semibold">👻 Hors solde</span>
-              <span className={`relative ml-3 h-6 w-11 shrink-0 rounded-full transition-colors ${horsSolde ? "bg-menthe" : "bg-voile"}`}>
-                <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-carte shadow transition-transform ${horsSolde ? "translate-x-[22px]" : "translate-x-0.5"}`} />
-              </span>
-            </button>
+              {optionsOuvertes && (
+                <div className="fade-in space-y-3 border-t border-bordure p-3">
+                  <div>
+                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-sourdine">Répéter</span>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {[["unefois", "Une seule fois"], ...Object.entries(FREQUENCES).map(([id, f]) => [id, f.label])].map(([id, label]) => (
+                        <button key={id} onClick={() => setFrequence(id)}
+                          className={`truncate rounded-pill border px-2.5 py-1.5 text-[13px] font-medium ${frequence === id ? "border-encre bg-encre text-contraste" : "border-bordure bg-carte"}`}>
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                    {frequence !== "unefois" && (
+                      <p className="mt-1.5 text-xs text-sourdine">
+                        🔁 Sera ajoutée automatiquement {FREQUENCES[frequence].label.toLowerCase()} à partir du {new Date(date).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}.
+                      </p>
+                    )}
+                  </div>
+                  <button onClick={() => setHorsSolde(!horsSolde)}
+                    className={`flex w-full items-center justify-between rounded-ios border px-3.5 py-2.5 text-left transition-colors ${horsSolde ? "border-menthe bg-menthe-pale" : "border-bordure bg-carte"}`}>
+                    <span className="text-sm font-semibold">👻 Hors solde</span>
+                    <span className={`relative ml-3 h-6 w-11 shrink-0 rounded-full transition-colors ${horsSolde ? "bg-menthe" : "bg-voile"}`}>
+                      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-carte shadow transition-transform ${horsSolde ? "translate-x-[22px]" : "translate-x-0.5"}`} />
+                    </span>
+                  </button>
+                </div>
+              )}
+            </section>
           )}
 
           {noteIA && (

@@ -232,6 +232,28 @@ body {
   transition: background-color var(--v3-duration-normal) var(--v3-ease-standard), color var(--v3-duration-normal) var(--v3-ease-standard);
 }
 
+/* Safari agrandit automatiquement la page lorsqu'un champ fait moins de
+   16 px. Sur iPhone, cela décale les feuilles et peut masquer le libellé en
+   cours de saisie : on conserve donc cette taille minimale pour les champs. */
+@media (max-width: 640px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
+}
+
+/* L'application reste vivante sans imposer de mouvement aux personnes qui
+   l'ont désactivé dans les réglages d'accessibilité de l'iPhone. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Fondations mobiles : aucune largeur rigide ne doit créer un débordement ou
    coincer une interface derrière la navigation fixe. */
 .app-shell { width: min(100%, 28rem); }

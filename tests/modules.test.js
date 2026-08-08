@@ -429,6 +429,10 @@ describe("Logos de commerçants", () => {
   it("reconnaît une enseigne dans un libellé bancaire", () => {
     expect(devinerDomaine("CARREFOUR MARKET BEGLES")).toBe("carrefour.fr");
     expect(devinerDomaine("PAIEMENT MCDO 33")).toBe("mcdonalds.fr");
+    expect(devinerDomaine("CB*UBER TRIP 08/08")).toBe("uber.com");
+    expect(devinerDomaine("PRLV SEPA NETFLIX.COM")).toBe("netflix.com");
+    expect(devinerDomaine("APPLE.COM/BILL PARIS")).toBe("apple.com");
+    expect(devinerDomaine("VINTED FRANCE")).toBe("vinted.fr");
   });
 
   it("retombe sur rien (→ initiale) pour les inconnus", () => {
@@ -438,7 +442,7 @@ describe("Logos de commerçants", () => {
     expect(devinerDomaine("")).toBeNull();
   });
 
-  it("tente un .fr pour un mot simple non listé", () => {
+  it("reconnaît les enseignes ajoutées à l'annuaire", () => {
     expect(devinerDomaine("Biocoop")).toBe("biocoop.fr");
   });
 

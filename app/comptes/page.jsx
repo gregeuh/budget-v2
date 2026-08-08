@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useBudget } from "@/lib/store";
-import { TYPES_COMPTE, COULEURS, euros, PLAFONDS } from "@/lib/format";
+import { TYPES_COMPTE, COULEURS, euros, PLAFONDS, dateCourte } from "@/lib/format";
 import Sheet from "@/components/Sheet";
 import FicheCredit, { mensualitesRestantes } from "@/components/FicheCredit";
 import CompteLogo from "@/components/CompteLogo";
@@ -133,7 +133,7 @@ function FicheCompte({ compte, onFermer }) {
 }
 
 export default function Comptes() {
-  const { comptes, soldes, credits } = useBudget();
+  const { comptes, soldes, credits, transactions } = useBudget();
   const [fiche, setFiche] = useState(null); // null | "nouveau" | compte
   const [detailCompte, setDetailCompte] = useState(null);
   const [ficheCredit, setFicheCredit] = useState(null); // null | "nouveau" | credit
@@ -174,6 +174,9 @@ export default function Comptes() {
                 const coul = COULEURS[t.couleur];
                 const plafond = c.type === "livretA" ? PLAFONDS.livretA : c.type === "ldds" ? PLAFONDS.ldds : null;
                 const solde = soldes[c.id] || 0;
+                const dernierMouvement = transactions
+                  .filter((tx) => tx.compteId === c.id || tx.versId === c.id)
+                  .sort((a, b) => b.date.localeCompare(a.date))[0];
                 return (
                   <li key={c.id}>
                     <button
@@ -197,6 +200,11 @@ export default function Comptes() {
                           </div>
                           <p className="mt-1 text-xs text-sourdine">{Math.max(0, Math.round((solde / plafond) * 100))} % du plafond ({euros(plafond)})</p>
                         </div>
+                      )}
+                      {dernierMouvement && (
+                        <p className="mt-3 truncate border-t border-bordure pt-2 text-xs text-sourdine">
+                          Dernier mouvement · {dernierMouvement.libelle || "Opération"} · {dateCourte(dernierMouvement.date)}
+                        </p>
                       )}
                     </button>
                   </li>
