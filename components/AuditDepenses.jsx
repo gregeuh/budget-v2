@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useBudget } from "@/lib/store";
 import { euros, toutesCategories } from "@/lib/format";
 import { auditerDepenses } from "@/lib/audit";
@@ -64,7 +65,7 @@ export default function AuditDepenses({ onFermer }) {
 
   if (audit.items.length === 0) {
     return (
-      <Sheet titre="Audit des abonnements" onFermer={onFermer}>
+      <Sheet titre="Centre des abonnements" onFermer={onFermer}>
         <p className="rounded-ios bg-carte p-5 text-center text-sm text-sourdine shadow-carte">
           Aucun abonnement récurrent détecté pour l&apos;instant. Importe ton relevé bancaire (au moins 2 mois) : l&apos;app repèrera automatiquement tout ce qui te prélève chaque mois.
         </p>
@@ -73,7 +74,7 @@ export default function AuditDepenses({ onFermer }) {
   }
 
   return (
-    <Sheet titre="Audit des abonnements" onFermer={onFermer}>
+    <Sheet titre="Centre des abonnements" onFermer={onFermer}>
       <div className="space-y-3">
         {/* Total */}
         <div className="rounded-ios p-4 text-center" style={{ background: "linear-gradient(135deg, #1C1C1E, #0A3D91)" }}>
@@ -125,6 +126,7 @@ export default function AuditDepenses({ onFermer }) {
                     </span>
                   </span>
                   <span className="chiffres shrink-0 text-sm font-bold">{euros(it.montantMensuel)}</span>
+                  <Link href={`/transactions?recherche=${encodeURIComponent(it.libelle)}`} onClick={onFermer} className="shrink-0 rounded-pill bg-marque-pale px-2 py-1 text-[11px] font-semibold text-marque-texte">Voir</Link>
                 </li>
               );
             })}

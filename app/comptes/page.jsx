@@ -14,6 +14,7 @@ const GROUPES = [
   { id: "avantages", label: "Avantages salariés" },
   { id: "epargne", label: "Épargne" },
   { id: "invest", label: "Investissement" },
+  { id: "credits", label: "Crédits et prêts" },
 ];
 
 function FicheCompte({ compte, onFermer }) {

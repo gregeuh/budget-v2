@@ -12,7 +12,7 @@ import { suggererIcone } from "@/lib/icones";
 import IconePicker from "./IconePicker";
 
 export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
-  const { comptes, categories, transactions, modifierTransaction, supprimerTransaction, ajouterTransaction } = useBudget();
+  const { comptes, categories, transactions, profil, sauverApp, modifierTransaction, supprimerTransaction, ajouterTransaction } = useBudget();
   const [montant, setMontant] = useState(String(Math.abs(tx.montant)).replace(".", ","));
   const [sens, setSens] = useState(tx.montant < 0 ? "depense" : "revenu");
   const [libelle, setLibelle] = useState(tx.libelle || "");
@@ -49,6 +49,7 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
     ? transactions.filter((t) => t.id !== tx.id && !t.versId && nettoyerLibelle((t.libelleBanque || t.libelle || "").trim()).toLowerCase() === origineNettoyee)
     : [];
   const [propager, setPropager] = useState(false);
+  const [creerRegle, setCreerRegle] = useState(false);
 
   // Ce que l'app a appris : catégorie et lieu habituels par commerçant
   const memoire = useMemo(() => construireMemoire(transactions), [transactions]);
@@ -119,6 +120,22 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
           categorie,
           icone: icone || null,
         }, { silencieux: true });
+      }
+    }
+    if (creerRegle && !estVirement && nouveauLibelle.length >= 2) {
+      const dejaPresente = (profil.reglesAuto || []).some((r) =>
+        String(r.mot || "").trim().toLowerCase() === nouveauLibelle.toLowerCase() && r.categorie === categorie
+      );
+      if (!dejaPresente) {
+        await sauverApp(undefined, {
+          ...profil,
+          reglesAuto: [...(profil.reglesAuto || []), {
+            id: `regle-${Date.now().toString(36)}`,
+            mot: nouveauLibelle,
+            categorie,
+            icone: icone || "",
+          }],
+        });
       }
     }
     onFermer();
@@ -207,6 +224,15 @@ export default function EditTxSheet({ tx, onFermer, niveau = 2 }) {
             <input type="checkbox" checked={propager} onChange={(e) => setPropager(e.target.checked)} className="h-4 w-4 accent-menthe" />
             <span className="text-xs text-menthe-texte">
               Mémoriser cette catégorie et cette icône pour les <strong>{memesLibelles.length}</strong> autre{memesLibelles.length > 1 ? "s" : ""} opération{memesLibelles.length > 1 ? "s" : ""} similaire{memesLibelles.length > 1 ? "s" : ""}
+            </span>
+          </label>
+        )}
+
+        {!estVirement && libelle.trim().length >= 2 && (
+          <label className="flex items-center gap-2.5 rounded-ios bg-marque-pale px-3.5 py-2.5">
+            <input type="checkbox" checked={creerRegle} onChange={(e) => setCreerRegle(e.target.checked)} className="h-4 w-4 accent-marque" />
+            <span className="text-xs text-marque-texte">
+              Créer une règle : « {libelle.trim()} » sera classé automatiquement dans <strong>{categorieActuelle.label}</strong>
             </span>
           </label>
         )}

@@ -529,6 +529,7 @@ export function DataProvider({ children }) {
     const existants = new Map(comptes.filter((c) => c.powensId).map((c) => [String(c.powensId), c]));
     const typeCompte = (type, nom) => {
       const texte = `${type || ""} ${nom || ""}`.toLowerCase();
+      if (/loan|credit|cr[eé]dit|pr[êe]t|emprunt|mortgage/.test(texte)) return "credit";
       if (/livret\s*a|savings|épargne|epargne|deposit/.test(texte)) return "livretA";
       if (/ldds/.test(texte)) return "ldds";
       if (/pea|securit|investment|market/.test(texte)) return "pea";

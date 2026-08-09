@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useBudget } from "@/lib/store";
 import FicheCategorie from "@/components/FicheCategorie";
@@ -12,6 +11,7 @@ import FicheProjet from "@/components/FicheProjet";
 import MoisSelecteur from "@/components/MoisSelecteur";
 import Repliable from "@/components/Repliable";
 import EtatVide from "@/components/EtatVide";
+import { calculerProjection } from "@/lib/projection";
 
 const REGLE = [
   { id: "besoin", label: "Besoins", cible: 50, couleur: "var(--marque)" },
@@ -62,7 +62,7 @@ function FicheBudget({ onFermer }) {
 }
 
 export default function Budgets() {
-  const { transactions, budgets, profil, projets, categories, modifierProjet, notifier, celebrer } = useBudget();
+  const { transactions, budgets, profil, projets, categories, comptes, soldes, recurrentes, modifierProjet, notifier, celebrer } = useBudget();
   const [ficheCat, setFicheCat] = useState(null);
 
   const contribuerProjet = (id, montant) => {
@@ -79,6 +79,10 @@ export default function Budgets() {
   const [mois, setMois] = useState(cleMois(aujourdhui()));
   const s = statsMois(transactions, mois);
   const revenu = s.revenus || profil.revenuMensuel || 0;
+  const projection = useMemo(
+    () => calculerProjection({ comptes, soldes, transactions, recurrentes, profil }),
+    [comptes, soldes, transactions, recurrentes, profil]
+  );
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("edit") === "1") setEdition(true);
@@ -214,6 +218,11 @@ export default function Budgets() {
                     {p.echeance && !atteint && (
                       <p className="mt-1.5 text-xs text-sourdine">
                         Échéance : {new Date(p.echeance).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
+                      </p>
+                    )}
+                    {!atteint && p.versementMensuel > 0 && (
+                      <p className="mt-1.5 rounded-v3-s bg-marque-pale px-2.5 py-2 text-xs text-marque-texte">
+                        Ton geste : <strong>{euros(p.versementMensuel)} / mois</strong> ({euros(p.versementMensuel / 30)} / jour). Après ce rythme, il te resterait environ <strong>{euros(Math.max(0, projection.reste - p.versementMensuel))}</strong> jusqu’à la paie.
                       </p>
                     )}
                   </div>
