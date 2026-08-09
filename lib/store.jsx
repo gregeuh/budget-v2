@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { firebaseActif, auth, db } from "./firebase";
-import { aujourdhui, prochaineOccurrence, CATEGORIES, definirCategoriesPerso, definirFormatAffichage } from "./format";
+import { aujourdhui, prochaineOccurrence, CATEGORIES, definirCategoriesPerso, definirFormatAffichage, arrondir } from "./format";
 import { appliquerAccent, ACCENT_DEFAUT } from "./themes";
 import { calculerSoldes } from "./soldes";
 import { estSauvegardePecule } from "./sauvegarde";
@@ -520,6 +520,80 @@ export function DataProvider({ children }) {
     notifier(`${liste.length} opération${liste.length > 1 ? "s" : ""} importée${liste.length > 1 ? "s" : ""}`, "⬇︎");
   }, [modeLocal, fs, notifier]);
 
+  // ------- Import bancaire Powens -------
+  // Le solde Powens est le solde d'aujourd'hui. Pour qu'il reste exact une fois
+  // l'historique importé, on initialise le compte au solde moins ses opérations
+  // déjà passées. Les opérations à venir ne modifient pas le solde courant.
+  const importerDonneesPowens = useCallback(async ({ accounts = [], transactions: transactionsPowens = [] }) => {
+    const dateImport = new Date().toISOString();
+    const existants = new Map(comptes.filter((c) => c.powensId).map((c) => [String(c.powensId), c]));
+    const typeCompte = (type, nom) => {
+      const texte = `${type || ""} ${nom || ""}`.toLowerCase();
+      if (/livret\s*a|savings|épargne|epargne|deposit/.test(texte)) return "livretA";
+      if (/ldds/.test(texte)) return "ldds";
+      if (/pea|securit|investment|market/.test(texte)) return "pea";
+      if (/cash|esp[eè]ces/.test(texte)) return "especes";
+      return "courant";
+    };
+    const aujourdHui = aujourdhui();
+    const nouveauxComptes = accounts.filter((a) => !existants.has(String(a.id)));
+    const idLocalParPowens = new Map(existants);
+    const preparations = nouveauxComptes.map((a, index) => {
+      const id = genId();
+      idLocalParPowens.set(String(a.id), { id });
+      const mouvementsPasses = transactionsPowens
+        .filter((t) => String(t.accountId) === String(a.id) && t.date && t.date <= aujourdHui && !t.coming)
+        .reduce((total, t) => total + Number(t.amount || 0), 0);
+      return {
+        id,
+        nom: a.name,
+        type: typeCompte(a.type, a.name),
+        soldeInitial: arrondir(Number(a.balance || 0) - mouvementsPasses),
+        ordre: comptes.length + index,
+        powensId: String(a.id),
+        source: "powens",
+        derniereSyncPowens: dateImport,
+      };
+    });
+    const dejaImportees = new Set(transactions.filter((t) => t.powensId).map((t) => String(t.powensId)));
+    const nouvellesTransactions = transactionsPowens
+      .filter((t) => !dejaImportees.has(String(t.id)) && idLocalParPowens.has(String(t.accountId)) && t.date)
+      .map((t) => ({
+        compteId: idLocalParPowens.get(String(t.accountId)).id,
+        montant: arrondir(Number(t.amount || 0)),
+        categorie: "autre",
+        libelle: t.label || "Opération bancaire",
+        libelleBanque: t.label || "Opération bancaire",
+        date: t.date,
+        powensId: String(t.id),
+        source: "powens",
+        importe: true,
+        dateImport,
+        ...(t.coming ? { aVenirBanque: true } : {}),
+      }));
+
+    if (modeLocal) {
+      setComptes((liste) => [...liste, ...preparations]);
+      setTransactions((liste) => [...liste, ...nouvellesTransactions]);
+    } else {
+      const { writeBatch, doc, collection, base } = await fs();
+      const operations = [
+        ...preparations.map((compte) => ({ collection: "comptes", id: compte.id, data: (() => { const { id, ...reste } = compte; return reste; })() })),
+        ...nouvellesTransactions.map((transaction) => ({ collection: "transactions", data: transaction })),
+      ];
+      for (let i = 0; i < operations.length; i += 450) {
+        const batch = writeBatch(db);
+        for (const operation of operations.slice(i, i + 450)) {
+          const ref = operation.id ? doc(db, `${base}/${operation.collection}/${operation.id}`) : doc(collection(db, `${base}/${operation.collection}`));
+          batch.set(ref, operation.data);
+        }
+        await batch.commit();
+      }
+    }
+    notifier(`${preparations.length} compte${preparations.length > 1 ? "s" : ""} et ${nouvellesTransactions.length} opération${nouvellesTransactions.length > 1 ? "s" : ""} importés`, "🏦");
+    return { comptes: preparations.length, transactions: nouvellesTransactions.length };
+  }, [comptes, transactions, modeLocal, fs, notifier]);
+
   const virement = useCallback(async (deId, versId, montant, date) => {
     const de = comptes.find((c) => c.id === deId);
     const vers = comptes.find((c) => c.id === versId);
@@ -677,7 +751,7 @@ export function DataProvider({ children }) {
     rafraichir,
     comptes, transactions, budgets, profil, soldes, recurrentes, projets, credits,
     ajouterCompte, modifierCompte, supprimerCompte,
-    ajouterTransaction, modifierTransaction, supprimerTransaction, ajouterTransactionsLot, fusionnerTransactions,
+    ajouterTransaction, modifierTransaction, supprimerTransaction, ajouterTransactionsLot, fusionnerTransactions, importerDonneesPowens,
     annulerImport, dernierImport,
     ajouterRecurrente, modifierRecurrente, supprimerRecurrente,
     ajouterProjet, modifierProjet, supprimerProjet,

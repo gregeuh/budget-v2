@@ -698,7 +698,9 @@ button, a, [role="button"] {
 .lien-echappement {
   position: fixed;
   z-index: 200;
-  top: calc(var(--safe-top) + 8px);
+  /* Safari peut rapporter une safe area nulle dans une PWA : on réserve donc
+     toujours la zone de la Dynamic Island quand le lien est appelé au clavier. */
+  top: max(calc(var(--safe-top) + 12px), 108px);
   left: 50%;
   transform: translate(-50%, -160%);
   border-radius: var(--v3-radius-pill);
@@ -708,9 +710,11 @@ button, a, [role="button"] {
   font-size: 0.875rem;
   font-weight: 700;
   box-shadow: var(--ombre-flottant);
-  transition: transform var(--v3-duration-fast) var(--v3-ease-standard);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform var(--v3-duration-fast) var(--v3-ease-standard), opacity var(--v3-duration-fast) ease;
 }
-.lien-echappement:focus { transform: translate(-50%, 0); }
+.lien-echappement:focus-visible { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
