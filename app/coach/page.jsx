@@ -7,8 +7,11 @@ import { calculerScore } from "@/lib/score";
 const ACCES = [
   ["/conseils", "✦", "Mes conseils", "Tes priorités, analyses et le coach budgétaire"],
   ["/inbox", "◉", "Boîte financière", "Les éléments qui attendent une décision"],
+  ["/plan", "☷", "Plan mensuel", "Répartir ton revenu entre charges, enveloppes et projets"],
+  ["/abonnements", "↻", "Mes abonnements", "Mesurer leur coût et repérer les services à revoir"],
+  ["/regles", "⚡", "Règles automatiques", "Ranger les prochaines opérations sans y penser"],
   ["/cloture", "✓", "Clôturer mon mois", "Faire le point et repartir sur une base saine"],
-  ["/reglages", "↗", "Règles & abonnements", "Automatiser les catégories et surveiller tes prélèvements"],
+  ["/reglages", "↗", "Réglages & données", "Importer, sauvegarder et régler l’application"],
 ];
 
 export default function CoachPage() {

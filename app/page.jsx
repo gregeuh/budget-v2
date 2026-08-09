@@ -169,6 +169,15 @@ export default function Accueil() {
         </section>
       )}
 
+      <section className="rounded-v3-l border border-ui-hairline bg-ui-surface-floating p-4 shadow-v3-soft">
+        <div className="flex items-start justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-[.12em] text-marque">Ton espace d’organisation</p><h2 className="mt-1 font-semibold">Décider plus vite</h2><p className="mt-1 text-xs leading-4 text-sourdine">Prépare le mois, traite les alertes et automatise ce qui revient.</p></div><Link href="/pilotage" className="shrink-0 rounded-pill bg-marque-pale px-3 py-2 text-xs font-semibold text-marque-texte">Tout voir</Link></div>
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          <Link href="/plan" className="rounded-v3-s bg-ui-surface-raised p-2.5 text-center active:scale-[.98]"><span className="block text-lg">☷</span><span className="mt-1 block text-[11px] font-semibold">Plan</span></Link>
+          <Link href="/inbox" className="rounded-v3-s bg-ui-surface-raised p-2.5 text-center active:scale-[.98]"><span className="block text-lg">◉</span><span className="mt-1 block text-[11px] font-semibold">À traiter</span></Link>
+          <Link href="/abonnements" className="rounded-v3-s bg-ui-surface-raised p-2.5 text-center active:scale-[.98]"><span className="block text-lg">↻</span><span className="mt-1 block text-[11px] font-semibold">Abonnements</span></Link>
+        </div>
+      </section>
+
       <button
         onClick={() => setRechercheOuverte(true)}
         className="flex w-full items-center gap-2.5 rounded-pill border border-bordure bg-carte px-4 py-2.5 text-left text-sm text-sourdine shadow-carte active:scale-[0.99] transition-transform"

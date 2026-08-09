@@ -7,6 +7,11 @@
   "background_color": "#F2F2F7",
   "theme_color": "#F2F2F7",
   "lang": "fr",
+  "shortcuts": [
+    { "name": "Ce mois-ci", "short_name": "Ce mois", "description": "Tes échéances et priorités", "url": "/mois" },
+    { "name": "Prévisions", "short_name": "Prévisions", "description": "Simuler une dépense", "url": "/previsions" },
+    { "name": "Opérations", "short_name": "Opérations", "description": "Consulter tes opérations", "url": "/transactions" }
+  ],
   "icons": [
     { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },

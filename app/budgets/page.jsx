@@ -83,6 +83,9 @@ export default function Budgets() {
     () => calculerProjection({ comptes, soldes, transactions, recurrentes, profil }),
     [comptes, soldes, transactions, recurrentes, profil]
   );
+  const finDuMois = new Date(`${mois}-01T12:00:00`);
+  finDuMois.setMonth(finDuMois.getMonth() + 1, 0);
+  const joursRestants = Math.max(1, Math.ceil((finDuMois.getTime() - new Date(`${aujourdhui()}T12:00:00`).getTime()) / 86400000) + 1);
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("edit") === "1") setEdition(true);
@@ -152,6 +155,7 @@ export default function Budgets() {
               const couleur = pct >= 100 ? "var(--corail)" : pct >= 80 ? "var(--beurre)" : "var(--menthe)";
               const restant = limite - reel;
               const couleurEtat = pct >= 100 ? "text-corail" : pct >= 80 ? "text-beurre-texte" : "text-menthe-texte";
+              const rythmeHebdo = restant > 0 ? (restant / joursRestants) * 7 : 0;
               return (
                 <li key={cat}>
                   <button onClick={() => setFicheCat(cat)} className="tappable w-full rounded-v3-s bg-ui-surface-floating p-4 text-left shadow-v3-soft">
@@ -168,6 +172,7 @@ export default function Budgets() {
                       {restant >= 0 ? `Reste ${euros(restant)}` : `Dépassé de ${euros(Math.abs(restant))}`}
                     </span>
                   </div>
+                  {restant > 0 && <p className="mt-1.5 text-xs text-sourdine">Rythme conseillé : <strong className="tnum text-ui-text-primary">≈ {euros(rythmeHebdo)} / semaine</strong></p>}
                   </button>
                 </li>
               );

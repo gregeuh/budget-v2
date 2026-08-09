@@ -76,7 +76,7 @@ export default function AppShell({ children }) {
   }, []);
 
   // La page entre du côté vers lequel on navigue, comme dans les apps natives.
-  const ORDRE = ["/", "/patrimoine", "/comptes", "/pilotage", "/mois", "/budgets", "/statistiques", "/calendrier", "/previsions", "/inbox", "/cloture", "/coach", "/conseils", "/controle", "/reglages"];
+  const ORDRE = ["/", "/patrimoine", "/comptes", "/pilotage", "/mois", "/plan", "/budgets", "/statistiques", "/calendrier", "/previsions", "/inbox", "/cloture", "/abonnements", "/regles", "/coach", "/conseils", "/controle", "/reglages"];
   const cheminPrecedent = useRef(chemin);
   const rang = (c) => {
     const i = ORDRE.indexOf(c);

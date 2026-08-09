@@ -21,6 +21,8 @@ export default function ActionsRapides({ onFermer, onChoisir }) {
     </div>
     <div className="mt-5 grid grid-cols-2 gap-2 border-t border-ui-hairline pt-4">
       <Link href="/transactions" onClick={onFermer} className="rounded-v3-s bg-ui-surface-raised px-3 py-3 text-center text-sm font-semibold">Voir les opérations</Link>
+      <Link href="/plan" onClick={onFermer} className="rounded-v3-s bg-marque-pale px-3 py-3 text-center text-sm font-semibold text-marque-texte">Préparer mon mois</Link>
+      <Link href="/previsions" onClick={onFermer} className="rounded-v3-s bg-ui-surface-raised px-3 py-3 text-center text-sm font-semibold">Simuler une dépense</Link>
       <Link href="/reglages" onClick={onFermer} className="rounded-v3-s bg-ui-surface-raised px-3 py-3 text-center text-sm font-semibold">Importer un relevé</Link>
     </div>
   </Sheet>;

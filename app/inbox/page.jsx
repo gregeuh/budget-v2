@@ -38,8 +38,8 @@ export default function InboxPage() {
   const priorites = [];
   if (qualite.sansCategorie.length) priorites.push({ icone: "🏷️", titre: `${qualite.sansCategorie.length} opération${qualite.sansCategorie.length > 1 ? "s" : ""} à classer`, detail: "Une catégorie précise rend tes budgets et conseils fiables.", ton: "attention", href: "/transactions?categorie=autre" });
   if (qualite.doublons.length) priorites.push({ icone: "👯", titre: `${qualite.doublons.length} doublon${qualite.doublons.length > 1 ? "s" : ""} possible${qualite.doublons.length > 1 ? "s" : ""}`, detail: "Vérifie-les avant qu’ils ne faussent ton suivi.", ton: "urgent", href: "/transactions" });
-  if (abonnements.doublons.length) priorites.push({ icone: "🔁", titre: "Abonnements à comparer", detail: `${abonnements.doublons.length} famille${abonnements.doublons.length > 1 ? "s" : ""} semble${abonnements.doublons.length > 1 ? "nt" : ""} faire doublon.`, ton: "attention", href: "/reglages" });
-  if (abonnements.items.some((item) => item.dormant)) priorites.push({ icone: "💤", titre: "Abonnement possiblement oublié", detail: "Un prélèvement récurrent n’a plus été observé récemment.", ton: "attention", href: "/reglages" });
+  if (abonnements.doublons.length) priorites.push({ icone: "🔁", titre: "Abonnements à comparer", detail: `${abonnements.doublons.length} famille${abonnements.doublons.length > 1 ? "s" : ""} semble${abonnements.doublons.length > 1 ? "nt" : ""} faire doublon.`, ton: "attention", href: "/abonnements" });
+  if (abonnements.items.some((item) => item.dormant)) priorites.push({ icone: "💤", titre: "Abonnement possiblement oublié", detail: "Un prélèvement récurrent n’a plus été observé récemment.", ton: "attention", href: "/abonnements" });
 
   return <div className="space-y-5">
     <header>
@@ -48,12 +48,14 @@ export default function InboxPage() {
       <p className="mt-2 max-w-sm text-sm leading-5 text-sourdine">Les quelques décisions qui améliorent vraiment la qualité de ton budget.</p>
     </header>
 
+    <section className="grid grid-cols-3 gap-2" aria-label="Raccourcis de traitement"><Link href="/plan" className="rounded-v3-m bg-marque-pale p-3 text-center shadow-v3-soft"><span className="block text-lg">☷</span><span className="mt-1 block text-xs font-semibold text-marque-texte">Plan</span></Link><Link href="/abonnements" className="rounded-v3-m bg-beurre-pale p-3 text-center shadow-v3-soft"><span className="block text-lg">↻</span><span className="mt-1 block text-xs font-semibold text-beurre-texte">Abonnements</span></Link><Link href="/regles" className="rounded-v3-m bg-menthe-pale p-3 text-center shadow-v3-soft"><span className="block text-lg">⚡</span><span className="mt-1 block text-xs font-semibold text-menthe-texte">Règles</span></Link></section>
+
     {priorites.length ? <section className="space-y-2.5">{priorites.map((item) => <Ligne key={item.titre} {...item} />)}</section> : <section className="rounded-v3-l bg-menthe-pale p-5 shadow-v3-soft"><p className="text-2xl">✨</p><h2 className="mt-2 font-semibold">Tout est sous contrôle</h2><p className="mt-1 text-sm leading-5 text-menthe-texte">Tes opérations sont rangées et aucune anomalie importante n’attend ton attention.</p></section>}
 
     <section><p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-sourdine">Ce que tes données racontent</p><Ligne {...signal} /></section>
 
     <section className="rounded-v3-l bg-ui-surface-floating p-4 shadow-v3-soft">
-      <div className="flex items-baseline justify-between gap-3"><h2 className="font-semibold">Tes automatisations</h2><Link href="/reglages" className="text-sm font-semibold text-marque">Gérer</Link></div>
+      <div className="flex items-baseline justify-between gap-3"><h2 className="font-semibold">Tes automatisations</h2><Link href="/regles" className="text-sm font-semibold text-marque">Gérer</Link></div>
       <div className="mt-3 grid grid-cols-2 gap-2 border-t border-bordure pt-3">
         <div><p className="text-2xl font-bold tnum">{(profil.reglesAuto || []).length}</p><p className="mt-0.5 text-xs text-sourdine">règle{(profil.reglesAuto || []).length > 1 ? "s" : ""} active{(profil.reglesAuto || []).length > 1 ? "s" : ""}</p></div>
         <div><p className="text-2xl font-bold tnum">{abonnements.items.length}</p><p className="mt-0.5 text-xs text-sourdine">abonnement{abonnements.items.length > 1 ? "s" : ""} détecté{abonnements.items.length > 1 ? "s" : ""}</p></div>
@@ -65,7 +67,7 @@ export default function InboxPage() {
       <Ligne icone="🔮" titre="Prévisions actionnables" detail="Teste l’impact d’une dépense avant de la faire, sans toucher à tes données." ton="positif" href="/previsions" />
       <Ligne icone="🗓️" titre="Calendrier financier" detail="Visualise tes dépenses, échéances et récurrences jour par jour." href="/calendrier" />
       <Ligne icone="📅" titre="Clôturer le mois précédent" detail="Conserve un bilan de référence et repars avec des budgets à jour." href="/cloture" />
-      <Ligne icone="🔁" titre="Centre des abonnements" detail="Repère les doublons, les services dormants et leur coût annuel." href="/reglages" />
+      <Ligne icone="🔁" titre="Centre des abonnements" detail="Repère les doublons, les services dormants et leur coût annuel." href="/abonnements" />
       <Ligne icone="🎯" titre="Projets d’épargne" detail="Relie tes objectifs à une contribution concrète chaque mois." href="/budgets" />
     </section>
   </div>;
