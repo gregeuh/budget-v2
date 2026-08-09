@@ -109,8 +109,11 @@ export default function Transactions() {
     try { setAstuce(!localStorage.getItem("astuce-swipe")); } catch {}
   }, []);
   useEffect(() => {
-    const categorieDemandee = new URLSearchParams(window.location.search).get("categorie");
+    const params = new URLSearchParams(window.location.search);
+    const categorieDemandee = params.get("categorie");
+    const rechercheDemandee = params.get("recherche");
     if (categorieDemandee && categories[categorieDemandee]) setCatFiltre(categorieDemandee);
+    if (rechercheDemandee) setRecherche(rechercheDemandee);
   }, [categories]);
   const fermerAstuce = () => {
     setAstuce(false);

@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useBudget } from "@/lib/store";
 import { analyserQualiteDonnees } from "@/lib/qualiteDonnees";
 import { auditerDepenses } from "@/lib/audit";
-import { euros } from "@/lib/format";
+import { euros, moisDecaleLocal } from "@/lib/format";
+import { statsMoisBudgetaire } from "@/lib/conseils";
 
 function Ligne({ icone, titre, detail, ton = "neutre", href }) {
   const couleurs = {
@@ -26,6 +27,14 @@ export default function InboxPage() {
   const { transactions, categories, recurrentes, profil } = useBudget();
   const qualite = useMemo(() => analyserQualiteDonnees(transactions, categories), [transactions, categories]);
   const abonnements = useMemo(() => auditerDepenses({ transactions, recurrentes }, { revenuMensuel: profil.revenuMensuel || 0 }), [transactions, recurrentes, profil.revenuMensuel]);
+  const signal = useMemo(() => {
+    const actuel = statsMoisBudgetaire(transactions, moisDecaleLocal(0), profil.jourSalaire);
+    const precedent = statsMoisBudgetaire(transactions, moisDecaleLocal(-1), profil.jourSalaire);
+    const ecart = actuel.depenses - precedent.depenses;
+    if (precedent.depenses > 0 && ecart > 40) return { icone: "📈", titre: "Dépenses en hausse", detail: `+${euros(ecart)} par rapport au mois dernier. Regarde les catégories qui expliquent l’écart.`, href: "/statistiques", ton: "attention" };
+    if (precedent.depenses > 0 && ecart < -40) return { icone: "🌱", titre: "Rythme de dépense en baisse", detail: `${euros(Math.abs(ecart))} de moins que le mois dernier à la même période.`, href: "/statistiques", ton: "positif" };
+    return { icone: "🧠", titre: "Signal financier local", detail: "Tes prochaines alertes apparaîtront ici selon tes habitudes, budgets et échéances.", href: "/statistiques", ton: "neutre" };
+  }, [transactions, profil.jourSalaire]);
   const priorites = [];
   if (qualite.sansCategorie.length) priorites.push({ icone: "🏷️", titre: `${qualite.sansCategorie.length} opération${qualite.sansCategorie.length > 1 ? "s" : ""} à classer`, detail: "Une catégorie précise rend tes budgets et conseils fiables.", ton: "attention", href: "/transactions?categorie=autre" });
   if (qualite.doublons.length) priorites.push({ icone: "👯", titre: `${qualite.doublons.length} doublon${qualite.doublons.length > 1 ? "s" : ""} possible${qualite.doublons.length > 1 ? "s" : ""}`, detail: "Vérifie-les avant qu’ils ne faussent ton suivi.", ton: "urgent", href: "/transactions" });
@@ -41,6 +50,8 @@ export default function InboxPage() {
 
     {priorites.length ? <section className="space-y-2.5">{priorites.map((item) => <Ligne key={item.titre} {...item} />)}</section> : <section className="rounded-v3-l bg-menthe-pale p-5 shadow-v3-soft"><p className="text-2xl">✨</p><h2 className="mt-2 font-semibold">Tout est sous contrôle</h2><p className="mt-1 text-sm leading-5 text-menthe-texte">Tes opérations sont rangées et aucune anomalie importante n’attend ton attention.</p></section>}
 
+    <section><p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-sourdine">Ce que tes données racontent</p><Ligne {...signal} /></section>
+
     <section className="rounded-v3-l bg-ui-surface-floating p-4 shadow-v3-soft">
       <div className="flex items-baseline justify-between gap-3"><h2 className="font-semibold">Tes automatisations</h2><Link href="/reglages" className="text-sm font-semibold text-marque">Gérer</Link></div>
       <div className="mt-3 grid grid-cols-2 gap-2 border-t border-bordure pt-3">
@@ -52,6 +63,7 @@ export default function InboxPage() {
 
     <section className="space-y-2.5">
       <Ligne icone="🔮" titre="Prévisions actionnables" detail="Teste l’impact d’une dépense avant de la faire, sans toucher à tes données." ton="positif" href="/previsions" />
+      <Ligne icone="🗓️" titre="Calendrier financier" detail="Visualise tes dépenses, échéances et récurrences jour par jour." href="/calendrier" />
       <Ligne icone="📅" titre="Clôturer le mois précédent" detail="Conserve un bilan de référence et repars avec des budgets à jour." href="/cloture" />
       <Ligne icone="🔁" titre="Centre des abonnements" detail="Repère les doublons, les services dormants et leur coût annuel." href="/reglages" />
       <Ligne icone="🎯" titre="Projets d’épargne" detail="Relie tes objectifs à une contribution concrète chaque mois." href="/budgets" />

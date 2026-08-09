@@ -13,6 +13,8 @@ import TirerPourRafraichir from "./TirerPourRafraichir";
 // Ces écrans ne sont utiles qu'à la demande : les isoler évite de les inclure
 // dans le premier rendu de chaque page, surtout sur réseau mobile.
 const AddSheet = dynamic(() => import("./AddSheet"), { ssr: false });
+const ActionsRapides = dynamic(() => import("./ActionsRapides"), { ssr: false });
+const RechercheGlobale = dynamic(() => import("./RechercheGlobale"), { ssr: false });
 const Login = dynamic(() => import("./Login"), { ssr: false });
 const Onboarding = dynamic(() => import("./Onboarding"), { ssr: false });
 const DrawerReglages = dynamic(() => import("./DrawerReglages"), { ssr: false });
@@ -56,10 +58,25 @@ export default function AppShell({ children }) {
     if (celebration > 0) setFete(true);
   }, [celebration]);
   const [ajoutOuvert, setAjoutOuvert] = useState(false);
+  const [actionsOuvertes, setActionsOuvertes] = useState(false);
+  const [modeAjout, setModeAjout] = useState("depense");
+  const [rechercheOuverte, setRechercheOuverte] = useState(false);
+  const [confidentiel, setConfidentiel] = useState(false);
   const chemin = usePathname();
 
+  useEffect(() => {
+    const ouvrirRecherche = (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setRechercheOuverte(true);
+      }
+    };
+    window.addEventListener("keydown", ouvrirRecherche);
+    return () => window.removeEventListener("keydown", ouvrirRecherche);
+  }, []);
+
   // La page entre du côté vers lequel on navigue, comme dans les apps natives.
-  const ORDRE = ["/", "/comptes", "/budgets", "/statistiques", "/conseils"];
+  const ORDRE = ["/", "/patrimoine", "/comptes", "/pilotage", "/budgets", "/statistiques", "/calendrier", "/previsions", "/inbox", "/cloture", "/coach", "/conseils", "/controle", "/reglages"];
   const cheminPrecedent = useRef(chemin);
   const rang = (c) => {
     const i = ORDRE.indexOf(c);
@@ -115,11 +132,18 @@ export default function AppShell({ children }) {
           ⚠️ {erreurInit}
         </div>
       )}
-      <main id="contenu-principal" key={chemin} tabIndex={-1} className={`relative z-10 ${sens} px-4 pt-6`} style={{ paddingBottom: "calc(var(--safe-bottom) + 7.5rem)" }}>
+      <main id="contenu-principal" key={chemin} tabIndex={-1} className={`relative z-10 ${sens} px-4 pt-6 ${confidentiel ? "select-none blur-xl" : ""}`} style={{ paddingBottom: "calc(var(--safe-bottom) + 7.5rem)" }} aria-hidden={confidentiel}>
         <div className="page-content">{children}</div>
       </main>
-      <TabBar onAjouter={() => setAjoutOuvert(true)} ajoutOuvert={ajoutOuvert} />
-      {ajoutOuvert && <AddSheet onFermer={() => setAjoutOuvert(false)} />}
+      <TabBar onAjouter={() => setActionsOuvertes(true)} ajoutOuvert={actionsOuvertes || ajoutOuvert} />
+      <button onClick={() => setRechercheOuverte(true)} aria-label="Rechercher dans Pécule" className="fixed right-4 z-30 flex h-10 w-10 items-center justify-center rounded-full bg-ui-surface-floating text-xl text-ui-text-primary shadow-v3-medium" style={{ top: "calc(var(--safe-top) + 12px)" }}>⌕</button>
+      <button onClick={() => setConfidentiel((actif) => !actif)} aria-pressed={confidentiel} className="fixed right-4 z-30 rounded-pill bg-ui-surface-floating px-3.5 py-2.5 text-xs font-semibold text-ui-text-primary shadow-v3-medium" style={{ bottom: "calc(var(--safe-bottom) + 6.5rem)" }}>
+        {confidentiel ? "◉ Afficher" : "◌ Masquer"}
+      </button>
+      {confidentiel && <button onClick={() => setConfidentiel(false)} className="fixed inset-0 z-20 flex items-center justify-center bg-encre/15 px-8 text-center" aria-label="Afficher de nouveau mes données"><span className="rounded-v3-l bg-ui-surface-floating p-5 text-sm font-semibold shadow-v3-medium">Mode confidentialité actif<br /><span className="mt-1 block text-xs font-normal text-sourdine">Touchez pour afficher tes montants.</span></span></button>}
+      {actionsOuvertes && <ActionsRapides onFermer={() => setActionsOuvertes(false)} onChoisir={(mode) => { setModeAjout(mode); setActionsOuvertes(false); setAjoutOuvert(true); }} />}
+      {rechercheOuverte && <RechercheGlobale onFermer={() => setRechercheOuverte(false)} />}
+      {ajoutOuvert && <AddSheet modeInitial={modeAjout} onFermer={() => setAjoutOuvert(false)} />}
       {reglagesOuverts && <DrawerReglages />}
       <Confettis actif={fete} onFini={() => setFete(false)} />
     </div>

@@ -5,10 +5,10 @@ import { usePathname } from "next/navigation";
 
 const ONGLETS = [
   { href: "/", label: "Accueil", icone: "accueil", couleur: "#007AFF", pale: "rgba(0,122,255,.12)" },
-  { href: "/comptes", label: "Comptes", icone: "comptes", couleur: "#5856D6", pale: "rgba(88,86,214,.13)" },
+  { href: "/patrimoine", label: "Comptes", icone: "comptes", couleur: "#5856D6", pale: "rgba(88,86,214,.13)" },
   { href: "AJOUT" },
-  { href: "/budgets", label: "Pilotage", icone: "budgets", couleur: "#FF9500", pale: "rgba(255,149,0,.14)" },
-  { href: "/conseils", label: "Conseils", icone: "conseils", couleur: "#AF52DE", pale: "rgba(175,82,222,.13)" },
+  { href: "/pilotage", label: "Pilotage", icone: "budgets", couleur: "#FF9500", pale: "rgba(255,149,0,.14)" },
+  { href: "/coach", label: "Coach", icone: "conseils", couleur: "#AF52DE", pale: "rgba(175,82,222,.13)" },
 ];
 
 function IconeOnglet({ nom }) {
@@ -45,7 +45,10 @@ export default function TabBar({ onAjouter, ajoutOuvert = false }) {
             </button>
           ) : (
             (() => {
-              const actif = chemin === o.href || (o.href === "/budgets" && chemin === "/statistiques");
+              const pagesPilotage = ["/pilotage", "/budgets", "/statistiques", "/previsions", "/calendrier", "/inbox", "/cloture"];
+              const pagesPatrimoine = ["/patrimoine", "/comptes"];
+              const pagesCoach = ["/coach", "/conseils"];
+              const actif = chemin === o.href || (o.href === "/pilotage" && pagesPilotage.includes(chemin)) || (o.href === "/patrimoine" && pagesPatrimoine.includes(chemin)) || (o.href === "/coach" && pagesCoach.includes(chemin));
               return <Link
               key={o.href}
               href={o.href}

@@ -50,10 +50,10 @@ const MODES = [
 ];
 
 
-export default function AddSheet({ onFermer }) {
+export default function AddSheet({ onFermer, modeInitial = "depense" }) {
   const { comptes, transactions, categories, profil, sauverApp, ajouterTransaction, ajouterRecurrente, virement } = useBudget();
   const [etape, setEtape] = useState(1);
-  const [mode, setMode] = useState("depense");
+  const [mode, setMode] = useState(modeInitial);
   const [montant, setMontant] = useState("");
   const [libelle, setLibelle] = useState("");
   const [categorie, setCategorie] = useState("courses");
@@ -88,6 +88,34 @@ export default function AddSheet({ onFermer }) {
 
   const secouer = () => setSecousse((s) => s + 1);
 
+  // Secours local, gratuit et privé : les phrases simples restent exploitables
+  // même sans clé IA ni réseau. L'API enrichit ce résultat lorsqu'elle existe.
+  const interpreterLocalement = () => {
+    const source = phrase.trim();
+    const montantTrouve = source.match(/(?:^|\s)(\d+(?:[,.]\d{1,2}?))(?:\s?€|\s|$)/);
+    const montantSimple = source.match(/(?:^|\s)(\d+)(?:\s?€|\s|$)/);
+    const brut = montantTrouve?.[1] || montantSimple?.[1];
+    const montantLocal = parseFloat(String(brut || "").replace(",", "."));
+    if (!Number.isFinite(montantLocal) || montantLocal <= 0) return false;
+    const texte = source.toLowerCase();
+    const dictionnaire = [
+      ["courses", ["carrefour", "auchan", "leclerc", "monoprix", "intermarché", "courses"]],
+      ["resto", ["restaurant", "café", "bar", "uber eats", "deliveroo", "pizza"]],
+      ["transport", ["uber", "bolt", "sncf", "ratp", "essence", "parking"]],
+      ["abonnements", ["netflix", "spotify", "apple", "canal", "abonnement"]],
+      ["shopping", ["zara", "amazon", "vinted", "ikea", "shopping"]],
+      ["sante", ["pharmacie", "médecin", "docteur", "santé"]],
+    ];
+    const trouve = dictionnaire.find(([, mots]) => mots.some((mot) => texte.includes(mot)));
+    const libelleLocal = source.replace(/\d+(?:[,.]\d{1,2})?\s?€/g, "").replace(/\b(aujourd'hui|hier)\b/gi, "").trim();
+    setMontant(String(montantLocal).replace(".", ","));
+    if (trouve && categories[trouve[0]]) setCategorie(trouve[0]);
+    if (libelleLocal) { setLibelle(libelleLocal); appliquerHabitude(libelleLocal); }
+    setNoteIA("Analyse locale appliquée : tu peux simplement vérifier puis enregistrer.");
+    setPhrase(""); setEtape(2);
+    return true;
+  };
+
   // Interprète une phrase ("15€ courses carrefour hier") et pré-remplit le formulaire
   const interpreter = async () => {
     if (!phrase.trim() || analyseEnCours) return;
@@ -107,7 +135,8 @@ export default function AddSheet({ onFermer }) {
       });
       if (!r.ok) {
         const d = await r.json().catch(() => ({}));
-        setErreurIA(r.status === 503 ? "Active l'IA (clé API) pour la saisie intelligente." : d.erreur || "Interprétation impossible.");
+        if (interpreterLocalement()) return;
+        setErreurIA(r.status === 503 ? "Ajoute un montant, par exemple « 18,50 € Carrefour », pour utiliser l’analyse locale gratuite." : d.erreur || "Interprétation impossible.");
         return;
       }
       const d = await r.json();
@@ -130,7 +159,7 @@ export default function AddSheet({ onFermer }) {
       if (d.montant > 0) setEtape(2);
       else secouer();
     } catch {
-      setErreurIA("Connexion impossible.");
+      if (!interpreterLocalement()) setErreurIA("Connexion impossible. Essaie une phrase comme « 18,50 € Carrefour » : l’analyse locale fonctionne aussi hors ligne.");
     } finally {
       setAnalyseEnCours(false);
     }
