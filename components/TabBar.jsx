@@ -45,7 +45,7 @@ export default function TabBar({ onAjouter, ajoutOuvert = false }) {
             </button>
           ) : (
             (() => {
-              const pagesPilotage = ["/pilotage", "/budgets", "/statistiques", "/previsions", "/calendrier", "/inbox", "/cloture"];
+              const pagesPilotage = ["/pilotage", "/mois", "/budgets", "/statistiques", "/previsions", "/calendrier", "/inbox", "/cloture"];
               const pagesPatrimoine = ["/patrimoine", "/comptes"];
               const pagesCoach = ["/coach", "/conseils"];
               const actif = chemin === o.href || (o.href === "/pilotage" && pagesPilotage.includes(chemin)) || (o.href === "/patrimoine" && pagesPatrimoine.includes(chemin)) || (o.href === "/coach" && pagesCoach.includes(chemin));

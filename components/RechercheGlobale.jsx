@@ -7,6 +7,7 @@ import Sheet from "./Sheet";
 
 const DESTINATIONS = [
   { href: "/", titre: "Accueil", detail: "Vue du mois et reste à vivre", icone: "⌂", mots: "accueil mois reste vivre" },
+  { href: "/mois", titre: "Ce mois-ci", detail: "Échéances, reste à vivre et priorités", icone: "☀︎", mots: "mois aujourd hui paie priorite echeance" },
   { href: "/patrimoine", titre: "Patrimoine", detail: "Comptes, épargne et crédits", icone: "▣", mots: "comptes epargne livret credit revolut swile" },
   { href: "/pilotage", titre: "Pilotage", detail: "Prévisions, calendrier et statistiques", icone: "◉", mots: "budget calendrier statistiques prevision cloture" },
   { href: "/coach", titre: "Coach", detail: "Conseils, alertes et règles", icone: "✦", mots: "conseil coach alerte regle abonnement boite" },
