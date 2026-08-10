@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Toutes les données métier sont sous users/{uid}/… : un utilisateur ne peut
+    // lire ou modifier que ses propres documents, y compris les sous-collections.
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}

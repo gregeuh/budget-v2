@@ -55,7 +55,7 @@ Tu peux réutiliser ton projet Firebase existant de « Mon Budget » :
 1. [Console Firebase](https://console.firebase.google.com) → ton projet → ⚙️ **Paramètres du projet → Tes applications** → récupère la config web (`apiKey`, `authDomain`, etc.).
 2. Dans **Authentication → Sign-in method**, active **E-mail/Mot de passe** et **Google** (pour le bouton « Continuer avec Google », choisis simplement un email d'assistance quand la console le demande).
 3. **Authentication → Settings → Domaines autorisés** : ajoute ton domaine Vercel (ex : `budget-v2.vercel.app`).
-4. **Firestore → Règles** : l'app écrit dans `users/{uid}/…`, ces règles suffisent :
+4. **Firestore → Règles** : l'app écrit dans `users/{uid}/…`, publie les règles versionnées dans [`firestore.rules`](firestore.rules) (ou colle leur contenu dans la console) :
 
 ```
 rules_version = '2';
