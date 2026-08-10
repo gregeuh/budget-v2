@@ -7,6 +7,7 @@ import { euros, toutesCategories } from "@/lib/format";
 import { auditerDepenses } from "@/lib/audit";
 import Sheet from "./Sheet";
 import PointsSautillants from "./PointsSautillants";
+import { fetchSecurise } from "@/lib/api-client";
 
 const PRIORITE = {
   haute: { label: "Priorité", couleur: "bg-corail-pale text-corail-texte" },
@@ -31,7 +32,7 @@ export default function AuditDepenses({ onFermer }) {
     setAnalyse(true);
     setErreur("");
     try {
-      const r = await fetch("/api/audit", {
+      const r = await fetchSecurise("/api/audit", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

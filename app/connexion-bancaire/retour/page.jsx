@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useBudget } from "@/lib/store";
 import { euros } from "@/lib/format";
+import { fetchSecurise } from "@/lib/api-client";
 
 export default function RetourConnexionBancaire() {
   const searchParams = useSearchParams();
@@ -28,7 +29,7 @@ export default function RetourConnexionBancaire() {
   useEffect(() => {
     if (erreurPowens) { setEtat("erreur"); return; }
     const state = searchParams.get("state") || "";
-    fetch(`/api/powens/sync?state=${encodeURIComponent(state)}`)
+    fetchSecurise(`/api/powens/sync?state=${encodeURIComponent(state)}`)
       .then(async (response) => ({ ok: response.ok, body: await response.json() }))
       .then(({ ok, body }) => { if (!ok) throw new Error(body.erreur); setData(body); setEtat("succes"); })
       .catch(() => setEtat("attente"));

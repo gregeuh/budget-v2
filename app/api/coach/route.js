@@ -18,6 +18,8 @@ Le fond (reste solide sous le ton léger) :
 - Ne demande jamais d'infos personnelles identifiantes.`;
 
 export async function POST(req) {
+  const securite = await protegerRoute(req, { scope: "ia", limit: 12 });
+  if (securite.response) return securite.response;
   const cle = process.env.ANTHROPIC_API_KEY;
   if (!cle) {
     return Response.json({
@@ -70,3 +72,4 @@ export async function POST(req) {
     return Response.json({ erreur: "Le coach est injoignable pour le moment." }, { status: 502 });
   }
 }
+import { protegerRoute } from "@/lib/api-security.server";

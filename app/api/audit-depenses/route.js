@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { protegerRoute } from "@/lib/api-security.server";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -25,6 +26,8 @@ Réponds UNIQUEMENT avec un JSON valide, sans texte ni Markdown autour :
 Règles : maximum 5 suggestions, triées par économie décroissante. "economieAnnuelle" est un entier en euros (0 si non chiffrable). N'invente pas de montants : base-toi sur les données fournies.`;
 
 export async function POST(req) {
+  const securite = await protegerRoute(req, { scope: "ia", limit: 12 });
+  if (securite.response) return securite.response;
   if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json({ erreur: "Clé API non configurée" }, { status: 503 });
   }

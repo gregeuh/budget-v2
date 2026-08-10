@@ -7,6 +7,7 @@ import { MODES_SALAIRE } from "@/lib/joursOuvres";
 import { detecterRecurrences, normaliserLibelle } from "@/lib/detection";
 import Sheet from "./Sheet";
 import PointsSautillants from "./PointsSautillants";
+import { fetchSecurise } from "@/lib/api-client";
 
 const CHARGES_MANUELLES = [
   { cle: "loyer", icone: "🏠", label: "Loyer / crédit immo", categorie: "logement" },
@@ -116,7 +117,7 @@ export default function AssistantConfig({ onFermer }) {
         .slice(0, 200)
         .map((t) => ({ date: t.date, montant: t.montant, libelle: (t.libelle || "").slice(0, 40), categorie: t.categorie }));
 
-      const r = await fetch("/api/analyser", {
+      const r = await fetchSecurise("/api/analyser", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

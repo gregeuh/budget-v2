@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { protegerRoute } from "@/lib/api-security.server";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -41,6 +42,8 @@ Règles STRICTES :
 - N'invente RIEN : chaque récurrence doit s'appuyer sur des opérations réelles fournies`;
 
 export async function POST(req) {
+  const securite = await protegerRoute(req, { scope: "ia", limit: 12 });
+  if (securite.response) return securite.response;
   if (!process.env.ANTHROPIC_API_KEY) {
     return NextResponse.json({ erreur: "Clé API non configurée" }, { status: 503 });
   }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Sheet from "@/components/Sheet";
+import { fetchSecurise } from "@/lib/api-client";
 
 export default function ConnexionBancaire({ onFermer }) {
   const [etat, setEtat] = useState("repos");
@@ -10,7 +11,7 @@ export default function ConnexionBancaire({ onFermer }) {
   const connecter = async () => {
     setEtat("chargement"); setErreur("");
     try {
-      const response = await fetch("/api/powens/connect", { method: "POST" });
+      const response = await fetchSecurise("/api/powens/connect", { method: "POST" });
       const data = await response.json();
       if (!response.ok || !data.url) throw new Error(data.erreur || "Connexion indisponible.");
       // Full-page navigation is recommended by Powens for iPhone app-to-app authentication.

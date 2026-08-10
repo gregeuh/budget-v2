@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
 import { powensCookieName, powensFetch, sameState, unsealPowensSession } from "@/lib/powens.server";
+import { protegerRoute } from "@/lib/api-security.server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(request) {
+  const securite = await protegerRoute(request, { scope: "powens-sync", limit: 10, windowMs: 10 * 60_000 });
+  if (securite.response) return securite.response;
   try {
     const session = unsealPowensSession(request.cookies.get(powensCookieName())?.value);
     const state = new URL(request.url).searchParams.get("state");
-    if (!session || !sameState(session.state, state)) {
+    if (!session || session.uid !== securite.uid || !sameState(session.state, state)) {
       return NextResponse.json({ erreur: "Session bancaire expirée. Relance la connexion depuis Pécule." }, { status: 401 });
     }
 
@@ -33,9 +36,12 @@ export async function GET(request) {
       label: transaction.wording || transaction.simplified_wording || transaction.original_wording || "Opération bancaire",
       coming: Boolean(transaction.coming),
     }));
-    return NextResponse.json({ accounts, transactions });
+    const response = NextResponse.json({ accounts, transactions }, { headers: { "cache-control": "no-store" } });
+    // The short-lived Powens credential is no longer needed after this import preview.
+    response.cookies.delete(powensCookieName());
+    return response;
   } catch (error) {
     console.error("Powens sync:", error);
-    return NextResponse.json({ erreur: "La banque synchronise encore ses données. Réessaie dans quelques instants." }, { status: 502 });
+    return NextResponse.json({ erreur: "La banque synchronise encore ses données. Réessaie dans quelques instants." }, { status: 502, headers: { "cache-control": "no-store" } });
   }
 }

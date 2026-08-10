@@ -22,6 +22,8 @@ Règles STRICTES :
 - Réponds pour CHAQUE opération de la liste, dans le même ordre.`;
 
 export async function POST(req) {
+  const securite = await protegerRoute(req, { scope: "ia", limit: 12 });
+  if (securite.response) return securite.response;
   const cle = process.env.ANTHROPIC_API_KEY;
   if (!cle) {
     return Response.json({ erreur: "Rangement IA non activé (clé API manquante)." }, { status: 503 });
@@ -96,3 +98,4 @@ export async function POST(req) {
     return Response.json({ erreur: "Erreur serveur" }, { status: 500 });
   }
 }
+import { protegerRoute } from "@/lib/api-security.server";

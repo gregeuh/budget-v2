@@ -6,6 +6,7 @@ import { aujourdhui, prochaineOccurrence, CATEGORIES, definirCategoriesPerso, de
 import { appliquerAccent, ACCENT_DEFAUT } from "./themes";
 import { calculerSoldes } from "./soldes";
 import { estSauvegardePecule } from "./sauvegarde";
+import { fetchSecurise } from "./api-client";
 
 const Ctx = createContext(null);
 export const useBudget = () => useContext(Ctx);
@@ -57,7 +58,7 @@ export function DataProvider({ children }) {
   const lancerProjectionIA = useCallback(async (charge) => {
     setProjIA({ chargement: true, resultat: null, erreur: "" });
     try {
-      const r = await fetch("/api/projection", {
+      const r = await fetchSecurise("/api/projection", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(charge),

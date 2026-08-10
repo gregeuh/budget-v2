@@ -81,11 +81,15 @@ service cloud.firestore {
 
 6. **Deployments → ⋯ → Redeploy**. L'écran de connexion apparaît, les données sont synchronisées entre appareils.
 
+> Les fonctions IA et la connexion bancaire demandent désormais une session Firebase valide. C’est volontaire : une page publique ne peut plus consommer ta clé IA ni initier une connexion bancaire. Vérifie donc aussi que les règles Firestore ci-dessus sont bien publiées avant de passer en production.
+
 ### 4. Activer le coach IA (optionnel)
 
 1. Crée une clé API sur [console.anthropic.com](https://console.anthropic.com).
 2. Sur Vercel, ajoute la variable `ANTHROPIC_API_KEY` (sans préfixe `NEXT_PUBLIC_` — elle reste côté serveur).
 3. Redéploie. Le chat de l'onglet Conseils devient actif.
+
+Les requêtes IA sont limitées par utilisateur pour éviter les abus. Une protection distribuée (Vercel Firewall / rate limiting) reste recommandée avant une ouverture à un large public.
 
 Sans cette clé, les conseils automatiques fonctionnent quand même : seul le chat affiche un message d'activation.
 
