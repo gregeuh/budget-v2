@@ -120,7 +120,7 @@ export default function Accueil() {
         <button onClick={() => setReglagesOuverts(true)} aria-label="Ouvrir les réglages" className="tappable flex h-11 w-11 items-center justify-center rounded-full border border-ui-hairline bg-ui-surface-floating text-lg shadow-v3-soft backdrop-blur-v3-glass">⚙️</button>
       </header>
 
-      <section className="dashboard-in relative overflow-hidden rounded-v3-xl bg-[linear-gradient(145deg,var(--marque),var(--marque-texte))] px-5 py-5 sm:px-6 sm:py-6 text-white shadow-v3-medium">
+      <section className="dashboard-hero dashboard-in relative overflow-hidden rounded-v3-xl px-5 py-5 sm:px-6 sm:py-6 text-white">
         <div className="reflet opacity-70" />
         <div className="relative">
           <div className="flex items-start justify-between gap-4">

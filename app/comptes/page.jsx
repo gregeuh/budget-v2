@@ -183,7 +183,12 @@ export default function Comptes() {
                     <button
                       onClick={() => setDetailCompte(c)}
                       className="group w-full rounded-v3-m border border-ui-hairline bg-ui-surface-floating p-4 text-left shadow-v3-soft transition-all active:scale-[0.99]"
-                      style={{ borderLeftWidth: "4px", borderLeftColor: coul.vif }}
+                      style={{
+                        borderLeftWidth: "4px",
+                        borderLeftColor: coul.vif,
+                        backgroundImage: `linear-gradient(135deg, ${coul.fond}, transparent 58%)`,
+                        boxShadow: `0 2px 4px rgba(64, 45, 137, 0.05), 0 12px 28px ${coul.vif}1c`,
+                      }}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">

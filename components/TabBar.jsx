@@ -4,11 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const ONGLETS = [
-  { href: "/", label: "Accueil", icone: "accueil", couleur: "#007AFF", pale: "rgba(0,122,255,.12)" },
-  { href: "/patrimoine", label: "Espaces", icone: "comptes", couleur: "#5856D6", pale: "rgba(88,86,214,.13)" },
+  { href: "/", label: "Accueil", icone: "accueil", couleur: "#735FE4", pale: "rgba(115,95,228,.15)" },
+  { href: "/patrimoine", label: "Espaces", icone: "comptes", couleur: "#5974D7", pale: "rgba(89,116,215,.15)" },
   { href: "AJOUT" },
-  { href: "/pilotage", label: "Piloter", icone: "budgets", couleur: "#FF9500", pale: "rgba(255,149,0,.14)" },
-  { href: "/coach", label: "Conseils", icone: "conseils", couleur: "#AF52DE", pale: "rgba(175,82,222,.13)" },
+  { href: "/pilotage", label: "Piloter", icone: "budgets", couleur: "#D88245", pale: "rgba(216,130,69,.16)" },
+  { href: "/coach", label: "Conseils", icone: "conseils", couleur: "#A461C5", pale: "rgba(164,97,197,.15)" },
 ];
 
 function IconeOnglet({ nom }) {
