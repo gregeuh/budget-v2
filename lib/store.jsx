@@ -7,6 +7,7 @@ import { appliquerAccent, ACCENT_DEFAUT } from "./themes";
 import { calculerSoldes } from "./soldes";
 import { estSauvegardePecule } from "./sauvegarde";
 import { fetchSecurise } from "./api-client";
+import { appliquerReglesAuto } from "./reglesAuto";
 
 const Ctx = createContext(null);
 export const useBudget = () => useContext(Ctx);
@@ -254,14 +255,19 @@ export function DataProvider({ children }) {
   }, [modeLocal, fs]);
 
   const ajouterTransaction = useCallback(async (t, opts = {}) => {
-    const nouvelle = { date: aujourdhui(), ...t };
+    const regle = appliquerReglesAuto(t.libelle, profil.reglesAuto || [], categories);
+    const nouvelle = {
+      date: aujourdhui(),
+      ...t,
+      ...((!t.categorie || t.categorie === "autre") && regle ? { categorie: regle.categorie, regleAuto: regle.nom } : {}),
+    };
     if (modeLocal) setTransactions((l) => [...l, { id: genId(), ...nouvelle }]);
     else {
       const { addDoc, collection, base } = await fs();
       addDoc(collection(db, `${base}/transactions`), nouvelle).catch((e) => console.error("Écriture:", e));
     }
     if (!opts.silencieux) notifier(nouvelle.montant >= 0 ? "Revenu ajouté" : "Dépense ajoutée");
-  }, [modeLocal, fs, notifier]);
+  }, [modeLocal, fs, notifier, profil.reglesAuto]);
 
   const modifierTransaction = useCallback(async (id, maj, opts = {}) => {
     if (modeLocal) setTransactions((l) => l.map((t) => (t.id === id ? { ...t, ...maj } : t)));
@@ -741,6 +747,20 @@ export function DataProvider({ children }) {
     notifier("Catégories enregistrées", "🏷️");
   }, [modeLocal, fs, notifier]);
 
+  // Les règles ne sont pas qu'une suggestion dans l'écran d'ajout : elles peuvent
+  // aussi remettre à niveau l'historique, sans écraser une catégorie déjà choisie.
+  const appliquerReglesExistantes = useCallback(async () => {
+    const candidates = transactions
+      .map((transaction) => ({ transaction, regle: appliquerReglesAuto(transaction.libelle, profil.reglesAuto || [], categories) }))
+      .filter(({ transaction, regle }) => regle && (!transaction.categorie || transaction.categorie === "autre") && transaction.categorie !== regle.categorie);
+    for (const { transaction, regle } of candidates) {
+      await modifierTransaction(transaction.id, { categorie: regle.categorie, regleAuto: regle.nom }, { silencieux: true });
+    }
+    if (candidates.length) notifier(`${candidates.length} opération${candidates.length > 1 ? "s" : ""} classée${candidates.length > 1 ? "s" : ""} automatiquement`, "⚡");
+    else notifier("Aucune opération à mettre à jour", "✓");
+    return candidates.length;
+  }, [transactions, profil.reglesAuto, categories, modifierTransaction, notifier]);
+
   // ------- Soldes calculés -------
   const soldes = useMemo(() => calculerSoldes(comptes, transactions, aujourdhui()), [comptes, transactions]);
 
@@ -753,7 +773,7 @@ export function DataProvider({ children }) {
     rafraichir,
     comptes, transactions, budgets, profil, soldes, recurrentes, projets, credits,
     ajouterCompte, modifierCompte, supprimerCompte,
-    ajouterTransaction, modifierTransaction, supprimerTransaction, ajouterTransactionsLot, fusionnerTransactions, importerDonneesPowens,
+    ajouterTransaction, modifierTransaction, supprimerTransaction, ajouterTransactionsLot, fusionnerTransactions, importerDonneesPowens, appliquerReglesExistantes,
     annulerImport, dernierImport,
     ajouterRecurrente, modifierRecurrente, supprimerRecurrente,
     ajouterProjet, modifierProjet, supprimerProjet,

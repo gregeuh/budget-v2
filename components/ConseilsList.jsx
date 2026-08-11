@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useBudget } from "@/lib/store";
 import { genererConseils, resumePourCoach } from "@/lib/conseils";
 import { fetchSuivi } from "@/lib/journal";
@@ -25,6 +26,16 @@ const lireMasques = () => {
 // Clé stable d'un conseil IA à partir de son titre (pour le masquage).
 const cleDe = (c) =>
   c.cle || (c.titre || "").toLowerCase().replace(/[0-9%€.,\s]+/g, "-").replace(/^-|-$/g, "");
+
+function actionDuConseil(conseil) {
+  const texte = `${conseil.titre || ""} ${conseil.texte || ""}`.toLowerCase();
+  if (/abonnement|streaming|récurrent/.test(texte)) return { href: "/abonnements", label: "Voir mes abonnements" };
+  if (/budget|envies|besoins|catégorie/.test(texte)) return { href: "/budgets", label: "Ajuster le budget" };
+  if (/découvert|compte|livret|swile/.test(texte)) return { href: "/comptes", label: "Voir mes comptes" };
+  if (/projet|épargne|objectif/.test(texte)) return { href: "/budgets", label: "Voir mes objectifs" };
+  if (/endettement|mensualité|crédit/.test(texte)) return { href: "/conseils#tous-les-conseils", label: "Explorer le détail" };
+  return { href: "/pilotage", label: "Voir les options" };
+}
 
 export default function ConseilsList() {
   const donnees = useBudget();
@@ -172,6 +183,7 @@ export default function ConseilsList() {
       {!chargeIA && affiches.map((c, i) => {
         const cle = cleDe(c);
         const st = TONS[c.ton] || TONS.info;
+        const action = actionDuConseil(c);
         return (
           <div key={cle + i} className={`pop-in rounded-ios p-4 ${st.carte}`} style={{ animationDelay: `${i * 60}ms` }}>
             <div className="flex gap-3">
@@ -190,6 +202,7 @@ export default function ConseilsList() {
                   </button>
                 </div>
                 <p className="mt-0.5 text-sm text-encre opacity-75">{c.texte}</p>
+                <Link href={action.href} className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-marque">{action.label} <span aria-hidden="true">›</span></Link>
                 {c.parIA && <p className="mt-1 text-[11px] font-medium text-marque">✨ Écrit pour toi</p>}
               </div>
             </div>

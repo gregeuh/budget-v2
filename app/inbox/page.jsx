@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useBudget } from "@/lib/store";
 import { analyserQualiteDonnees } from "@/lib/qualiteDonnees";
@@ -24,7 +24,8 @@ function Ligne({ icone, titre, detail, ton = "neutre", href }) {
 }
 
 export default function InboxPage() {
-  const { transactions, categories, recurrentes, profil } = useBudget();
+  const { transactions, categories, recurrentes, profil, appliquerReglesExistantes } = useBudget();
+  const [applicationEnCours, setApplicationEnCours] = useState(false);
   const qualite = useMemo(() => analyserQualiteDonnees(transactions, categories), [transactions, categories]);
   const abonnements = useMemo(() => auditerDepenses({ transactions, recurrentes }, { revenuMensuel: profil.revenuMensuel || 0 }), [transactions, recurrentes, profil.revenuMensuel]);
   const signal = useMemo(() => {
@@ -40,6 +41,14 @@ export default function InboxPage() {
   if (qualite.doublons.length) priorites.push({ icone: "👯", titre: `${qualite.doublons.length} doublon${qualite.doublons.length > 1 ? "s" : ""} possible${qualite.doublons.length > 1 ? "s" : ""}`, detail: "Vérifie-les avant qu’ils ne faussent ton suivi.", ton: "urgent", href: "/transactions" });
   if (abonnements.doublons.length) priorites.push({ icone: "🔁", titre: "Abonnements à comparer", detail: `${abonnements.doublons.length} famille${abonnements.doublons.length > 1 ? "s" : ""} semble${abonnements.doublons.length > 1 ? "nt" : ""} faire doublon.`, ton: "attention", href: "/abonnements" });
   if (abonnements.items.some((item) => item.dormant)) priorites.push({ icone: "💤", titre: "Abonnement possiblement oublié", detail: "Un prélèvement récurrent n’a plus été observé récemment.", ton: "attention", href: "/abonnements" });
+  const reglesApplicables = useMemo(() => transactions.filter((transaction) => {
+    const libelle = (transaction.libelle || "").toLocaleLowerCase("fr");
+    return (!transaction.categorie || transaction.categorie === "autre") && (profil.reglesAuto || []).some((regle) => libelle.includes((regle.mot || "").toLocaleLowerCase("fr")));
+  }).length, [transactions, profil.reglesAuto]);
+  const appliquerMaintenant = async () => {
+    setApplicationEnCours(true);
+    try { await appliquerReglesExistantes(); } finally { setApplicationEnCours(false); }
+  };
 
   return <div className="space-y-5">
     <header>
@@ -49,6 +58,8 @@ export default function InboxPage() {
     </header>
 
     <section className="grid grid-cols-3 gap-2" aria-label="Raccourcis de traitement"><Link href="/plan" className="rounded-v3-m bg-marque-pale p-3 text-center shadow-v3-soft"><span className="block text-lg">☷</span><span className="mt-1 block text-xs font-semibold text-marque-texte">Plan</span></Link><Link href="/abonnements" className="rounded-v3-m bg-beurre-pale p-3 text-center shadow-v3-soft"><span className="block text-lg">↻</span><span className="mt-1 block text-xs font-semibold text-beurre-texte">Abonnements</span></Link><Link href="/regles" className="rounded-v3-m bg-menthe-pale p-3 text-center shadow-v3-soft"><span className="block text-lg">⚡</span><span className="mt-1 block text-xs font-semibold text-menthe-texte">Règles</span></Link></section>
+
+    {reglesApplicables > 0 && <section className="rounded-v3-l border border-menthe/25 bg-menthe-pale p-4 shadow-v3-soft"><div className="flex items-start gap-3"><span className="text-xl">⚡</span><div className="min-w-0 flex-1"><h2 className="text-sm font-semibold text-menthe-texte">Une action peut être automatisée</h2><p className="mt-1 text-xs leading-5 text-menthe-texte">Tes règles peuvent classer {reglesApplicables} opération{reglesApplicables > 1 ? "s" : ""} en attente, sans modifier les catégories que tu as déjà choisies.</p><button type="button" onClick={appliquerMaintenant} disabled={applicationEnCours} className="mt-3 rounded-pill bg-menthe px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">{applicationEnCours ? "Application…" : "Appliquer maintenant"}</button></div></div></section>}
 
     {priorites.length ? <section className="space-y-2.5">{priorites.map((item) => <Ligne key={item.titre} {...item} />)}</section> : <section className="rounded-v3-l bg-menthe-pale p-5 shadow-v3-soft"><p className="text-2xl">✨</p><h2 className="mt-2 font-semibold">Tout est sous contrôle</h2><p className="mt-1 text-sm leading-5 text-menthe-texte">Tes opérations sont rangées et aucune anomalie importante n’attend ton attention.</p></section>}
 
