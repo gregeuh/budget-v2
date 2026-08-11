@@ -144,8 +144,8 @@ export default function Transactions() {
   return (
     <div className="space-y-6">
       <header className="flex items-center justify-between px-1">
-        <div><p className="text-v3-caption font-medium text-ui-text-secondary">Suivi en temps réel</p><h1 className="text-v3-title font-semibold">Opérations</h1></div>
-        <button onClick={() => setImportOuvert(true)} className="tappable rounded-pill bg-marque-bouton px-4 py-2.5 text-sm font-semibold text-surMarque shadow-bouton">Importer</button>
+        <div><p className="text-v3-caption font-medium text-ui-text-secondary">Toutes tes entrées et sorties</p><h1 className="text-3xl font-bold tracking-tight">Transactions</h1></div>
+        <button onClick={() => setFiltresOuverts((ouvert) => !ouvert)} aria-label="Ouvrir les filtres" className={`tappable flex h-11 w-11 items-center justify-center rounded-2xl border text-xl shadow-v3-soft ${filtresOuverts ? "border-marque bg-marque-pale text-marque-texte" : "border-ui-hairline bg-ui-surface-floating"}`}>⌕</button>
       </header>
 
       <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
@@ -177,7 +177,7 @@ export default function Transactions() {
           autoCapitalize="none"
           autoCorrect="off"
           spellCheck={false}
-          placeholder="Rechercher (Carrefour, Netflix, courses…)"
+          placeholder="Rechercher une transaction"
           value={recherche}
           onChange={(e) => setRecherche(e.target.value)}
           className="w-full champ champ-pill bg-ui-surface-floating py-3 pl-10 pr-9 text-sm outline-none shadow-v3-soft"
@@ -287,7 +287,7 @@ export default function Transactions() {
 
       {/* Reste à vivre projeté */}
       {!recherche && !filtresActifs && (
-        <div className={`relative overflow-hidden rounded-v3-m p-4 sm:p-5 text-white shadow-v3-medium ${projection.reste < 0 ? "bg-[linear-gradient(145deg,var(--corail),var(--corail-bouton))]" : "bg-[linear-gradient(145deg,var(--marque),var(--marque-texte))]"}`}>
+        <div className={`relative overflow-hidden rounded-v3-m p-4 sm:p-5 text-white shadow-v3-medium ${projection.reste < 0 ? "bg-[linear-gradient(145deg,var(--corail),var(--corail-bouton))]" : "dashboard-hero"}`}>
           <div className="reflet opacity-60" />
           <div className="relative">
           <div className="flex items-start justify-between gap-3">
@@ -324,7 +324,7 @@ export default function Transactions() {
       {/* À venir */}
       {!recherche && !filtresActifs && aVenirAffiche.length > 0 && (
         <section>
-          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-sourdine">À venir</h2>
+          <div className="mb-2 flex items-center justify-between"><h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">À venir</h2><span className="text-xs font-semibold text-marque">Prévision</span></div>
           <ul className="space-y-2">
             {aVenirAffiche.map((t, i) =>
               t.virtuel ? (

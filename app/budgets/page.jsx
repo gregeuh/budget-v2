@@ -19,6 +19,11 @@ const REGLE = [
   { id: "epargne", label: "Épargne", cible: 20, couleur: "var(--menthe)" },
 ];
 
+function Anneau({ valeur, couleur }) {
+  const pct = Math.max(0, Math.min(100, Math.round(valeur)));
+  return <div className="budget-ring" style={{ "--ring-value": pct, "--ring-color": couleur }}><span>{pct}%</span></div>;
+}
+
 function FicheBudget({ onFermer }) {
   const { budgets, sauverApp, categories } = useBudget();
   const [locaux, setLocaux] = useState({ ...budgets });
@@ -86,6 +91,9 @@ export default function Budgets() {
   const finDuMois = new Date(`${mois}-01T12:00:00`);
   finDuMois.setMonth(finDuMois.getMonth() + 1, 0);
   const joursRestants = Math.max(1, Math.ceil((finDuMois.getTime() - new Date(`${aujourdhui()}T12:00:00`).getTime()) / 86400000) + 1);
+  const budgetPhare = Object.entries(budgets)
+    .map(([id, limite]) => ({ id, limite, reel: s.parCategorie[id] || 0, ratio: limite > 0 ? (s.parCategorie[id] || 0) / limite : 0 }))
+    .sort((a, b) => b.ratio - a.ratio)[0];
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("edit") === "1") setEdition(true);
@@ -94,7 +102,7 @@ export default function Budgets() {
   return (
     <div className="space-y-6">
       <header className="flex items-center justify-between px-1">
-        <div><p className="text-v3-caption font-medium text-ui-text-secondary">Objectifs mensuels</p><h1 className="text-v3-title font-semibold">Budgets</h1></div>
+        <div><p className="text-v3-caption font-medium text-ui-text-secondary">Garder le cap, sans te priver</p><h1 className="text-3xl font-bold tracking-tight">Budgets</h1></div>
         <button onClick={() => setEdition(true)} className="tappable rounded-pill bg-marque-bouton px-4 py-2.5 text-sm font-semibold text-surMarque shadow-bouton">
           Modifier
         </button>
@@ -158,21 +166,15 @@ export default function Budgets() {
               const rythmeHebdo = restant > 0 ? (restant / joursRestants) * 7 : 0;
               return (
                 <li key={cat}>
-                  <button onClick={() => setFicheCat(cat)} className="tappable w-full rounded-v3-s bg-ui-surface-floating p-4 text-left shadow-v3-soft">
-                  <div className="mb-1.5 flex items-center justify-between text-sm">
-                    <span className="font-semibold">{c.icone} {c.label} <span className="text-sourdine/50">›</span></span>
-                    <span className="tnum text-sourdine">{euros(reel)} / {euros(limite)}</span>
+                  <button onClick={() => setFicheCat(cat)} className="tappable w-full rounded-v3-m border border-ui-hairline bg-ui-surface-floating p-3.5 text-left shadow-v3-soft">
+                  <div className="flex items-center gap-3">
+                    <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-2xl ${pct >= 100 ? "bg-corail-pale" : pct >= 80 ? "bg-ambre-pale" : "bg-menthe-pale"}`}>{c.icone}</span>
+                    <span className="min-w-0 flex-1"><span className="block truncate font-semibold">{c.label}</span><span className="mt-0.5 block text-xs text-sourdine">Budget {euros(limite)}</span></span>
+                    <Anneau valeur={pct} couleur={couleur} />
+                    <span className="text-lg text-sourdine">›</span>
                   </div>
-                  <div className="h-2.5 overflow-hidden rounded-full bg-voile">
-                    <div className="jauge-in h-full rounded-full transition-all" style={{ width: `${Math.min(100, pct)}%`, background: couleur }} />
-                  </div>
-                  <div className="mt-2 flex items-center justify-between gap-3 text-xs">
-                    <span className="tnum text-sourdine">{Math.round(pct)} % utilisé</span>
-                    <span className={`tnum truncate font-semibold ${couleurEtat}`}>
-                      {restant >= 0 ? `Reste ${euros(restant)}` : `Dépassé de ${euros(Math.abs(restant))}`}
-                    </span>
-                  </div>
-                  {restant > 0 && <p className="mt-1.5 text-xs text-sourdine">Rythme conseillé : <strong className="tnum text-ui-text-primary">≈ {euros(rythmeHebdo)} / semaine</strong></p>}
+                  {pct >= 80 && <p className={`mt-3 rounded-xl px-3 py-2 text-xs font-semibold ${pct >= 100 ? "bg-corail-pale text-corail" : "bg-ambre-pale text-beurre-texte"}`}>{pct >= 100 ? `Dépassé de ${euros(Math.abs(restant))}` : `Attention : il reste ${euros(restant)}`}</p>}
+                  {restant > 0 && <p className="mt-2 text-xs text-sourdine">Rythme conseillé : <strong className="tnum text-ui-text-primary">≈ {euros(rythmeHebdo)} / semaine</strong></p>}
                   </button>
                 </li>
               );
@@ -180,6 +182,13 @@ export default function Budgets() {
           </ul>
         )}
       </section>
+
+      {budgetPhare && (
+        <section className="dashboard-hero relative overflow-hidden rounded-v3-l p-5 text-white">
+          <div className="reflet opacity-60" />
+          <div className="relative"><p className="text-sm font-medium text-white/75">Ton prochain geste</p><h2 className="mt-2 text-xl font-semibold">{budgetPhare.ratio >= 0.8 ? `Optimise ton budget ${categories[budgetPhare.id]?.label || "ce mois-ci"}` : "Continue sur ton bon rythme"}</h2><p className="mt-2 text-sm text-white/75">Une action simple maintenant aide à garder ton mois confortable.</p><Link href={budgetPhare.ratio >= 0.8 ? `/transactions?categorie=${budgetPhare.id}` : "/conseils"} className="mt-4 flex items-center justify-between rounded-2xl bg-white/95 px-4 py-3 text-sm font-semibold text-marque-texte">Voir mes conseils <span>›</span></Link></div>
+        </section>
+      )}
 
       {/* Projets d'épargne */}
       <section>

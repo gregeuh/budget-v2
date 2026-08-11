@@ -96,7 +96,7 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
           role="button"
           tabIndex={0}
           aria-label={`Modifier l'opération ${tx.libelle || cat.label} de ${euros(tx.montant, { precis: true })}`}
-          className="tappable relative flex min-h-12 cursor-pointer items-center gap-3 rounded-2xl bg-carte px-3 py-2 shadow-carte focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marque focus-visible:ring-offset-2"
+          className="tappable relative flex min-h-[72px] cursor-pointer items-center gap-3 rounded-[22px] border border-ui-hairline bg-ui-surface-floating px-3.5 py-3 shadow-v3-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marque focus-visible:ring-offset-2"
           style={{
             transform: `translateX(${decalage}px)`,
             transition: glisse ? "none" : "transform 0.28s cubic-bezier(0.32, 0.72, 0, 1)",
@@ -116,7 +116,7 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
               {tx.lieu && ` · 📍 ${tx.lieu}`}
             </span>
           </span>
-          <span className={`tnum shrink-0 text-sm font-bold ${cat.type === "virement" ? "text-sourdine" : positif ? "text-menthe" : "text-encre"}`}>
+          <span className={`tnum shrink-0 text-sm font-bold ${cat.type === "virement" ? "text-sourdine" : positif ? "text-menthe-texte" : "text-corail"}`}>
             {estVirement ? "⇄ " : positif ? "+" : ""}{euros(estVirement ? Math.abs(tx.montant) : tx.montant, { precis: true })}
           </span>
           <button
