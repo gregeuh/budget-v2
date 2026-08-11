@@ -5,10 +5,10 @@ import { usePathname } from "next/navigation";
 
 const ONGLETS = [
   { href: "/", label: "Accueil", icone: "accueil", couleur: "#007AFF", pale: "rgba(0,122,255,.12)" },
-  { href: "/patrimoine", label: "Comptes", icone: "comptes", couleur: "#5856D6", pale: "rgba(88,86,214,.13)" },
+  { href: "/patrimoine", label: "Espaces", icone: "comptes", couleur: "#5856D6", pale: "rgba(88,86,214,.13)" },
   { href: "AJOUT" },
-  { href: "/pilotage", label: "Pilotage", icone: "budgets", couleur: "#FF9500", pale: "rgba(255,149,0,.14)" },
-  { href: "/coach", label: "Coach", icone: "conseils", couleur: "#AF52DE", pale: "rgba(175,82,222,.13)" },
+  { href: "/pilotage", label: "Piloter", icone: "budgets", couleur: "#FF9500", pale: "rgba(255,149,0,.14)" },
+  { href: "/coach", label: "Conseils", icone: "conseils", couleur: "#AF52DE", pale: "rgba(175,82,222,.13)" },
 ];
 
 function IconeOnglet({ nom }) {
@@ -27,10 +27,10 @@ export default function TabBar({ onAjouter, ajoutOuvert = false }) {
   return (
     <nav
       aria-label="Navigation principale"
-      className="tabbar fixed inset-x-0 bottom-0 z-40 mx-auto max-w-md px-4"
-      style={{ paddingBottom: "calc(var(--safe-bottom) + 10px)" }}
+      className="tabbar pointer-events-none fixed bottom-0 left-1/2 z-40 w-full max-w-md -translate-x-1/2 px-4"
+      style={{ bottom: "calc(var(--safe-bottom) + 12px)" }}
     >
-      <div className="tabbar__surface grid grid-cols-5 items-center rounded-v3-l border border-ui-hairline bg-ui-surface-glass px-2 py-2 shadow-v3-floating backdrop-blur-v3-glass">
+      <div className="tabbar__surface pointer-events-auto grid grid-cols-5 items-center rounded-v3-l border border-ui-hairline bg-ui-surface-glass px-2 py-2 shadow-v3-floating backdrop-blur-v3-glass">
         {ONGLETS.map((o) =>
           o.href === "AJOUT" ? (
             <button

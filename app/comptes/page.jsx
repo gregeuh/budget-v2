@@ -182,7 +182,8 @@ export default function Comptes() {
                   <li key={c.id}>
                     <button
                       onClick={() => setDetailCompte(c)}
-                      className="w-full rounded-ios bg-carte p-4 text-left shadow-carte active:scale-[0.99] transition-transform"
+                      className="group w-full rounded-v3-m border border-ui-hairline bg-ui-surface-floating p-4 text-left shadow-v3-soft transition-all active:scale-[0.99]"
+                      style={{ borderLeftWidth: "4px", borderLeftColor: coul.vif }}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -192,7 +193,10 @@ export default function Comptes() {
                             <div className="text-xs" style={{ color: coul.texte }}>{t.label}</div>
                           </div>
                         </div>
-                        <span className={`chiffres text-lg font-bold ${solde < 0 ? "text-corail" : ""}`}>{euros(solde)}</span>
+                        <div className="flex items-center gap-2">
+                          <span className={`chiffres text-lg font-bold ${solde < 0 ? "text-corail" : ""}`}>{euros(solde)}</span>
+                          <span aria-hidden="true" className="text-lg text-sourdine transition-transform group-active:translate-x-0.5">›</span>
+                        </div>
                       </div>
                       {plafond && (
                         <div className="mt-3">
