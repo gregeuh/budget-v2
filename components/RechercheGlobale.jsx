@@ -8,12 +8,12 @@ import Sheet from "./Sheet";
 const DESTINATIONS = [
   { href: "/", titre: "Accueil", detail: "Vue du mois et reste à vivre", icone: "⌂", mots: "accueil mois reste vivre" },
   { href: "/mois", titre: "Ce mois-ci", detail: "Échéances, reste à vivre et priorités", icone: "☀︎", mots: "mois aujourd hui paie priorite echeance" },
-  { href: "/patrimoine", titre: "Patrimoine", detail: "Comptes, épargne et crédits", icone: "▣", mots: "comptes epargne livret credit revolut swile" },
-  { href: "/pilotage", titre: "Pilotage", detail: "Prévisions, calendrier et statistiques", icone: "◉", mots: "budget calendrier statistiques prevision cloture" },
+  { href: "/patrimoine", titre: "Espaces", detail: "Comptes, épargne et crédits", icone: "▣", mots: "comptes espaces epargne livret credit revolut swile" },
+  { href: "/pilotage", titre: "Piloter", detail: "Prévisions, calendrier et statistiques", icone: "◉", mots: "pilotage budget calendrier statistiques prevision cloture" },
   { href: "/plan", titre: "Plan mensuel", detail: "Répartir ton revenu avant de le dépenser", icone: "☷", mots: "plan mois revenu charges enveloppes epargne" },
   { href: "/abonnements", titre: "Abonnements", detail: "Coûts récurrents et services à surveiller", icone: "↻", mots: "abonnement netflix spotify recurrent mensuel annuel" },
   { href: "/regles", titre: "Règles automatiques", detail: "Classer tes opérations automatiquement", icone: "⚡", mots: "regle automatique categorie classement mots clefs" },
-  { href: "/coach", titre: "Coach", detail: "Conseils, alertes et règles", icone: "✦", mots: "conseil coach alerte regle abonnement boite" },
+  { href: "/coach", titre: "Conseils", detail: "Conseils, alertes et règles", icone: "✦", mots: "conseil coach alerte regle abonnement boite" },
   { href: "/transactions", titre: "Toutes les opérations", detail: "Rechercher ou modifier une opération", icone: "↕", mots: "transaction operation depense revenu virement" },
   { href: "/reglages", titre: "Réglages", detail: "Données, import et confidentialité", icone: "⚙", mots: "reglage importer csv confidentialite sauvegarde" },
 ];

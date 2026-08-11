@@ -149,7 +149,7 @@ export default function Comptes() {
     <div className="space-y-6">
       <header className="flex items-center justify-between">
         <div className="min-w-0">
-          <h1 className="text-xl font-bold">Comptes</h1>
+          <h1 className="text-xl font-bold">Espaces</h1>
           <p className="tnum text-sm text-sourdine">
             Total : {euros(total)}{avantages > 0 && ` · hors titres-resto : ${euros(total - avantages)}`}
           </p>

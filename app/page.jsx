@@ -105,7 +105,7 @@ export default function Accueil() {
         >
           <div className="flex items-baseline justify-between">
             <span className="min-w-0 truncate text-sm font-semibold">
-              {accueil.mot}{profil.prenom ? ` ${profil.prenom}` : ""} {accueil.emoji}
+              {accueil.mot}{profil.prenom ? ` ${profil.prenom}` : ""} ✦
             </span>
             <span className={`chiffres shrink-0 pl-2 text-base font-bold ${patrimoine < 0 ? "text-corail" : ""}`}>{euros(patrimoine)}</span>
           </div>
@@ -115,7 +115,7 @@ export default function Accueil() {
       <header className="flex items-center justify-between px-1">
         <div>
           <p className="text-v3-caption font-semibold uppercase tracking-[0.14em] text-marque">Ton mois en un regard</p>
-          <h1 className="mt-0.5 text-v3-title font-semibold tracking-tight">{accueil.mot}{profil.prenom ? ` ${profil.prenom.slice(0, 20)}` : ""} {accueil.emoji}</h1>
+          <h1 className="mt-0.5 text-v3-title font-semibold tracking-tight">{accueil.mot}{profil.prenom ? ` ${profil.prenom.slice(0, 20)}` : ""} ✦</h1>
         </div>
         <button onClick={() => setReglagesOuverts(true)} aria-label="Ouvrir les réglages" className="tappable flex h-11 w-11 items-center justify-center rounded-full border border-ui-hairline bg-ui-surface-floating text-lg shadow-v3-soft backdrop-blur-v3-glass">⚙️</button>
       </header>

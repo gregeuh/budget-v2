@@ -7,29 +7,27 @@
   --safe-top: env(safe-area-inset-top, 0px);
 
   /* Thème clair */
-  /* Fond très proche de la carte : la hiérarchie vient de l'espace et des filets,
-     plus du contraste entre un fond gris et des boîtes blanches. */
-  /* Fond groupé iOS : gris clair, cartes blanches, comme dans Wallet */
-  --c-fond: #f2f2f7;
+  /* Direction A — lavande douce, lumineuse et éditoriale. */
+  --c-fond: #f7f5ff;
   --c-carte: #ffffff;
-  --c-encre: #000000;
-  --c-sourdine: #6e6e73;          /* secondaryLabel, assombri pour rester lisible */
-  --c-bordure: rgba(60, 60, 67, 0.13);   /* separator */
-  --c-voile: rgba(120, 120, 128, 0.12);  /* tertiarySystemFill */
+  --c-encre: #29213f;
+  --c-sourdine: #746f8c;
+  --c-bordure: rgba(70, 53, 132, 0.14);
+  --c-voile: rgba(111, 91, 190, 0.10);
   --c-contraste: #ffffff;
   /* Système d'ombres : un filet fin + une ombre douce diffuse pour la profondeur.
      Deux couches (proche nette + lointaine diffuse) = rendu naturel façon Apple. */
-  --ombre-carte: 0 0 0 0.5px rgba(60, 60, 67, 0.06), 0 1px 2px rgba(60, 60, 67, 0.06), 0 4px 12px rgba(60, 60, 67, 0.05);
-  --ombre-flottant: 0 0 0 0.5px rgba(60, 60, 67, 0.05), 0 4px 10px rgba(60, 60, 67, 0.08), 0 12px 32px rgba(60, 60, 67, 0.10);
+  --ombre-carte: 0 1px 2px rgba(65, 46, 130, 0.04), 0 7px 20px rgba(65, 46, 130, 0.08);
+  --ombre-flottant: 0 1px 2px rgba(65, 46, 130, 0.05), 0 14px 34px rgba(65, 46, 130, 0.14);
   /* Ombre colorée d'un bouton d'action : la teinte de marque irradie sous le bouton. */
-  --ombre-bouton: 0 4px 14px -2px rgba(0, 122, 255, 0.4);
+  --ombre-bouton: 0 5px 16px -2px rgba(114, 93, 229, 0.42);
   --ombre-bouton: 0 4px 14px -2px color-mix(in srgb, var(--marque) 45%, transparent);
 
-  /* --- Teinte de l'app : le bleu système, comme les liens de Wallet --- */
-  --marque: #007aff;
-  --marque-pale: rgba(0, 122, 255, 0.12);
-  --marque-texte: #0062cc;
-  --marque-bouton: #007aff;
+  /* Teinte principale — lavande, avec contraste suffisant sur fond clair. */
+  --marque: #735fe4;
+  --marque-pale: #eeeaff;
+  --marque-texte: #604bd2;
+  --marque-bouton: #735fe4;
   --sur-marque: #ffffff;
 
   /* --- Trois rôles sémantiques, en couleurs système --- */
@@ -66,12 +64,12 @@
 
   /* Budget V3 — tokens sémantiques, sans incidence sur les écrans existants. */
   --v3-surface-1: var(--c-carte);
-  --v3-surface-2: #f8f9fc;
-  --v3-surface-3: #f1f4f9;
-  --v3-surface-floating: rgba(255, 255, 255, 0.82);
-  --v3-surface-glass: rgba(255, 255, 255, 0.64);
+  --v3-surface-2: #faf9ff;
+  --v3-surface-3: #f0edfb;
+  --v3-surface-floating: rgba(255, 255, 255, 0.86);
+  --v3-surface-glass: rgba(255, 255, 255, 0.76);
   --v3-primary: var(--marque);
-  --v3-primary-accent: #2f8cff;
+  --v3-primary-accent: #8b79ef;
   --v3-positive: var(--menthe);
   --v3-negative: var(--corail);
   --v3-text-primary: var(--c-encre);
@@ -145,23 +143,23 @@
 }
 
 html.sombre {
-  /* Wallet en sombre : noir profond, cartes gris très foncé */
-  --c-fond: #000000;
-  --c-carte: #1c1c1e;
+  /* Même identité lavande dans une variante nocturne profonde. */
+  --c-fond: #100f1d;
+  --c-carte: #211e31;
   --c-encre: #ffffff;
-  --c-sourdine: #8e8e93;
-  --c-bordure: rgba(84, 84, 88, 0.5);
-  --c-voile: rgba(118, 118, 128, 0.24);
+  --c-sourdine: #aaa4c1;
+  --c-bordure: rgba(172, 155, 239, 0.24);
+  --c-voile: rgba(151, 130, 238, 0.18);
   --c-contraste: #000000;
   /* En sombre, les ombres sont plus profondes (noir pur) pour rester visibles. */
   --ombre-carte: 0 0 0 0.5px rgba(255, 255, 255, 0.06), 0 1px 3px rgba(0, 0, 0, 0.5), 0 4px 14px rgba(0, 0, 0, 0.4);
   --ombre-flottant: 0 0 0 0.5px rgba(255, 255, 255, 0.06), 0 6px 16px rgba(0, 0, 0, 0.6), 0 16px 40px rgba(0, 0, 0, 0.5);
   --ombre-bouton: 0 4px 16px -2px color-mix(in srgb, var(--marque) 55%, transparent);
 
-  --marque: #0a84ff;
-  --marque-pale: rgba(10, 132, 255, 0.20);
-  --marque-texte: #64b5ff;
-  --marque-bouton: #0a84ff;
+  --marque: #a391ff;
+  --marque-pale: rgba(163, 145, 255, 0.22);
+  --marque-texte: #c3b7ff;
+  --marque-bouton: #8d77f1;
   --sur-marque: #ffffff;
 
   --menthe: #30d158;
@@ -193,11 +191,11 @@ html.sombre {
   --id-orange-pale: rgba(255, 159, 10, 0.20);  --id-orange-texte: #ffbe57;
   --id-rouge-pale:  rgba(255, 55, 95, 0.20);   --id-rouge-texte:  #ff6482;
 
-  --v3-surface-2: #22242a;
-  --v3-surface-3: #2c2e35;
-  --v3-surface-floating: rgba(28, 28, 30, 0.82);
-  --v3-surface-glass: rgba(44, 44, 46, 0.66);
-  --v3-primary-accent: #4da3ff;
+  --v3-surface-2: #29253b;
+  --v3-surface-3: #342e4b;
+  --v3-surface-floating: rgba(33, 30, 49, 0.86);
+  --v3-surface-glass: rgba(48, 42, 69, 0.72);
+  --v3-primary-accent: #b3a6ff;
   --v3-shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.20), 0 8px 24px rgba(0, 0, 0, 0.30);
   --v3-shadow-medium: 0 1px 2px rgba(0, 0, 0, 0.28), 0 12px 32px rgba(0, 0, 0, 0.40);
   --v3-shadow-floating: 0 1px 2px rgba(0, 0, 0, 0.32), 0 18px 48px rgba(0, 0, 0, 0.52);
