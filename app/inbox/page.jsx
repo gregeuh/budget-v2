@@ -50,12 +50,16 @@ export default function InboxPage() {
     try { await appliquerReglesExistantes(); } finally { setApplicationEnCours(false); }
   };
 
+  const totalActions = priorites.length + (reglesApplicables > 0 ? 1 : 0) + (signal.ton !== "neutre" ? 1 : 0);
+
   return <div className="space-y-5">
     <header>
       <p className="text-v3-caption font-semibold uppercase tracking-[0.14em] text-marque">À traiter</p>
       <h1 className="mt-1 text-3xl font-bold tracking-tight">Ta boîte financière</h1>
       <p className="mt-2 max-w-sm text-sm leading-5 text-sourdine">Les quelques décisions qui améliorent vraiment la qualité de ton budget.</p>
     </header>
+
+    <section className="ritual-dark relative overflow-hidden rounded-v3-l p-5 text-white"><div className="reflet opacity-50" /><div className="relative flex items-center gap-4"><span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/10 text-2xl shadow-v3-soft">🔔</span><div><p className="text-4xl font-bold leading-none">{totalActions || "✓"}</p><p className="mt-1 text-sm font-semibold">{totalActions ? "chose" + (totalActions > 1 ? "s" : "") + " mérite" + (totalActions > 1 ? "nt" : "") + " ton attention" : "Tout est à jour"}</p></div></div></section>
 
     <section className="grid grid-cols-3 gap-2" aria-label="Raccourcis de traitement"><Link href="/plan" className="rounded-v3-m bg-marque-pale p-3 text-center shadow-v3-soft"><span className="block text-lg">☷</span><span className="mt-1 block text-xs font-semibold text-marque-texte">Plan</span></Link><Link href="/abonnements" className="rounded-v3-m bg-beurre-pale p-3 text-center shadow-v3-soft"><span className="block text-lg">↻</span><span className="mt-1 block text-xs font-semibold text-beurre-texte">Abonnements</span></Link><Link href="/regles" className="rounded-v3-m bg-menthe-pale p-3 text-center shadow-v3-soft"><span className="block text-lg">⚡</span><span className="mt-1 block text-xs font-semibold text-menthe-texte">Règles</span></Link></section>
 
