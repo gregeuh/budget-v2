@@ -206,8 +206,9 @@ export default function Budgets() {
               const pct = p.objectif > 0 ? Math.min(100, (p.montantActuel / p.objectif) * 100) : 0;
               const atteint = pct >= 100;
               const restant = Math.max(0, (p.objectif || 0) - (p.montantActuel || 0));
+              const estimationMois = !atteint && p.versementMensuel > 0 ? Math.ceil(restant / p.versementMensuel) : null;
               return (
-              <li key={p.id} className="overflow-hidden rounded-v3-m bg-ui-surface-floating p-4 shadow-v3-soft">
+              <li key={p.id} className="overflow-hidden rounded-v3-m border border-ui-hairline bg-ui-surface-floating p-4 shadow-v3-soft">
                   {/* Zone d'ouverture de la fiche (div cliquable : on ne peut pas imbriquer des boutons) */}
                   <div
                     role="button"
@@ -229,26 +230,23 @@ export default function Budgets() {
                         {atteint ? "Objectif atteint" : `Encore ${euros(restant)}`}
                       </span>
                     </div>
-                    {p.echeance && !atteint && (
-                      <p className="mt-1.5 text-xs text-sourdine">
-                        Échéance : {new Date(p.echeance).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
-                      </p>
-                    )}
                     {!atteint && p.versementMensuel > 0 && (
-                      <p className="mt-1.5 rounded-v3-s bg-marque-pale px-2.5 py-2 text-xs text-marque-texte">
-                        Ton geste : <strong>{euros(p.versementMensuel)} / mois</strong> ({euros(p.versementMensuel / 30)} / jour). Après ce rythme, il te resterait environ <strong>{euros(Math.max(0, projection.reste - p.versementMensuel))}</strong> jusqu’à la paie.
-                      </p>
+                      <div className="mt-3 rounded-v3-s bg-marque-pale/70 px-3 py-2.5 text-xs text-marque-texte">
+                        <div className="flex items-center justify-between font-semibold"><span>Aujourd’hui</span><span>{p.echeance ? new Date(p.echeance).toLocaleDateString("fr-FR", { month: "short", year: "numeric" }) : estimationMois ? `≈ ${estimationMois} mois` : "Objectif"}</span></div>
+                        <div className="mt-2 flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-full bg-marque" /><span className="h-0.5 flex-1 bg-marque/30" /><i className="h-2.5 w-2.5 rounded-full border-2 border-marque bg-ui-surface-floating" /></div>
+                        <p className="mt-2">Ton geste : <strong>{euros(p.versementMensuel)} / mois</strong>{estimationMois ? ` · objectif estimé dans ${estimationMois} mois` : ""}.</p>
+                      </div>
                     )}
                   </div>
 
                   {/* Contribution rapide */}
                   {!atteint && (
-                    <div className="mt-2.5 flex gap-1.5">
+                    <div className="mt-3 flex gap-1.5 border-t border-ui-hairline pt-3">
                       {[20, 50, 100].map((v) => (
                         <button
                           key={v}
                           onClick={() => contribuerProjet(p.id, v)}
-                          className="flex-1 rounded-pill bg-marque-pale py-1.5 text-xs font-semibold text-marque-texte active:scale-95 transition-transform"
+                          className="flex-1 rounded-pill bg-marque-pale py-2 text-xs font-semibold text-marque-texte active:scale-95 transition-transform"
                         >
                           +{v} €
                         </button>
