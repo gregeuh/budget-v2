@@ -61,7 +61,6 @@ export default function AppShell({ children }) {
   const [actionsOuvertes, setActionsOuvertes] = useState(false);
   const [modeAjout, setModeAjout] = useState("depense");
   const [rechercheOuverte, setRechercheOuverte] = useState(false);
-  const [confidentiel, setConfidentiel] = useState(false);
   const chemin = usePathname();
 
   useEffect(() => {
@@ -132,15 +131,11 @@ export default function AppShell({ children }) {
           ⚠️ {erreurInit}
         </div>
       )}
-      <main id="contenu-principal" key={chemin} tabIndex={-1} className={`relative z-10 ${sens} px-4 pt-6 ${confidentiel ? "select-none blur-xl" : ""}`} style={{ paddingBottom: "calc(var(--safe-bottom) + 7.5rem)" }} aria-hidden={confidentiel}>
+      <main id="contenu-principal" key={chemin} tabIndex={-1} className={`relative z-10 ${sens} px-4 pt-6`} style={{ paddingBottom: "calc(var(--safe-bottom) + 7.5rem)" }}>
         <div className="page-content">{children}</div>
       </main>
       <TabBar onAjouter={() => setActionsOuvertes(true)} ajoutOuvert={actionsOuvertes || ajoutOuvert} />
-      <button onClick={() => setRechercheOuverte(true)} aria-label="Rechercher dans Pécule" className="fixed right-4 z-30 flex h-10 w-10 items-center justify-center rounded-full bg-ui-surface-floating text-xl text-ui-text-primary shadow-v3-medium" style={{ top: "calc(var(--safe-top) + 12px)" }}>⌕</button>
-      <button onClick={() => setConfidentiel((actif) => !actif)} aria-pressed={confidentiel} className="fixed right-4 z-30 rounded-pill bg-ui-surface-floating px-3.5 py-2.5 text-xs font-semibold text-ui-text-primary shadow-v3-medium" style={{ bottom: "calc(var(--safe-bottom) + 6.5rem)" }}>
-        {confidentiel ? "◉ Afficher" : "◌ Masquer"}
-      </button>
-      {confidentiel && <button onClick={() => setConfidentiel(false)} className="fixed inset-0 z-20 flex items-center justify-center bg-encre/15 px-8 text-center" aria-label="Afficher de nouveau mes données"><span className="rounded-v3-l bg-ui-surface-floating p-5 text-sm font-semibold shadow-v3-medium">Mode confidentialité actif<br /><span className="mt-1 block text-xs font-normal text-sourdine">Touchez pour afficher tes montants.</span></span></button>}
+      <button onClick={() => setRechercheOuverte(true)} aria-label="Rechercher dans Pécule" className="global-search-button fixed right-4 z-30 flex h-9 w-9 items-center justify-center rounded-full border border-ui-hairline bg-ui-surface-floating text-ui-text-secondary shadow-v3-soft" style={{ top: "calc(var(--safe-top) + 12px)" }}><span aria-hidden="true">⌕</span></button>
       {actionsOuvertes && <ActionsRapides onFermer={() => setActionsOuvertes(false)} onChoisir={(mode) => { setModeAjout(mode); setActionsOuvertes(false); setAjoutOuvert(true); }} />}
       {rechercheOuverte && <RechercheGlobale onFermer={() => setRechercheOuverte(false)} />}
       {ajoutOuvert && <AddSheet modeInitial={modeAjout} onFermer={() => setAjoutOuvert(false)} />}
