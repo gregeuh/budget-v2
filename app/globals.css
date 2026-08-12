@@ -470,6 +470,10 @@ html.sombre .reflet {
 /* Carte de compte : enfoncement au toucher, pour qu'elle réagisse sous le doigt */
 .carte-compte { transition: transform 0.18s cubic-bezier(0.32, 0.72, 0, 1); }
 .carte-compte:active { transform: scale(0.975) !important; }
+/* Les cartes de comptes gardent leur texte clair quel que soit le thème de
+   l'écran qui les héberge. */
+.carte-compte .chiffres { color: #fff; }
+.carte-compte .unite { color: rgba(255, 255, 255, 0.64); }
 
 /* Enfoncement générique des éléments tappables (rangées, tuiles).
    Le mouvement est court et reste sous le doigt : il confirme l'action sans

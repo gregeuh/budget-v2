@@ -10,7 +10,7 @@ import LogoCommercant from "./LogoCommercant";
 // doit pas retarder l'affichage de la liste sur un réseau mobile.
 const EditTxSheet = dynamic(() => import("./EditTxSheet"), { ssr: false });
 
-const LARGEUR_ACTION = 88;   // largeur du bouton Supprimer révélé
+const LARGEUR_ACTION = 104;  // largeur du bouton Supprimer révélé
 const SEUIL_OUVERTURE = 44;  // au-delà, la ligne reste ouverte au relâchement
 const SEUIL_TAP = 6;         // en deçà, c'est un tap, pas un glissement
 
@@ -75,7 +75,7 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
         <button
           onClick={() => { supprimerTransaction(tx.id); setDecalage(0); }}
           aria-label="Supprimer l'opération"
-          className="absolute inset-y-0 right-0 flex min-h-11 items-center justify-center bg-corail-bouton text-xs font-bold text-white"
+          className={`absolute inset-y-0 right-0 flex min-h-11 items-center justify-center rounded-r-2xl bg-corail-bouton text-xs font-bold text-white transition-opacity duration-150 ${decalage < -SEUIL_TAP ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
           style={{ width: LARGEUR_ACTION }}
         >
           🗑️ Supprimer
