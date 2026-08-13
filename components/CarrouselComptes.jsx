@@ -64,10 +64,10 @@ export default function CarrouselComptes({ onChange }) {
               className={`carte-compte relative w-[86%] shrink-0 snap-center overflow-hidden rounded-v3-l p-5 shadow-v3-medium transition-[transform,opacity] duration-v3-normal ease-v3-standard ${!estTous && i === actif ? "cursor-pointer" : ""}`}
               style={{
                 ...(estTous
-                  ? { background: "linear-gradient(145deg, #2c2a74, #1965bc)" }
+                  ? { background: "linear-gradient(145deg, #3c2d8d 0%, #6954e8 58%, #a595ff 140%)" }
                   : {
-                      background: `linear-gradient(145deg, ${coul.vif}, color-mix(in srgb, ${coul.vif} 62%, #19243b))`,
-                      border: `1px solid color-mix(in srgb, ${coul.vif} 72%, white)`,
+                      background: `linear-gradient(145deg, color-mix(in srgb, ${coul.vif} 90%, #2b2350) 0%, ${coul.vif} 58%, color-mix(in srgb, ${coul.vif} 55%, white) 145%)`,
+                      border: `1px solid color-mix(in srgb, ${coul.vif} 58%, white)`,
                     }),
                 transform: i === actif ? "scale(1)" : "scale(0.93)",
                 opacity: i === actif ? 1 : 0.55,
@@ -99,10 +99,10 @@ export default function CarrouselComptes({ onChange }) {
                     style={{ background: estTous ? "rgba(255,255,255,0.25)" : "var(--c-voile)" }}
                   />
                 </div>
-                <div className="mt-3">
-                  <Montant
-                    valeur={solde}
-                    className={`block font-bold leading-none text-white ${Math.abs(solde) >= 100000 ? "text-[24px]" : Math.abs(solde) >= 10000 ? "text-[28px]" : "text-[32px]"}`}
+                  <div className="mt-6">
+                    <Montant
+                      valeur={solde}
+                      className={`block font-bold leading-none text-white ${Math.abs(solde) >= 100000 ? "text-[25px]" : Math.abs(solde) >= 10000 ? "text-[30px]" : "text-[34px]"}`}
                   />
                   <div className="mt-1 flex items-center gap-1 text-[13px] text-white/75">
                     {estTous ? "Tous les comptes" : c.nom}

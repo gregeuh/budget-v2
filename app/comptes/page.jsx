@@ -147,16 +147,19 @@ export default function Comptes() {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-center justify-between">
+      <header className="rounded-v3-l border border-ui-hairline bg-ui-surface-floating px-4 py-4 shadow-v3-soft backdrop-blur-v3-glass">
+        <div className="flex items-center justify-between">
         <div className="min-w-0">
-          <h1 className="text-xl font-bold">Espaces</h1>
-          <p className="tnum text-sm text-sourdine">
+          <p className="text-v3-caption font-semibold uppercase tracking-[0.14em] text-marque">Ta vue d’ensemble</p>
+          <h1 className="mt-0.5 text-v3-title font-semibold tracking-tight">Espaces</h1>
+          <p className="tnum mt-1 text-sm text-sourdine">
             Total : {euros(total)}{avantages > 0 && ` · hors titres-resto : ${euros(total - avantages)}`}
           </p>
         </div>
-        <button onClick={() => setFiche("nouveau")} className="rounded-pill bg-marque-bouton px-4 py-2 text-sm font-semibold text-surMarque">
-          + Ajouter
+        <button onClick={() => setFiche("nouveau")} className="tappable rounded-pill bg-marque-bouton px-4 py-2.5 text-sm font-semibold text-surMarque shadow-bouton">
+          + Compte
         </button>
+        </div>
       </header>
 
       {GROUPES.map((g) => {
@@ -165,9 +168,9 @@ export default function Comptes() {
         const sousTotal = liste.reduce((a, c) => a + (soldes[c.id] || 0), 0);
         return (
           <section key={g.id}>
-            <div className="mb-2 flex items-baseline justify-between">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">{g.label}</h2>
-              <span className="tnum text-sm font-semibold text-sourdine">{euros(sousTotal)}</span>
+            <div className="mb-2.5 flex items-baseline justify-between px-1">
+              <h2 className="text-v3-caption font-semibold uppercase tracking-[0.12em] text-sourdine">{g.label}</h2>
+              <span className="tnum rounded-pill bg-voile px-2.5 py-1 text-xs font-semibold text-sourdine">{euros(sousTotal)}</span>
             </div>
             <ul className="space-y-2">
               {liste.map((c) => {
@@ -182,7 +185,7 @@ export default function Comptes() {
                   <li key={c.id}>
                     <button
                       onClick={() => setDetailCompte(c)}
-                      className="group w-full rounded-v3-m border border-ui-hairline bg-ui-surface-floating p-4 text-left shadow-v3-soft transition-all active:scale-[0.99]"
+                      className="account-row tappable group w-full rounded-v3-m border border-ui-hairline bg-ui-surface-floating p-4 text-left shadow-v3-soft"
                       style={{
                         borderLeftWidth: "4px",
                         borderLeftColor: coul.vif,

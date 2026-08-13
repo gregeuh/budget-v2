@@ -17,30 +17,50 @@ const CLE_LOCALE = "budget-v2-donnees";
 const genId = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
 
 const donneesDemo = () => {
-  const m = aujourdhui().slice(0, 7);
+  const maintenant = new Date(`${aujourdhui()}T12:00:00`);
+  const moisCourant = aujourdhui().slice(0, 7);
+  const precedent = new Date(maintenant.getFullYear(), maintenant.getMonth() - 1, 1);
+  const m = `${precedent.getFullYear()}-${String(precedent.getMonth() + 1).padStart(2, "0")}`;
+  const date = (mois, jour) => `${mois}-${String(jour).padStart(2, "0")}`;
   return {
     comptes: [
-      { id: "c1", nom: "Compte courant", type: "courant", soldeInitial: 1240, ordre: 0 },
-      { id: "c2", nom: "Revolut", type: "revolut", soldeInitial: 310, ordre: 1 },
-      { id: "c3", nom: "Swile", type: "swile", soldeInitial: 152, ordre: 2 },
-      { id: "c4", nom: "Livret A", type: "livretA", soldeInitial: 6800, ordre: 3 },
+      { id: "demo-courant", nom: "Compte courant", type: "courant", soldeInitial: 2860, ordre: 0 },
+      { id: "demo-revolut", nom: "Revolut", type: "revolut", soldeInitial: 348.6, ordre: 1 },
+      { id: "demo-swile", nom: "Swile", type: "swile", soldeInitial: 134.2, ordre: 2 },
+      { id: "demo-livret", nom: "Livret A", type: "livretA", soldeInitial: 7420, ordre: 3 },
+      { id: "demo-pea", nom: "PEA", type: "pea", soldeInitial: 2140, ordre: 4 },
     ],
     transactions: [
-      { id: "t1", compteId: "c1", montant: 2350, categorie: "salaire", libelle: "Salaire", date: `${m}-02` },
-      { id: "t2", compteId: "c1", montant: -890, categorie: "logement", libelle: "Loyer", date: `${m}-03` },
-      { id: "t3", compteId: "c1", montant: -64.3, categorie: "courses", libelle: "Carrefour", date: `${m}-04` },
-      { id: "t4", compteId: "c2", montant: -12.99, categorie: "abonnements", libelle: "Netflix", date: `${m}-05` },
-      { id: "t5", compteId: "c3", montant: -11.5, categorie: "resto", libelle: "Déjeuner", date: `${m}-05` },
-      { id: "t6", compteId: "c1", montant: -200, categorie: "virement", libelle: "Vers Livret A", date: `${m}-06` },
-      { id: "t7", compteId: "c4", montant: 200, categorie: "virement", libelle: "Depuis compte courant", date: `${m}-06` },
+      { id: "demo-01", compteId: "demo-courant", montant: 2450, categorie: "salaire", libelle: "Salaire", date: date(m, 28) },
+      { id: "demo-02", compteId: "demo-courant", montant: -895, categorie: "logement", libelle: "Loyer", date: date(m, 29) },
+      { id: "demo-03", compteId: "demo-courant", montant: -58.74, categorie: "courses", libelle: "Carrefour", date: date(m, 30) },
+      { id: "demo-04", compteId: "demo-revolut", montant: -13.49, categorie: "abonnements", libelle: "Netflix", date: date(m, 30) },
+      { id: "demo-05", compteId: "demo-courant", montant: -10.99, categorie: "abonnements", libelle: "Apple Music", date: date(moisCourant, 2) },
+      { id: "demo-06", compteId: "demo-courant", montant: -76.32, categorie: "courses", libelle: "Carrefour Market", date: date(moisCourant, 3), lieu: "Toulouse" },
+      { id: "demo-07", compteId: "demo-swile", montant: -14.2, categorie: "resto", libelle: "Café Joyeux", date: date(moisCourant, 4) },
+      { id: "demo-08", compteId: "demo-revolut", montant: -6.45, categorie: "resto", libelle: "Starbucks", date: date(moisCourant, 5) },
+      { id: "demo-09", compteId: "demo-courant", montant: -42.8, categorie: "transport", libelle: "SNCF Connect", date: date(moisCourant, 6) },
+      { id: "demo-10", compteId: "demo-courant", montant: -29.99, categorie: "abonnements", libelle: "Canal+", date: date(moisCourant, 7) },
+      { id: "demo-11", compteId: "demo-courant", montant: -64, categorie: "shopping", libelle: "Decathlon", date: date(moisCourant, 8) },
+      { id: "demo-12", compteId: "demo-courant", montant: -120, categorie: "virement", libelle: "Vers Livret A", versId: "demo-livret", date: date(moisCourant, 9) },
+      { id: "demo-13", compteId: "demo-livret", montant: 120, categorie: "virement", libelle: "Depuis compte courant", versId: "demo-courant", date: date(moisCourant, 9) },
+      { id: "demo-14", compteId: "demo-courant", montant: -21.5, categorie: "sante", libelle: "Pharmacie Lafayette", date: date(moisCourant, 10) },
+      { id: "demo-15", compteId: "demo-revolut", montant: -17.9, categorie: "loisirs", libelle: "UGC Ciné Cité", date: date(moisCourant, 11) },
+      { id: "demo-16", compteId: "demo-courant", montant: -850, categorie: "logement", libelle: "Loyer", date: date(moisCourant, 28), recurrenteId: "demo-r-loyer" },
+      { id: "demo-17", compteId: "demo-courant", montant: -48.6, categorie: "factures", libelle: "Électricité", date: date(moisCourant, 20), recurrenteId: "demo-r-electricite" },
     ],
-    budgets: { courses: 350, resto: 150, shopping: 100 },
-    profil: { prenom: "", revenuMensuel: 2350, jourSalaire: 2, modeSalaire: "jour", theme: "auto" },
-    recurrentes: [],
+    budgets: { courses: 360, resto: 180, shopping: 140, abonnements: 70, transport: 120 },
+    profil: { prenom: "Camille", revenuMensuel: 2450, jourSalaire: 28, modeSalaire: "jour", theme: "clair", accent: "indigo", reglesAuto: [{ id: "demo-rule", nom: "Netflix → Abonnements", mots: ["netflix"], categorie: "abonnements" }] },
+    recurrentes: [
+      { id: "demo-r-loyer", nom: "Loyer", compteId: "demo-courant", montant: -850, categorie: "logement", frequence: "mensuelle", jour: 28, actif: true },
+      { id: "demo-r-electricite", nom: "Électricité", compteId: "demo-courant", montant: -48.6, categorie: "factures", frequence: "mensuelle", jour: 20, actif: true },
+      { id: "demo-r-netflix", nom: "Netflix", compteId: "demo-revolut", montant: -13.49, categorie: "abonnements", frequence: "mensuelle", jour: 30, actif: true },
+    ],
     projets: [
-      { id: "p1", nom: "Vacances", icone: "🏖️", objectif: 2000, montantActuel: 650, echeance: "" },
+      { id: "demo-p-vacances", nom: "Voyage au Portugal", icone: "🌊", objectif: 2200, montantActuel: 1480, echeance: `${maintenant.getFullYear()}-10-01` },
+      { id: "demo-p-securite", nom: "Coussin de sécurité", icone: "🛟", objectif: 3000, montantActuel: 2360, echeance: "" },
     ],
-    credits: [],
+    credits: [{ id: "demo-credit", nom: "Prêt personnel", restant: 2140, mensualite: 108.61, taux: 3.2 }],
   };
 };
 
@@ -95,8 +115,14 @@ export function DataProvider({ children }) {
   useEffect(() => {
     if (!modeLocal) return;
     try {
+      const chargerDemo = new URLSearchParams(window.location.search).get("demo") === "1";
       const brut = localStorage.getItem(CLE_LOCALE);
-      const d = brut ? JSON.parse(brut) : {};
+      const sauvegarde = brut ? JSON.parse(brut) : {};
+      // Le serveur de test doit toujours être immédiatement exploitable. Une
+      // base locale vide reçoit donc le jeu fictif, mais une base déjà remplie
+      // n'est jamais remplacée sans l'action explicite de l'utilisateur.
+      const baseVide = !Array.isArray(sauvegarde.comptes) || sauvegarde.comptes.length === 0;
+      const d = (chargerDemo || baseVide) ? donneesDemo() : sauvegarde;
       setComptes(d.comptes || []);
       setTransactions(d.transactions || []);
       setBudgets(d.budgets || {});
@@ -105,6 +131,7 @@ export function DataProvider({ children }) {
       setProjets(d.projets || []);
       setCredits(d.credits || []);
       setCategoriesPerso(d.categoriesPerso || {});
+      if (chargerDemo) window.history.replaceState({}, "", window.location.pathname);
     } catch {
       const d = {};
       setComptes([]);
@@ -616,6 +643,20 @@ export function DataProvider({ children }) {
     setRecurrentes([]); setProjets([]); setCredits([]);
   }, [modeLocal]);
 
+  const chargerDonneesDemo = useCallback(() => {
+    if (!modeLocal) return;
+    const d = donneesDemo();
+    setComptes(d.comptes);
+    setTransactions(d.transactions);
+    setBudgets(d.budgets);
+    setProfil(d.profil);
+    setRecurrentes(d.recurrentes);
+    setProjets(d.projets);
+    setCredits(d.credits);
+    setCategoriesPerso({});
+    notifier("Jeu de démonstration chargé", "✨");
+  }, [modeLocal, notifier]);
+
 
   // ------- Format d'affichage (centimes, arrondis) -------
   useEffect(() => {
@@ -778,7 +819,7 @@ export function DataProvider({ children }) {
     ajouterRecurrente, modifierRecurrente, supprimerRecurrente,
     ajouterProjet, modifierProjet, supprimerProjet,
     ajouterCredit, modifierCredit, supprimerCredit,
-    sauverApp, virement, reinitialiserDemo, importerDonnees,
+    sauverApp, virement, reinitialiserDemo, chargerDonneesDemo, importerDonnees,
   };
 
   return <Ctx.Provider value={valeur}>{children}</Ctx.Provider>;

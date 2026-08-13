@@ -509,7 +509,7 @@ function QualiteDonneesSheet({ onFermer }) {
 
 /* ---- Panneau principal (style épuré) ---- */
 export default function ReglagesContenu() {
-  const { profil, modeLocal, user, recurrentes, categoriesPerso, reinitialiserDemo, transactions, categories } = useBudget();
+  const { profil, modeLocal, user, recurrentes, categoriesPerso, reinitialiserDemo, chargerDonneesDemo, transactions, categories } = useBudget();
   const [fiche, setFiche] = useState(null);
   const [confirmeEffacer, setConfirmeEffacer] = useState(false);
 
@@ -541,17 +541,20 @@ export default function ReglagesContenu() {
       {/* Zone de sortie, séparée par une bande */}
       <div className="my-5 h-px bg-ui-hairline" />
       {modeLocal ? (
-        <Rangee
-          icone="🗑️"
-          label={confirmeEffacer ? "Confirmer l'effacement total ?" : "Tout effacer"}
-          danger
-          dernier
-          onClick={() => {
-            if (!confirmeEffacer) return setConfirmeEffacer(true);
-            reinitialiserDemo();
-            setConfirmeEffacer(false);
-          }}
-        />
+        <div className="space-y-2">
+          <Rangee icone="✨" label="Charger les données de démonstration" detail="Comptes, opérations, budgets et projets fictifs" onClick={chargerDonneesDemo} />
+          <Rangee
+            icone="🗑️"
+            label={confirmeEffacer ? "Confirmer l'effacement total ?" : "Tout effacer"}
+            danger
+            dernier
+            onClick={() => {
+              if (!confirmeEffacer) return setConfirmeEffacer(true);
+              reinitialiserDemo();
+              setConfirmeEffacer(false);
+            }}
+          />
+        </div>
       ) : (
         <Rangee icone="🚪" label="Se déconnecter" danger dernier onClick={deconnexion} />
       )}

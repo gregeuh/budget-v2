@@ -30,7 +30,6 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
   const surDebut = (e) => {
     const t = e.touches[0];
     depart.current = { x: t.clientX, y: t.clientY, base: decalage, horizontal: null };
-    setGlisse(true);
   };
 
   const surMouvement = (e) => {
@@ -45,6 +44,8 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
       depart.current.horizontal = Math.abs(dx) > Math.abs(dy);
     }
     if (!depart.current.horizontal) return;
+
+    setGlisse(true);
 
     let d = depart.current.base + dx;
     d = Math.min(0, d);                                  // pas de glissement vers la droite
@@ -75,7 +76,7 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
         <button
           onClick={() => { supprimerTransaction(tx.id); setDecalage(0); }}
           aria-label="Supprimer l'opération"
-          className={`absolute inset-y-0 right-0 flex min-h-11 items-center justify-center rounded-r-2xl bg-corail-bouton text-xs font-bold text-white transition-opacity duration-150 ${decalage < -SEUIL_TAP ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
+          className={`absolute inset-y-0 right-0 flex min-h-11 items-center justify-center rounded-r-2xl bg-corail-bouton text-xs font-bold text-white transition-opacity duration-150 ${decalage <= -SEUIL_OUVERTURE ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
           style={{ width: LARGEUR_ACTION }}
         >
           🗑️ Supprimer
@@ -96,7 +97,7 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
           role="button"
           tabIndex={0}
           aria-label={`Modifier l'opération ${tx.libelle || cat.label} de ${euros(tx.montant, { precis: true })}`}
-          className="tappable relative flex min-h-[72px] cursor-pointer items-center gap-3 rounded-[22px] border border-ui-hairline bg-ui-surface-floating px-3.5 py-3 shadow-v3-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marque focus-visible:ring-offset-2"
+          className="transaction-row tappable relative flex min-h-[72px] cursor-pointer items-center gap-3 rounded-[22px] border border-ui-hairline bg-ui-surface-floating px-3.5 py-3 shadow-v3-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marque focus-visible:ring-offset-2"
           style={{
             transform: `translateX(${decalage}px)`,
             transition: glisse ? "none" : "transform 0.28s cubic-bezier(0.32, 0.72, 0, 1)",
@@ -116,7 +117,7 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
               {tx.lieu && ` · 📍 ${tx.lieu}`}
             </span>
           </span>
-          <span className={`tnum shrink-0 text-sm font-bold ${cat.type === "virement" ? "text-sourdine" : positif ? "text-menthe-texte" : "text-corail"}`}>
+          <span className={`tnum shrink-0 text-right text-sm font-bold ${cat.type === "virement" ? "text-sourdine" : positif ? "text-menthe-texte" : "text-corail"}`}>
             {estVirement ? "⇄ " : positif ? "+" : ""}{euros(estVirement ? Math.abs(tx.montant) : tx.montant, { precis: true })}
           </span>
           <button
