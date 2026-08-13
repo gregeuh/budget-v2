@@ -8,17 +8,17 @@
 
   /* Thème clair */
   /* Direction A — lavande douce, lumineuse et éditoriale. */
-  --c-fond: #f7f5ff;
+  --c-fond: color-mix(in srgb, var(--marque) 5%, white);
   --c-carte: #ffffff;
   --c-encre: #29213f;
   --c-sourdine: #746f8c;
-  --c-bordure: rgba(70, 53, 132, 0.14);
-  --c-voile: rgba(111, 91, 190, 0.10);
+  --c-bordure: color-mix(in srgb, var(--marque) 16%, transparent);
+  --c-voile: color-mix(in srgb, var(--marque) 10%, transparent);
   --c-contraste: #ffffff;
   /* Système d'ombres : un filet fin + une ombre douce diffuse pour la profondeur.
      Deux couches (proche nette + lointaine diffuse) = rendu naturel façon Apple. */
-  --ombre-carte: 0 1px 2px rgba(65, 46, 130, 0.04), 0 7px 20px rgba(65, 46, 130, 0.08);
-  --ombre-flottant: 0 1px 2px rgba(65, 46, 130, 0.05), 0 14px 34px rgba(65, 46, 130, 0.14);
+  --ombre-carte: 0 1px 2px color-mix(in srgb, var(--marque-bouton) 5%, transparent), 0 7px 20px color-mix(in srgb, var(--marque-bouton) 9%, transparent);
+  --ombre-flottant: 0 1px 2px color-mix(in srgb, var(--marque-bouton) 6%, transparent), 0 14px 34px color-mix(in srgb, var(--marque-bouton) 15%, transparent);
   /* Ombre colorée d'un bouton d'action : la teinte de marque irradie sous le bouton. */
   --ombre-bouton: 0 5px 16px -2px rgba(114, 93, 229, 0.42);
   --ombre-bouton: 0 4px 14px -2px color-mix(in srgb, var(--marque) 45%, transparent);
@@ -64,12 +64,12 @@
 
   /* Budget V3 — tokens sémantiques, sans incidence sur les écrans existants. */
   --v3-surface-1: var(--c-carte);
-  --v3-surface-2: #faf9ff;
-  --v3-surface-3: #f0edfb;
+  --v3-surface-2: color-mix(in srgb, var(--marque) 3%, white);
+  --v3-surface-3: color-mix(in srgb, var(--marque) 7%, white);
   --v3-surface-floating: rgba(255, 255, 255, 0.86);
   --v3-surface-glass: rgba(255, 255, 255, 0.76);
   --v3-primary: var(--marque);
-  --v3-primary-accent: #8b79ef;
+  --v3-primary-accent: var(--marque);
   --v3-positive: var(--menthe);
   --v3-negative: var(--corail);
   --v3-text-primary: var(--c-encre);
@@ -94,9 +94,9 @@
   --v3-radius-xxl: 44px;
   --v3-radius-pill: 999px;
 
-  --v3-shadow-soft: 0 1px 2px rgba(64, 45, 137, 0.05), 0 9px 24px rgba(64, 45, 137, 0.09);
-  --v3-shadow-medium: 0 2px 4px rgba(64, 45, 137, 0.07), 0 16px 36px rgba(64, 45, 137, 0.15);
-  --v3-shadow-floating: 0 2px 4px rgba(64, 45, 137, 0.09), 0 20px 48px rgba(64, 45, 137, 0.20);
+  --v3-shadow-soft: 0 1px 2px color-mix(in srgb, var(--marque-bouton) 5%, transparent), 0 9px 24px color-mix(in srgb, var(--marque-bouton) 10%, transparent);
+  --v3-shadow-medium: 0 2px 4px color-mix(in srgb, var(--marque-bouton) 7%, transparent), 0 16px 36px color-mix(in srgb, var(--marque-bouton) 16%, transparent);
+  --v3-shadow-floating: 0 2px 4px color-mix(in srgb, var(--marque-bouton) 9%, transparent), 0 20px 48px color-mix(in srgb, var(--marque-bouton) 22%, transparent);
 
   --v3-font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
   --v3-font-display: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -148,8 +148,8 @@ html.sombre {
   --c-carte: #211e31;
   --c-encre: #ffffff;
   --c-sourdine: #aaa4c1;
-  --c-bordure: rgba(172, 155, 239, 0.24);
-  --c-voile: rgba(151, 130, 238, 0.18);
+  --c-bordure: color-mix(in srgb, var(--marque) 24%, transparent);
+  --c-voile: color-mix(in srgb, var(--marque) 18%, transparent);
   --c-contraste: #000000;
   /* En sombre, les ombres sont plus profondes (noir pur) pour rester visibles. */
   --ombre-carte: 0 0 0 0.5px rgba(255, 255, 255, 0.06), 0 1px 3px rgba(0, 0, 0, 0.5), 0 4px 14px rgba(0, 0, 0, 0.4);
@@ -191,11 +191,11 @@ html.sombre {
   --id-orange-pale: rgba(255, 159, 10, 0.20);  --id-orange-texte: #ffbe57;
   --id-rouge-pale:  rgba(255, 55, 95, 0.20);   --id-rouge-texte:  #ff6482;
 
-  --v3-surface-2: #29253b;
-  --v3-surface-3: #342e4b;
+  --v3-surface-2: color-mix(in srgb, var(--marque) 10%, #211e31);
+  --v3-surface-3: color-mix(in srgb, var(--marque) 18%, #211e31);
   --v3-surface-floating: rgba(33, 30, 49, 0.86);
   --v3-surface-glass: rgba(48, 42, 69, 0.72);
-  --v3-primary-accent: #b3a6ff;
+  --v3-primary-accent: var(--marque);
   --v3-shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.20), 0 8px 24px rgba(0, 0, 0, 0.30);
   --v3-shadow-medium: 0 1px 2px rgba(0, 0, 0, 0.28), 0 12px 32px rgba(0, 0, 0, 0.40);
   --v3-shadow-floating: 0 1px 2px rgba(0, 0, 0, 0.32), 0 18px 48px rgba(0, 0, 0, 0.52);
@@ -314,10 +314,10 @@ textarea:focus-visible {
 
 .dashboard-hero {
   background:
-    radial-gradient(80% 110% at 100% 0%, rgba(214, 207, 255, 0.5), transparent 54%),
-    radial-gradient(60% 90% at 0% 100%, rgba(70, 43, 158, 0.30), transparent 58%),
-    linear-gradient(135deg, #44308e 0%, var(--marque) 52%, #9c8fff 100%);
-  box-shadow: 0 18px 38px rgba(78, 56, 165, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    radial-gradient(80% 110% at 100% 0%, color-mix(in srgb, var(--marque) 34%, white), transparent 54%),
+    radial-gradient(60% 90% at 0% 100%, color-mix(in srgb, var(--marque-bouton) 58%, #131128), transparent 58%),
+    linear-gradient(135deg, color-mix(in srgb, var(--marque-bouton) 86%, #17142d) 0%, var(--marque-bouton) 52%, color-mix(in srgb, var(--marque) 68%, var(--marque-bouton)) 100%);
+  box-shadow: 0 18px 38px color-mix(in srgb, var(--marque-bouton) 30%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 /* Direction A — l'accueil reste lumineux en mode clair. Le contraste vient de
@@ -327,11 +327,11 @@ textarea:focus-visible {
   --c-carte: rgba(255, 255, 255, 0.92);
   --c-encre: #1c1b33;
   --c-sourdine: #6d6b80;
-  --c-bordure: rgba(101, 86, 188, 0.14);
-  --c-voile: rgba(93, 73, 191, 0.09);
+  --c-bordure: color-mix(in srgb, var(--marque) 17%, transparent);
+  --c-voile: color-mix(in srgb, var(--marque) 10%, transparent);
   --v3-surface-1: #ffffff;
-  --v3-surface-2: #f4f1fb;
-  --v3-surface-3: #ebe7f8;
+  --v3-surface-2: color-mix(in srgb, var(--marque) 5%, white);
+  --v3-surface-3: color-mix(in srgb, var(--marque) 10%, white);
   --v3-surface-floating: rgba(255, 255, 255, 0.86);
   --v3-surface-glass: rgba(255, 255, 255, 0.74);
   --v3-text-primary: #1c1b33;
@@ -339,17 +339,20 @@ textarea:focus-visible {
   position: relative;
   border-radius: 30px;
   background:
-    radial-gradient(72% 32% at 20% 0%, rgba(123, 102, 239, 0.12), transparent 72%),
-    radial-gradient(54% 25% at 92% 26%, rgba(111, 89, 225, 0.08), transparent 74%),
-    linear-gradient(180deg, #fbfaff 0%, #f6f4fc 100%);
+    radial-gradient(72% 32% at 20% 0%, color-mix(in srgb, var(--marque) 13%, transparent), transparent 72%),
+    radial-gradient(54% 25% at 92% 26%, color-mix(in srgb, var(--marque) 9%, transparent), transparent 74%),
+    linear-gradient(180deg, color-mix(in srgb, var(--marque) 2%, white) 0%, color-mix(in srgb, var(--marque) 5%, white) 100%);
   color: #1c1b33;
   padding: 16px;
   box-shadow: 0 22px 50px rgba(56, 43, 116, 0.10);
 }
 
 .dashboard-v3 .dashboard-hero {
-  box-shadow: 0 22px 42px rgba(93, 72, 204, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  box-shadow: 0 22px 42px color-mix(in srgb, var(--marque-bouton) 35%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
+.dashboard-v3 .dashboard-hero-compact .text-v3-hero { font-size: clamp(3.25rem, 14vw, 4.35rem); }
+.dashboard-v3 .dashboard-hero-compact .courbe-projection > div { margin-top: 0; }
+.dashboard-v3 .dashboard-hero-compact .courbe-projection { margin-top: .55rem; }
 
 .dashboard-v3 .chiffres { color: inherit; }
 
@@ -358,18 +361,18 @@ html.sombre .dashboard-v3 {
   --c-carte: rgba(30, 32, 50, 0.94);
   --c-encre: #fbfaff;
   --c-sourdine: #b2b0c0;
-  --c-bordure: rgba(214, 207, 255, 0.14);
+  --c-bordure: color-mix(in srgb, var(--marque) 24%, transparent);
   --c-voile: rgba(255, 255, 255, 0.09);
   --v3-surface-1: #1c1e31;
-  --v3-surface-2: #242640;
-  --v3-surface-3: #302d50;
+  --v3-surface-2: color-mix(in srgb, var(--marque) 10%, #1c1e31);
+  --v3-surface-3: color-mix(in srgb, var(--marque) 18%, #1c1e31);
   --v3-surface-floating: rgba(30, 32, 50, 0.86);
   --v3-surface-glass: rgba(28, 30, 48, 0.74);
   --v3-text-primary: #fbfaff;
   --v3-text-secondary: #b2b0c0;
   background:
-    radial-gradient(72% 32% at 20% 0%, rgba(123, 102, 239, 0.24), transparent 72%),
-    radial-gradient(54% 25% at 92% 26%, rgba(111, 89, 225, 0.15), transparent 74%),
+    radial-gradient(72% 32% at 20% 0%, color-mix(in srgb, var(--marque) 28%, transparent), transparent 72%),
+    radial-gradient(54% 25% at 92% 26%, color-mix(in srgb, var(--marque) 18%, transparent), transparent 74%),
     linear-gradient(180deg, #121426 0%, #0d0f1c 100%);
   color: #fbfaff;
   box-shadow: 0 22px 50px rgba(18, 13, 48, 0.24);
@@ -381,6 +384,55 @@ html.sombre .dashboard-v3 {
 }
 .global-search-button:active { opacity: 1; transform: scale(.94); }
 .global-search-button > span { font-size: 1.15rem; line-height: 1; }
+
+/* Direction "Pécule signatures" — l'accueil conserve une carte de pilotage
+   expressive, mais reste nettement lisible dans le thème clair. */
+.dashboard-v3 .dashboard-hero {
+  border: 1px solid rgba(255, 255, 255, .42);
+  background:
+    radial-gradient(90% 100% at 108% -10%, rgba(255,255,255,.22), transparent 58%),
+    radial-gradient(70% 100% at -18% 100%, color-mix(in srgb, var(--marque-bouton) 55%, #141126), transparent 58%),
+    linear-gradient(135deg, color-mix(in srgb, var(--marque-bouton) 90%, #18142f) 0%, var(--marque-bouton) 52%, color-mix(in srgb, var(--marque) 68%, var(--marque-bouton)) 112%);
+}
+
+.transactions-v4 { position: relative; padding-top: 2px; }
+.transactions-v4::before { content:""; position:absolute; z-index:-1; top:-84px; left:-24px; right:-24px; height:270px; background:radial-gradient(70% 68% at 56% 7%, color-mix(in srgb, var(--marque) 20%, transparent), transparent 75%); pointer-events:none; }
+.transactions-v4 > header h1 { font-family: var(--v3-font-display); letter-spacing:-.055em; }
+.transactions-v4 .champ { border: 1px solid color-mix(in srgb, var(--marque) 18%, transparent); background: color-mix(in srgb, var(--marque) 8%, white); box-shadow: inset 0 1px 0 rgba(255,255,255,.82); }
+.transactions-v4 .transaction-row-v4 { min-height:68px; border:0; border-radius:0; background:transparent; box-shadow:none; padding-left:14px; padding-right:2px; }
+.transactions-v4 .transaction-row-v4::before { left:0; top:14px; bottom:14px; width:2px; background:var(--marque); opacity:.44; }
+.transactions-v4 .transaction-row-v4:hover::before { opacity:.44; }
+.transactions-v4 .transaction-row-v4 + * { border-color:transparent; }
+.transactions-v4 .transaction-row-v4 .text-corail { color:#df545c; }
+.transactions-v4 section > ul.space-y-2 { position:relative; display:block; overflow:hidden; border:1px solid color-mix(in srgb, var(--marque) 10%, transparent); border-radius:24px; background:rgba(255,255,255,.78); padding:3px 14px; box-shadow:0 13px 28px color-mix(in srgb, var(--marque-bouton) 8%, transparent); }
+.transactions-v4 section > ul.space-y-2 > li:not(:last-child) .transaction-row-v4 { border-bottom:1px solid color-mix(in srgb, var(--marque) 11%, transparent); }
+.transactions-v4 .dashboard-hero { border-radius:26px; box-shadow:0 18px 32px color-mix(in srgb, var(--marque-bouton) 22%, transparent); }
+
+.budgets-v4 { position:relative; padding:2px 0 12px; }
+.budgets-v4::before { content:""; position:absolute; z-index:-1; top:-48px; left:-24px; right:-24px; height:500px; background:radial-gradient(66% 48% at 83% 5%, color-mix(in srgb, var(--marque) 22%, transparent), transparent 72%), linear-gradient(180deg,color-mix(in srgb, var(--marque) 10%, white) 0%, rgba(248,247,255,0) 100%); border-radius:0 0 54px 54px; }
+.budgets-v4 > header h1 { font-family:var(--v3-font-display); letter-spacing:-.055em; }
+.budgets-v4 .budget-ring { box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--marque) 10%, transparent), 0 7px 16px color-mix(in srgb, var(--marque-bouton) 9%, transparent); }
+.budgets-v4 li > button.rounded-v3-m { border-color:color-mix(in srgb, var(--marque) 13%, transparent); background:rgba(255,255,255,.94); box-shadow:0 10px 25px color-mix(in srgb, var(--marque-bouton) 8%, transparent); }
+.budgets-v4 li > button.rounded-v3-m > div:first-child > span:first-child { box-shadow:inset 0 1px 0 rgba(255,255,255,.8); }
+.budgets-v4 .dashboard-hero { border-radius:28px; background:radial-gradient(circle at 90% 16%,rgba(255,255,255,.28) 0 4%,transparent 4.5%), radial-gradient(circle at 81% 26%,rgba(255,255,255,.13) 0 11%,transparent 11.5%), linear-gradient(135deg,var(--marque-bouton),color-mix(in srgb, var(--marque) 70%, var(--marque-bouton))); box-shadow:0 18px 34px color-mix(in srgb, var(--marque-bouton) 22%, transparent); }
+.budgets-v4 .dashboard-hero::after { content:"✦"; position:absolute; right:20px; bottom:20px; color:rgba(255,255,255,.26); font-size:4rem; line-height:1; pointer-events:none; }
+.budgets-v4 .rounded-pill.bg-voile { background:color-mix(in srgb, var(--marque) 11%, transparent); }
+
+.coach-v4 { position:relative; }
+.coach-v4::before { content:""; position:absolute; z-index:-1; top:-56px; left:-24px; right:-24px; height:360px; background:radial-gradient(62% 58% at 84% 10%, color-mix(in srgb, var(--marque) 20%, transparent), transparent 70%), linear-gradient(180deg,color-mix(in srgb, var(--marque) 8%, white),transparent); }
+.coach-v4 #priorites-conseils > div:first-child { border-color:color-mix(in srgb, var(--marque) 20%, transparent); background:linear-gradient(135deg,color-mix(in srgb, var(--marque-bouton) 90%, #17142d) 0%,var(--marque-bouton) 57%,color-mix(in srgb, var(--marque) 68%, var(--marque-bouton)) 100%); color:white; box-shadow:0 20px 38px color-mix(in srgb, var(--marque-bouton) 25%, transparent); }
+.coach-v4 #priorites-conseils > div:first-child .text-ui-text-primary { color:#fff; }
+.coach-v4 #priorites-conseils > div:first-child .text-ui-text-secondary { color:rgba(255,255,255,.72); }
+.coach-v4 #priorites-conseils > div:first-child .bg-ui-surface-floating { background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.17); }
+.coach-v4 #priorites-conseils > div:first-child .bg-corail-pale,
+.coach-v4 #priorites-conseils > div:first-child .bg-menthe-pale { background:rgba(255,255,255,.15); }
+.coach-v4 #priorites-conseils > div:first-child .text-corail-texte,
+.coach-v4 #priorites-conseils > div:first-child .text-menthe-texte { color:#fff; }
+
+@media (max-width: 374px) {
+  .dashboard-v3 { padding-inline:0; }
+  .dashboard-v3 .dashboard-hero { border-radius:25px; }
+}
 
 .budget-ring {
   position: relative;
@@ -423,9 +475,9 @@ html.sombre .dashboard-v3 {
 
 html.sombre .dashboard-hero {
   background:
-    radial-gradient(80% 110% at 100% 0%, rgba(184, 170, 255, 0.22), transparent 54%),
-    radial-gradient(60% 90% at 0% 100%, rgba(31, 18, 84, 0.55), transparent 58%),
-    linear-gradient(135deg, #302165 0%, var(--marque) 58%, #7c6bda 100%);
+    radial-gradient(80% 110% at 100% 0%, color-mix(in srgb, var(--marque) 30%, white), transparent 54%),
+    radial-gradient(60% 90% at 0% 100%, color-mix(in srgb, var(--marque-bouton) 70%, #070712), transparent 58%),
+    linear-gradient(135deg, color-mix(in srgb, var(--marque-bouton) 90%, #0a0918) 0%, var(--marque-bouton) 58%, color-mix(in srgb, var(--marque) 68%, var(--marque-bouton)) 100%);
   box-shadow: 0 20px 44px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 

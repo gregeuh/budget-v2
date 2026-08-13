@@ -45,7 +45,7 @@ export default function CarrouselComptes({ onChange }) {
       <div
         ref={rail}
         onScroll={surDefilement}
-        className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-4"
+        className="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-0"
       >
         {cartes.map((c, i) => {
           const estTous = c.id === null;
@@ -61,16 +61,16 @@ export default function CarrouselComptes({ onChange }) {
               key={c.id ?? "tous"}
               onClick={() => { if (!estTous && i === actif) transitionPartagee(() => setFiche(c)); }}
               role={estTous ? undefined : "button"}
-              className={`carte-compte relative w-[86%] shrink-0 snap-center overflow-hidden rounded-v3-l p-5 shadow-v3-medium transition-[transform,opacity] duration-v3-normal ease-v3-standard ${!estTous && i === actif ? "cursor-pointer" : ""}`}
+              className={`carte-compte relative w-full shrink-0 snap-start overflow-hidden rounded-v3-l p-5 shadow-v3-medium transition-[transform,opacity] duration-v3-normal ease-v3-standard ${!estTous && i === actif ? "cursor-pointer" : ""}`}
               style={{
                 ...(estTous
-                  ? { background: "linear-gradient(145deg, #3c2d8d 0%, #6954e8 58%, #a595ff 140%)" }
+                  ? { background: "linear-gradient(145deg, color-mix(in srgb, var(--marque-bouton) 90%, #17142d) 0%, var(--marque-bouton) 58%, color-mix(in srgb, var(--marque) 68%, var(--marque-bouton)) 140%)" }
                   : {
                       background: `linear-gradient(145deg, color-mix(in srgb, ${coul.vif} 90%, #2b2350) 0%, ${coul.vif} 58%, color-mix(in srgb, ${coul.vif} 55%, white) 145%)`,
                       border: `1px solid color-mix(in srgb, ${coul.vif} 58%, white)`,
                     }),
-                transform: i === actif ? "scale(1)" : "scale(0.93)",
-                opacity: i === actif ? 1 : 0.55,
+                transform: "scale(1)",
+                opacity: 1,
                 viewTransitionName: !estTous && i === actif && !fiche ? "carte-active" : undefined,
               }}
             >

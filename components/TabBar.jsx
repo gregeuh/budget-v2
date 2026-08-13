@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const ONGLETS = [
-  { href: "/", label: "Accueil", icone: "accueil", couleur: "#735FE4", pale: "rgba(115,95,228,.15)" },
+  { href: "/", label: "Accueil", icone: "accueil", couleur: "var(--marque)", pale: "var(--marque-pale)" },
   { href: "/patrimoine", label: "Espaces", icone: "comptes", couleur: "#5974D7", pale: "rgba(89,116,215,.15)" },
   { href: "AJOUT" },
   { href: "/pilotage", label: "Piloter", icone: "budgets", couleur: "#D88245", pale: "rgba(216,130,69,.16)" },

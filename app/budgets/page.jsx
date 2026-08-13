@@ -100,9 +100,9 @@ export default function Budgets() {
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="budgets-v4 space-y-6">
       <header className="flex items-center justify-between px-1">
-        <div><p className="text-v3-caption font-medium text-ui-text-secondary">Garder le cap, sans te priver</p><h1 className="text-3xl font-bold tracking-tight">Budgets</h1></div>
+        <div><p className="text-v3-caption font-semibold uppercase tracking-[.14em] text-ui-primary">Ton plan du mois</p><h1 className="mt-1 text-3xl font-bold tracking-tight">Budgets</h1></div>
         <button onClick={() => setEdition(true)} className="tappable rounded-pill bg-marque-bouton px-4 py-2.5 text-sm font-semibold text-surMarque shadow-bouton">
           Modifier
         </button>
@@ -186,7 +186,7 @@ export default function Budgets() {
       {budgetPhare && (
         <section className="dashboard-hero relative overflow-hidden rounded-v3-l p-5 text-white">
           <div className="reflet opacity-60" />
-          <div className="relative"><p className="text-sm font-medium text-white/75">Ton prochain geste</p><h2 className="mt-2 text-xl font-semibold">{budgetPhare.ratio >= 0.8 ? `Optimise ton budget ${categories[budgetPhare.id]?.label || "ce mois-ci"}` : "Continue sur ton bon rythme"}</h2><p className="mt-2 text-sm text-white/75">Une action simple maintenant aide à garder ton mois confortable.</p><Link href={budgetPhare.ratio >= 0.8 ? `/transactions?categorie=${budgetPhare.id}` : "/conseils"} className="mt-4 flex items-center justify-between rounded-2xl bg-white/95 px-4 py-3 text-sm font-semibold text-marque-texte">Voir mes conseils <span>›</span></Link></div>
+          <div className="relative max-w-[76%]"><p className="text-sm font-medium text-white/75">Ton prochain geste</p><h2 className="mt-2 text-xl font-semibold">{budgetPhare.ratio >= 0.8 ? `Optimise ton budget ${categories[budgetPhare.id]?.label || "ce mois-ci"}` : "Continue sur ton bon rythme"}</h2><p className="mt-2 text-sm text-white/75">Une action simple maintenant aide à garder ton mois confortable.</p><Link href={budgetPhare.ratio >= 0.8 ? `/transactions?categorie=${budgetPhare.id}` : "/conseils"} className="mt-4 flex items-center justify-between rounded-2xl bg-white/95 px-4 py-3 text-sm font-semibold text-marque-texte">Voir mes conseils <span>›</span></Link></div>
         </section>
       )}
 

@@ -120,7 +120,7 @@ export default function Accueil() {
         <button onClick={() => setReglagesOuverts(true)} aria-label="Ouvrir les réglages" className="tappable flex h-11 w-11 items-center justify-center rounded-full border border-ui-hairline bg-ui-surface-floating text-lg shadow-v3-soft backdrop-blur-v3-glass">⚙️</button>
       </header>
 
-      <section className="dashboard-hero dashboard-in relative overflow-hidden rounded-v3-xl px-5 py-5 sm:px-6 sm:py-6 text-white">
+      <section className="dashboard-hero dashboard-hero-compact dashboard-in relative overflow-hidden rounded-v3-xl px-5 py-4 sm:px-6 sm:py-5 text-white">
         <div className="reflet opacity-70" />
         <div className="relative">
           <div className="flex items-start justify-between gap-4">
@@ -130,22 +130,13 @@ export default function Accueil() {
             </div>
             <span className="rounded-pill bg-white/15 px-3 py-1.5 text-v3-caption font-semibold backdrop-blur-v3-glass">{joursAvantSalaire === null ? "30 jours" : joursAvantSalaire === 0 ? "Jour de paie" : `${joursAvantSalaire} j.`}</span>
           </div>
-          <p className="mt-2 text-v3-caption text-white/75">{projection.reste < 0 ? "Tes échéances à venir dépassent le disponible." : `Tu as environ ${euros(projection.parJour)} par jour jusqu’à la paie.`}</p>
+          <p className="mt-1 text-v3-caption text-white/75">{projection.reste < 0 ? "Tes échéances à venir dépassent le disponible." : `Tu as environ ${euros(projection.parJour)} par jour jusqu’à la paie.`}</p>
           <CourbeProjection evolution={projection.evolution} horizonISO={projection.horizonISO} />
-          <div className="mt-3 border-t border-white/20 pt-3">
-            <div className="mb-1.5 flex items-center justify-between text-v3-caption text-white/70">
-              <span>{joursAvantSalaire === null ? "Horizon de 30 jours" : "Budget préservé jusqu’à la paie"}</span>
-              <span className="tnum font-semibold text-white">{tauxReste} %</span>
-            </div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-white/20">
-              <div className={`jauge-in h-full rounded-full ${projection.reste < 0 ? "bg-corail" : "bg-white"}`} style={{ width: `${tauxReste}%` }} />
-            </div>
-          </div>
-          <div className="mt-4 grid grid-cols-2 gap-3 border-t border-white/20 pt-4">
+          <div className="mt-3 grid grid-cols-2 gap-3 border-t border-white/20 pt-3">
             <div><p className="text-v3-caption text-white/65">Disponible</p><p className="tnum mt-0.5 text-sm font-semibold">{euros(projection.dispo)}</p></div>
             <div className="border-l border-white/20 pl-4"><p className="text-v3-caption text-white/65">À venir</p><p className="tnum mt-0.5 text-sm font-semibold">−{euros(projection.prevu)}</p></div>
           </div>
-          <Link href="/transactions" className="mt-4 flex items-center justify-between border-t border-white/20 pt-3 text-sm font-semibold text-white/90 active:text-white">
+          <Link href="/transactions" className="mt-3 flex items-center justify-between border-t border-white/20 pt-2 text-sm font-semibold text-white/90 active:text-white">
             <span>Voir les prévisions</span>
             <span aria-hidden="true">›</span>
           </Link>

@@ -77,7 +77,7 @@ export default function Conseils() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="coach-v4 space-y-6">
       <ConseilsHero onVoirPriorites={ouvrirAnalyse} />
       <ConseilsPriorites onVoirTout={ouvrirAnalyse} onVoirTransactions={voirTransactions} onModifierBudgets={modifierBudgets} onOuvrirActionPilier={ouvrirActionPilier} />
 
@@ -146,7 +146,7 @@ export default function Conseils() {
         </details>
       </Sheet>}
 
-      <button onClick={() => setCoachOuvert(true)} aria-label="Ouvrir le coach budgétaire" className="fixed bottom-[calc(var(--safe-bottom)+5.75rem)] right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[linear-gradient(145deg,#7655ef,#5d44dc)] text-2xl text-white shadow-[0_12px_28px_rgba(100,72,220,.4)] transition-transform active:scale-90">✦</button>
+      <button onClick={() => setCoachOuvert(true)} aria-label="Ouvrir le coach budgétaire" className="fixed bottom-[calc(var(--safe-bottom)+5.75rem)] right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full text-2xl text-white transition-transform active:scale-90" style={{ background: "linear-gradient(145deg, var(--marque), var(--marque-bouton))", boxShadow: "0 12px 28px color-mix(in srgb, var(--marque-bouton) 40%, transparent)" }}>✦</button>
     </div>
   );
 }

@@ -10,7 +10,7 @@ function Fleche() {
   return <span aria-hidden="true" className="text-2xl font-light leading-none text-ui-text-secondary/65">›</span>;
 }
 
-function Cercle({ valeur, couleur = "#2864f0" }) {
+function Cercle({ valeur, couleur = "var(--marque)" }) {
   const pct = Math.max(0, Math.min(valeur, 100));
   return (
     <div className="relative h-16 w-16 shrink-0">
@@ -128,7 +128,7 @@ export default function ConseilsPriorites({ onVoirTout, onVoirTransactions, onMo
         <p className="px-1 text-v3-caption font-semibold uppercase tracking-[.12em] text-marque">À surveiller</p>
         <div className="mt-3 overflow-hidden rounded-v3-l border border-ui-hairline bg-ui-surface-floating shadow-v3-soft">
           {surveiller.map((p, index) => {
-            const couleur = p.points >= 14 ? "#36b989" : p.points >= 8 ? "#5375ed" : "#f0a637";
+            const couleur = p.points >= 14 ? "#36b989" : p.points >= 8 ? "var(--marque)" : "#f0a637";
             return <button key={p.id} onClick={() => onOuvrirActionPilier?.(p.id)} className={`flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors active:bg-ui-surface-2 ${index ? "border-t border-ui-hairline" : ""}`}>
               <Cercle valeur={(p.points / 20) * 100} couleur={couleur} />
               <span className="min-w-0 flex-1"><span className="block text-base font-semibold text-ui-text-primary">{p.icone} {p.label}</span><span className="mt-0.5 block truncate text-sm text-ui-text-secondary">{p.detail}</span><span className="mt-1.5 inline-flex rounded-pill bg-marque-pale px-2 py-0.5 text-[10px] font-semibold text-marque-texte">{actionPilier[p.id] || "Voir l'action"}</span></span>

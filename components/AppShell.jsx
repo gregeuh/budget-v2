@@ -135,7 +135,7 @@ export default function AppShell({ children }) {
         <div className="page-content">{children}</div>
       </main>
       <TabBar onAjouter={() => setActionsOuvertes(true)} ajoutOuvert={actionsOuvertes || ajoutOuvert} />
-      <button onClick={() => setRechercheOuverte(true)} aria-label="Rechercher dans Pécule" className="global-search-button fixed right-4 z-30 flex h-9 w-9 items-center justify-center rounded-full border border-ui-hairline bg-ui-surface-floating text-ui-text-secondary shadow-v3-soft" style={{ top: "calc(var(--safe-top) + 12px)" }}><span aria-hidden="true">⌕</span></button>
+      {chemin !== "/" && <button onClick={() => setRechercheOuverte(true)} aria-label="Rechercher dans Pécule" className="global-search-button fixed right-4 z-30 flex h-9 w-9 items-center justify-center rounded-full border border-ui-hairline bg-ui-surface-floating text-ui-text-secondary shadow-v3-soft" style={{ top: "calc(var(--safe-top) + 12px)" }}><span aria-hidden="true">⌕</span></button>}
       {actionsOuvertes && <ActionsRapides onFermer={() => setActionsOuvertes(false)} onChoisir={(mode) => { setModeAjout(mode); setActionsOuvertes(false); setAjoutOuvert(true); }} />}
       {rechercheOuverte && <RechercheGlobale onFermer={() => setRechercheOuverte(false)} />}
       {ajoutOuvert && <AddSheet modeInitial={modeAjout} onFermer={() => setAjoutOuvert(false)} />}

@@ -16,8 +16,8 @@ export default function CourbeProjection({ evolution = [], horizonISO }) {
   const positif = final >= 0;
 
   return (
-    <div className="mt-5" aria-label={`Projection du disponible : ${euros(points[0]?.solde || 0)} aujourd’hui, ${euros(final)} à l’horizon`}>
-      <svg viewBox={`0 0 ${largeur} ${hauteur}`} className="h-16 w-full overflow-visible" role="img" aria-label="Évolution prévisionnelle du reste à vivre">
+    <div className="courbe-projection mt-3" aria-label={`Projection du disponible : ${euros(points[0]?.solde || 0)} aujourd’hui, ${euros(final)} à l’horizon`}>
+      <svg viewBox={`0 0 ${largeur} ${hauteur}`} className="h-11 w-full overflow-visible" role="img" aria-label="Évolution prévisionnelle du reste à vivre">
         <defs>
           <linearGradient id="projection-area" x1="0" y1="0" x2="0" y2="1">
             <stop stopColor="white" stopOpacity=".28" />

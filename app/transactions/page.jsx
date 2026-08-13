@@ -142,9 +142,9 @@ export default function Transactions() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="transactions-v4 space-y-6">
       <header className="flex items-center justify-between px-1">
-        <div><p className="text-v3-caption font-medium text-ui-text-secondary">Toutes tes entrées et sorties</p><h1 className="text-3xl font-bold tracking-tight">Transactions</h1></div>
+        <div><p className="text-v3-caption font-semibold uppercase tracking-[.14em] text-ui-primary">Mouvements du compte</p><h1 className="mt-1 text-3xl font-bold tracking-tight">Transactions</h1></div>
         <button onClick={() => setFiltresOuverts((ouvert) => !ouvert)} aria-label="Ouvrir les filtres" className={`tappable flex h-11 w-11 items-center justify-center rounded-2xl border text-xl shadow-v3-soft ${filtresOuverts ? "border-marque bg-marque-pale text-marque-texte" : "border-ui-hairline bg-ui-surface-floating"}`}>⌕</button>
       </header>
 

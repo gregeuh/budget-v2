@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import { useBudget } from "@/lib/store";
 import { euros, dateCourte } from "@/lib/format";
 import LogoCommercant from "./LogoCommercant";
@@ -19,6 +20,7 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
   const [edition, setEdition] = useState(false);
   const [decalage, setDecalage] = useState(0);
   const [glisse, setGlisse] = useState(false);
+  const pathname = usePathname();
   const depart = useRef(null);
 
   const cat = categories[tx.categorie] || categories.autre;
@@ -69,7 +71,7 @@ export default function TxRow({ tx, avecCompte = false, retard = 0 }) {
   return (
     <>
       <li
-        className="pop-in relative overflow-hidden rounded-2xl"
+        className={`pop-in relative overflow-hidden rounded-2xl ${pathname === "/transactions" ? "transaction-row-v4" : ""}`}
         style={{ animationDelay: `${Math.min(retard, 8) * 50}ms` }}
       >
         {/* Action révélée par le glissement */}

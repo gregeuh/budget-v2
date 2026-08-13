@@ -27,7 +27,7 @@ export default function AbonnementsPage() {
         <div className="relative">
           <p className="text-sm text-white/70">Coût récurrent mensuel</p>
           <p className="tnum mt-1 text-4xl font-bold">{euros(audit.totalMensuel)}<span className="text-lg text-white/60"> / mois</span></p>
-          <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/15"><div className="h-full rounded-full bg-[#a998ff]" style={{ width: `${Math.max(8, partDuRevenu)}%` }} /></div>
+          <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/15"><div className="h-full rounded-full bg-marque" style={{ width: `${Math.max(8, partDuRevenu)}%` }} /></div>
           <p className="mt-2 text-xs text-white/70">{profil.revenuMensuel ? `${partDuRevenu} % de tes revenus mensuels` : `${euros(audit.totalAnnuel)} estimés sur un an`} · {audit.items.length} service{audit.items.length > 1 ? "s" : ""}</p>
         </div>
       </section>
