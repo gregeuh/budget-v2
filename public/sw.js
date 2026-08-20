@@ -38,3 +38,25 @@ self.addEventListener("fetch", (e) => {
       .catch(() => caches.match(e.request))
   );
 });
+
+// Web Push : ce code s'exécute même lorsque Pécule est fermée.
+self.addEventListener("push", (event) => {
+  let data = {};
+  try { data = event.data?.json() || {}; } catch { data = { body: event.data?.text() }; }
+  event.waitUntil(self.registration.showNotification(data.title || "Pécule", {
+    body: data.body || "Ton budget t'attend.",
+    icon: data.icon || "/icons/icon-192.png",
+    badge: data.badge || "/icons/icon-192.png",
+    tag: data.tag || "pecule",
+    data: { url: data.url || "/" },
+  }));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const cible = new URL(event.notification.data?.url || "/", self.location.origin).href;
+  event.waitUntil(clients.matchAll({ type: "window", includeUncontrolled: true }).then((fenetres) => {
+    const existante = fenetres.find((fenetre) => fenetre.url.startsWith(self.location.origin));
+    return existante ? existante.focus().then(() => existante.navigate(cible)) : clients.openWindow(cible);
+  }));
+});

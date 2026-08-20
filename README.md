@@ -97,6 +97,16 @@ Sans cette clé, les conseils automatiques fonctionnent quand même : seul le ch
 
 Ouvre l'URL Vercel dans **Safari** → bouton **Partager** → **« Sur l'écran d'accueil »**. L'app s'ouvre alors en plein écran, avec son icône, comme une app native.
 
+## Activer les vraies notifications iPhone
+
+Les notifications Push arrivent même quand Pécule est fermée, mais elles demandent une URL HTTPS, Pécule installée sur l'écran d'accueil et quatre variables **serveur** sur Vercel :
+
+1. Installe les dépendances déjà référencées par le projet : `npm install`.
+2. Génére une paire VAPID : `npx web-push generate-vapid-keys`.
+3. Dans Vercel → **Settings → Environment Variables**, ajoute `PUSH_VAPID_PUBLIC_KEY`, `PUSH_VAPID_PRIVATE_KEY` et `PUSH_VAPID_SUBJECT` (`mailto:ton-email@domaine.fr`).
+4. Firebase Console → **Paramètres du projet → Comptes de service → Générer une nouvelle clé privée**. Dans Vercel, ajoute le contenu JSON sur une ligne sous `FIREBASE_SERVICE_ACCOUNT_JSON`. Ne la mets jamais dans une variable `NEXT_PUBLIC_*`.
+5. Redéploie, ouvre Pécule installée sur l'iPhone puis va dans **Réglages → Notifications → Activer les notifications**. Le bouton de test envoie une vraie notification, app fermée.
+
 ## Développement local
 
 ```bash
