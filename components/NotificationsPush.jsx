@@ -15,9 +15,10 @@ function cleVersUint8Array(base64) {
 }
 
 export default function NotificationsPush({ onFermer }) {
-  const { user, modeLocal } = useBudget();
+  const { user, modeLocal, profil, sauverApp } = useBudget();
   const [statut, setStatut] = useState("verification");
   const [message, setMessage] = useState("");
+  const preferences = { echeances: profil.notifications?.echeances !== false, budgets: profil.notifications?.budgets !== false, bilan: profil.notifications?.bilan !== false };
 
   const verifier = async () => {
     if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
@@ -103,6 +104,24 @@ export default function NotificationsPush({ onFermer }) {
     }
   };
 
+  const envoyerApercu = async () => {
+    try {
+      setMessage("Analyse de tes échéances et budgets en cours…");
+      const token = await jeton();
+      const res = await fetch("/api/push/preview", { method: "POST", headers: { authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.erreur || "Envoi impossible.");
+      setMessage(`${data.alerte?.title || "Aperçu"} envoyé sur cet iPhone.`);
+    } catch (error) { setMessage(error.message || "Aperçu impossible."); }
+  };
+
+  const changerPreference = async (cle) => {
+    try {
+      await sauverApp(undefined, { ...profil, notifications: { ...preferences, [cle]: !preferences[cle] } });
+      setMessage("Préférences d'alertes enregistrées.");
+    } catch { setMessage("Impossible d'enregistrer cette préférence."); }
+  };
+
   const desactiver = async () => {
     try {
       const registration = await navigator.serviceWorker.ready;
@@ -163,7 +182,19 @@ export default function NotificationsPush({ onFermer }) {
 
         {statut === "active" ? (
           <div className="space-y-2">
-            <button onClick={tester} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque">Envoyer une notification test</button>
+            <div className="rounded-ios bg-ui-surface-raised p-3">
+              <p className="text-sm font-semibold">Ce que Pécule peut t'envoyer</p>
+              <p className="mt-1 text-xs leading-relaxed text-sourdine">Une seule alerte utile par jour maximum, selon tes vraies données.</p>
+              <div className="mt-3 space-y-2">
+                {[["echeances", "📅", "Échéances imminentes", "La veille d'un paiement prévu"], ["budgets", "🎯", "Budgets à surveiller", "À partir de 80 % consommés"], ["bilan", "📊", "Bilan mensuel", "Au début de chaque nouveau mois"]].map(([cle, icone, titre, detail]) => (
+                  <button key={cle} onClick={() => changerPreference(cle)} className="flex w-full items-center gap-3 rounded-2xl bg-carte px-3 py-2.5 text-left active:scale-[0.99]">
+                    <span className="text-lg">{icone}</span><span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{titre}</span><span className="block text-xs text-sourdine">{detail}</span></span><span className={`rounded-pill px-2 py-1 text-xs font-semibold ${preferences[cle] ? "bg-menthe-pale text-menthe-texte" : "bg-voile text-sourdine"}`}>{preferences[cle] ? "Activé" : "Masqué"}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <button onClick={envoyerApercu} className="w-full rounded-ios bg-marque-bouton py-3 font-semibold text-surMarque">Recevoir l'aperçu utile du jour</button>
+            <button onClick={tester} className="w-full rounded-ios bg-voile py-3 text-sm font-semibold text-sourdine">Envoyer une notification technique</button>
             <button onClick={desactiver} className="w-full rounded-ios bg-voile py-3 text-sm font-semibold text-sourdine">Désactiver sur cet iPhone</button>
           </div>
         ) : !contenu && (
