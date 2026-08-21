@@ -41,6 +41,16 @@ export default function NotificationsPush({ onFermer }) {
     return current.getIdToken();
   };
 
+  const enregistrerSurServeur = async (subscription, token = null) => {
+    if (!subscription?.endpoint) throw new Error("Aucun abonnement iPhone n'a été trouvé.");
+    const save = await fetch("/api/push/subscribe", {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${token || await jeton()}` },
+      body: JSON.stringify(subscription),
+    });
+    if (!save.ok) throw new Error((await save.json()).erreur || "Enregistrement impossible.");
+  };
+
   const activer = async () => {
     try {
       setStatut("chargement");
@@ -58,13 +68,7 @@ export default function NotificationsPush({ onFermer }) {
         userVisibleOnly: true,
         applicationServerKey: cleVersUint8Array(key),
       });
-      const token = await jeton();
-      const save = await fetch("/api/push/subscribe", {
-        method: "POST",
-        headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
-        body: JSON.stringify(subscription),
-      });
-      if (!save.ok) throw new Error((await save.json()).erreur || "Enregistrement impossible.");
+      await enregistrerSurServeur(subscription);
       setStatut("active");
       setMessage("Notifications activées sur cet iPhone.");
     } catch (error) {
@@ -77,7 +81,20 @@ export default function NotificationsPush({ onFermer }) {
     try {
       setMessage("Envoi en cours… ferme Pécule pour vérifier la notification.");
       const token = await jeton();
-      const res = await fetch("/api/push/test", { method: "POST", headers: { authorization: `Bearer ${token}` } });
+      let res = await fetch("/api/push/test", { method: "POST", headers: { authorization: `Bearer ${token}` } });
+
+      // Une PWA peut garder une souscription locale créée avant une mise à jour
+      // serveur. Si le serveur ne la connaît pas encore, on la réassocie puis
+      // on rejoue le test : aucune manipulation supplémentaire côté iPhone.
+      if (res.status === 404) {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        if (subscription) {
+          await enregistrerSurServeur(subscription, token);
+          res = await fetch("/api/push/test", { method: "POST", headers: { authorization: `Bearer ${token}` } });
+        }
+      }
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.erreur || "Envoi impossible.");
       setMessage("Notification envoyée. Elle doit apparaître même si Pécule est fermée.");
