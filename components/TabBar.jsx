@@ -31,6 +31,11 @@ export default function TabBar({ onAjouter, ajoutOuvert = false }) {
       style={{ bottom: "calc(var(--safe-bottom) + 12px)" }}
     >
       <div className="tabbar__surface pointer-events-auto grid grid-cols-5 items-center rounded-v3-l border border-ui-hairline bg-ui-surface-glass px-2 py-2 shadow-v3-floating backdrop-blur-v3-glass">
+        <div className="tabbar__brand" aria-hidden="true">
+          <span className="tabbar__brand-mark">✦</span>
+          <span>Pécule</span>
+          <small>Ton argent, au calme.</small>
+        </div>
         {ONGLETS.map((o) =>
           o.href === "AJOUT" ? (
             <button

@@ -106,7 +106,7 @@ export default function Sheet({ titre, onFermer, children, niveau = 1, clair = f
   if (!monte) return null;
 
   return createPortal(
-    <div className="fixed inset-0 mx-auto max-w-md" style={{ zIndex: 100 + niveau * 5 }}>
+    <div className="sheet-overlay fixed inset-0 mx-auto max-w-md" style={{ zIndex: 100 + niveau * 5 }}>
       <div aria-hidden="true" className="voile-feuille absolute inset-0" onClick={onFermer} />
       <div
         ref={feuilleRef}
