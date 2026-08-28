@@ -56,30 +56,31 @@ export default function CarrouselComptes({ onChange }) {
             .filter((t) => t.compteId === c.id || t.versId === c.id)
             .sort((a, b) => b.date.localeCompare(a.date))[0];
           const plafond = !estTous && c.type === "livretA" ? PLAFONDS.livretA : !estTous && c.type === "ldds" ? PLAFONDS.ldds : null;
+          const accent = estTous ? "var(--marque)" : coul.vif;
           return (
             <div
               key={c.id ?? "tous"}
               onClick={() => { if (!estTous && i === actif) transitionPartagee(() => setFiche(c)); }}
               role={estTous ? undefined : "button"}
-              className={`carte-compte relative w-full shrink-0 snap-start overflow-hidden rounded-v3-l p-5 shadow-v3-medium transition-[transform,opacity] duration-v3-normal ease-v3-standard ${!estTous && i === actif ? "cursor-pointer" : ""}`}
+              className={`carte-compte compte-focus-card relative w-full shrink-0 snap-start overflow-hidden rounded-v3-l p-5 shadow-v3-medium transition-[transform,opacity] duration-v3-normal ease-v3-standard ${estTous ? "compte-focus-card--overview" : ""} ${!estTous && i === actif ? "cursor-pointer" : ""}`}
               style={{
                 ...(estTous
-                  ? { background: "linear-gradient(145deg, color-mix(in srgb, var(--marque-bouton) 90%, #17142d) 0%, var(--marque-bouton) 58%, color-mix(in srgb, var(--marque) 68%, var(--marque-bouton)) 140%)" }
+                  ? { "--account-accent": accent }
                   : {
-                      background: `linear-gradient(145deg, color-mix(in srgb, ${coul.vif} 90%, #2b2350) 0%, ${coul.vif} 58%, color-mix(in srgb, ${coul.vif} 55%, white) 145%)`,
-                      border: `1px solid color-mix(in srgb, ${coul.vif} 58%, white)`,
+                      "--account-accent": accent,
+                      "--account-tint": coul.fond,
                     }),
                 transform: "scale(1)",
                 opacity: 1,
                 viewTransitionName: !estTous && i === actif && !fiche ? "carte-active" : undefined,
               }}
             >
-              <div className="reflet" />
+              <div className="compte-focus-glow" />
               <div className="relative">
                 <div className="flex items-start justify-between">
-                  {estTous ? <span className="flex h-10 w-10 items-center justify-center rounded-v3-xs bg-white/15 text-lg text-white backdrop-blur-v3-glass">✨</span> : <CompteLogo type={c.type} taille={40} />}
+                  {estTous ? <span className="compte-focus-icon flex h-10 w-10 items-center justify-center rounded-v3-xs text-lg">✨</span> : <span className="compte-focus-icon flex h-10 w-10 items-center justify-center rounded-v3-xs"><CompteLogo type={c.type} taille={32} /></span>}
                   <span
-                    className="rounded-pill bg-white/15 px-2.5 py-1 text-[11px] font-semibold text-white/90 backdrop-blur-v3-glass"
+                    className="compte-focus-type rounded-pill px-2.5 py-1 text-[11px] font-semibold"
                   >
                     {estTous ? `${comptes.length} comptes` : t.label}
                   </span>
@@ -91,34 +92,34 @@ export default function CarrouselComptes({ onChange }) {
                     style={{
                       background: estTous
                         ? "linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0.2))"
-                        : "linear-gradient(135deg, rgba(200,160,50,0.55), rgba(200,160,50,0.25))",
+                        : "linear-gradient(135deg, color-mix(in srgb, var(--account-accent) 52%, white), color-mix(in srgb, var(--account-accent) 18%, transparent))",
                     }}
                   />
                   <span
                     className="h-2 w-2 rounded-full"
-                    style={{ background: estTous ? "rgba(255,255,255,0.25)" : "var(--c-voile)" }}
+                    style={{ background: estTous ? "rgba(255,255,255,0.25)" : "color-mix(in srgb, var(--account-accent) 38%, transparent)" }}
                   />
                 </div>
                   <div className="mt-6">
                     <Montant
                       valeur={solde}
-                      className={`block font-bold leading-none text-white ${Math.abs(solde) >= 100000 ? "text-[25px]" : Math.abs(solde) >= 10000 ? "text-[30px]" : "text-[34px]"}`}
+                      className={`compte-focus-amount block font-bold leading-none ${Math.abs(solde) >= 100000 ? "text-[25px]" : Math.abs(solde) >= 10000 ? "text-[30px]" : "text-[34px]"} ${solde < 0 ? "text-corail" : ""}`}
                   />
-                  <div className="mt-1 flex items-center gap-1 text-[13px] text-white/75">
+                  <div className="compte-focus-subtitle mt-1 flex items-center gap-1 text-[13px]">
                     {estTous ? "Tous les comptes" : c.nom}
-                    {!estTous && i === actif && <span className="text-white/60">›</span>}
+                    {!estTous && i === actif && <span className="text-sourdine/50">›</span>}
                   </div>
                 </div>
                 {plafond && (
                   <div className="mt-3">
-                    <div className="h-1.5 overflow-hidden rounded-full bg-white/20">
-                      <div className="jauge-in h-full rounded-full" style={{ width: `${Math.max(0, Math.min(100, (solde / plafond) * 100))}%`, background: coul.vif }} />
+                    <div className="h-1.5 overflow-hidden rounded-full bg-voile">
+                      <div className="jauge-in h-full rounded-full" style={{ width: `${Math.max(0, Math.min(100, (solde / plafond) * 100))}%`, background: accent }} />
                     </div>
-                    <p className="mt-1 text-[11px] text-white/70">{Math.max(0, Math.round((solde / plafond) * 100))} % du plafond</p>
+                    <p className="compte-focus-subtitle mt-1 text-[11px]">{Math.max(0, Math.round((solde / plafond) * 100))} % du plafond</p>
                   </div>
                 )}
                 {!estTous && dernierMouvement && (
-                  <p className="mt-3 truncate border-t border-white/15 pt-2 text-[11px] text-white/75">
+                  <p className="compte-focus-footer mt-3 truncate pt-2 text-[11px]">
                     Dernier mouvement · {dernierMouvement.libelle || "Opération"}
                   </p>
                 )}

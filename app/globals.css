@@ -527,6 +527,47 @@ html.sombre .reflet {
 .carte-compte .chiffres { color: #fff; }
 .carte-compte .unite { color: rgba(255, 255, 255, 0.64); }
 
+/* Le carrousel alterne une vue d'ensemble expressive et des comptes plus
+   calmes. La couleur propre à chaque compte devient un accent, jamais un fond
+   qui fatigue la lecture dans le thème clair. */
+.compte-focus-card {
+  min-height: 218px;
+  border: 1px solid color-mix(in srgb, var(--account-accent) 24%, var(--c-bordure));
+  background: linear-gradient(145deg, color-mix(in srgb, var(--account-tint) 64%, var(--c-carte)), var(--c-carte) 62%);
+}
+.compte-focus-card--overview {
+  background:
+    radial-gradient(88% 92% at 108% -10%, rgba(255,255,255,.22), transparent 58%),
+    linear-gradient(135deg, color-mix(in srgb, var(--marque-bouton) 90%, #17142d), var(--marque-bouton) 57%, color-mix(in srgb, var(--marque) 68%, var(--marque-bouton)));
+  border-color: color-mix(in srgb, var(--marque) 72%, white);
+}
+.compte-focus-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .82;
+  background: radial-gradient(90% 70% at 100% 0%, color-mix(in srgb, var(--account-accent) 20%, transparent), transparent 72%);
+}
+.compte-focus-icon {
+  background: color-mix(in srgb, var(--account-accent) 15%, var(--c-carte));
+  color: var(--account-accent);
+  box-shadow: 0 6px 15px color-mix(in srgb, var(--account-accent) 13%, transparent);
+}
+.compte-focus-type { background: color-mix(in srgb, var(--account-accent) 12%, var(--c-carte)); color: var(--account-accent); }
+.compte-focus-amount { color: var(--c-encre) !important; }
+.compte-focus-amount .unite { color: currentColor !important; }
+.compte-focus-subtitle { color: var(--c-sourdine); }
+.compte-focus-footer { border-top: 1px solid var(--c-bordure); color: var(--c-sourdine); }
+.compte-focus-card--overview .compte-focus-icon,
+.compte-focus-card--overview .compte-focus-type { background: rgba(255,255,255,.15); color: white; box-shadow: none; }
+.compte-focus-card--overview .compte-focus-amount { color: white !important; }
+.compte-focus-card--overview .compte-focus-subtitle,
+.compte-focus-card--overview .compte-focus-footer { color: rgba(255,255,255,.74); }
+.compte-focus-card--overview .compte-focus-footer { border-top-color: rgba(255,255,255,.2); }
+html.sombre .compte-focus-card:not(.compte-focus-card--overview) {
+  background: linear-gradient(145deg, color-mix(in srgb, var(--account-tint) 18%, var(--c-carte)), var(--c-carte));
+}
+
 /* Les grandes cartes d'espaces gardent une profondeur chaleureuse, mais les
    comptes individuels restent faciles à lire : couleur d'identité en liseré,
    contenu posé sur une vraie surface. */
