@@ -166,6 +166,24 @@ export default function AddSheet({ onFermer, modeInitial = "depense" }) {
   };
 
   const valeur = parseFloat(String(montant).replace(",", ".")) || 0;
+  // Un vrai pavé évite d'ouvrir le clavier iOS : l'ajout reste dans la feuille
+  // et le pouce ne quitte jamais l'action en cours.
+  const saisirMontant = (touche) => {
+    setErreurFormulaire("");
+    setMontant((actuel) => {
+      if (touche === "effacer") return actuel.slice(0, -1);
+      if (touche === ",") {
+        if (actuel.includes(",")) return actuel;
+        return actuel ? `${actuel},` : "0,";
+      }
+      const [entier = "", decimales] = actuel.split(",");
+      if (decimales !== undefined && decimales.length >= 2) return actuel;
+      if (decimales === undefined && entier.length >= 7) return actuel;
+      // On évite les suites de zéros inutiles, sans empêcher 0,50 €.
+      if (decimales === undefined && entier === "0") return touche;
+      return `${actuel}${touche}`;
+    });
+  };
   const couleurMontant = mode === "depense" ? "text-corail" : mode === "revenu" ? "text-menthe" : "text-encre";
   const dateHier = useMemo(() => {
     const d = new Date();
@@ -371,15 +389,11 @@ export default function AddSheet({ onFermer, modeInitial = "depense" }) {
                 <input
                   value={montant}
                   size={Math.max(1, montant.length)}
-                  inputMode="decimal"
-                  enterKeyHint="next"
                   aria-label="Montant"
                   placeholder="0"
-                  onChange={(e) => {
-                    const valeurSaisie = e.target.value.replace(".", ",");
-                    if (/^\d{0,7}(,\d{0,2})?$/.test(valeurSaisie)) setMontant(valeurSaisie);
-                  }}
-                  className="chiffres min-w-[3.2ch] max-w-[7ch] bg-transparent text-center text-[1em] font-bold leading-none outline-none placeholder:text-ui-text-secondary"
+                  readOnly
+                  tabIndex={-1}
+                  className="chiffres pointer-events-none min-w-[3.2ch] max-w-[7ch] bg-transparent text-center text-[1em] font-bold leading-none outline-none placeholder:text-ui-text-secondary"
                 />
                 <span className="unite ml-1 text-[0.5em] text-sourdine">€</span>
               </span>
@@ -398,6 +412,25 @@ export default function AddSheet({ onFermer, modeInitial = "depense" }) {
               )}
               </div>
             )}
+          </div>
+
+          <div className="add-keypad" role="group" aria-label="Pavé numérique pour le montant">
+            {["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0"].map((touche) => (
+              <button
+                key={touche}
+                type="button"
+                onClick={() => saisirMontant(touche)}
+                className="add-keypad__key tappable"
+                aria-label={touche === "," ? "Virgule" : touche}
+              >
+                {touche}
+              </button>
+            ))}
+            <button type="button" onClick={() => saisirMontant("effacer")} className="add-keypad__key add-keypad__erase tappable" aria-label="Effacer le dernier chiffre">
+              <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 4H8l-5 8 5 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z" /><path d="m10 9 5 6m0-6-5 6" />
+              </svg>
+            </button>
           </div>
 
           {mode !== "virement" && (
