@@ -3,19 +3,17 @@
 import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { useBudget } from "@/lib/store";
-import { cleMois, euros, aujourdhui, dateCourte } from "@/lib/format";
-import { calculerProjection } from "@/lib/projection";
+import { cleMois, euros, aujourdhui } from "@/lib/format";
 import { statsMois } from "@/lib/conseils";
 import TxRow from "@/components/TxRow";
 import Sheet from "@/components/Sheet";
 import EtatVide from "@/components/EtatVide";
 import { rechercher } from "@/lib/recherche";
-import CalendrierFinancier from "@/components/CalendrierFinancier";
 
 const ImportCSV = dynamic(() => import("@/components/ImportCSV"), { ssr: false });
 
 export default function Transactions() {
-  const { transactions, comptes, categories, recurrentes, soldes, profil } = useBudget();
+  const { transactions, comptes, categories } = useBudget();
   const [compteId, setCompteId] = useState("tous");
   const [catFiltre, setCatFiltre] = useState("toutes");
   const [importOuvert, setImportOuvert] = useState(false);
@@ -120,22 +118,6 @@ export default function Transactions() {
     try { localStorage.setItem("astuce-swipe", "1"); } catch {}
   };
 
-  const projection = useMemo(
-    () => calculerProjection({ comptes, soldes, transactions, recurrentes, profil }),
-    [comptes, soldes, transactions, recurrentes, profil]
-  );
-  const { salaireISO, aVenir } = projection;
-  const pointBas = useMemo(
-    () => projection.evolution.reduce((min, point) => point.solde < min.solde ? point : min, projection.evolution[0] || { solde: projection.dispo, date: aujourdhui() }),
-    [projection]
-  );
-  const prochaineSortie = useMemo(() => aVenir.find((t) => t.montant < 0), [aVenir]);
-
-  const aVenirAffiche = useMemo(
-    () => aVenir.filter((t) => compteId === "tous" || t.compteId === compteId || t.versId === compteId),
-    [aVenir, compteId]
-  );
-
   const nomMois = (m) => {
     const s = new Date(m + "-15").toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
     return s.charAt(0).toUpperCase() + s.slice(1);
@@ -144,10 +126,11 @@ export default function Transactions() {
   return (
     <div className="transactions-v4 space-y-6">
       <header className="flex items-center justify-between px-1">
-        <div><p className="text-v3-caption font-semibold uppercase tracking-[.14em] text-ui-primary">Mouvements du compte</p><h1 className="mt-1 text-3xl font-bold tracking-tight">Transactions</h1></div>
-        <button onClick={() => setFiltresOuverts((ouvert) => !ouvert)} aria-label="Ouvrir les filtres" className={`tappable flex h-11 w-11 items-center justify-center rounded-2xl border text-xl shadow-v3-soft ${filtresOuverts ? "border-marque bg-marque-pale text-marque-texte" : "border-ui-hairline bg-ui-surface-floating"}`}>⌕</button>
+        <div><p className="text-v3-caption font-semibold uppercase tracking-[.14em] text-ui-primary">Ce qui s’est passé</p><h1 className="mt-1 text-3xl font-bold tracking-tight">Activité</h1></div>
+        <button onClick={() => setFiltresOuverts((ouvert) => !ouvert)} aria-label="Rechercher ou filtrer" className={`tappable flex h-11 w-11 items-center justify-center rounded-2xl border text-xl shadow-v3-soft ${filtresOuverts ? "border-marque bg-marque-pale text-marque-texte" : "border-ui-hairline bg-ui-surface-floating"}`}>⌕</button>
       </header>
 
+      {filtresOuverts && <div className="fade-in space-y-3 rounded-v3-m border border-bordure bg-carte p-3.5 shadow-carte">
       <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
         <button
           onClick={() => setCompteId("tous")}
@@ -187,20 +170,9 @@ export default function Transactions() {
         )}
       </div>
 
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => setFiltresOuverts((ouvert) => !ouvert)}
-          aria-expanded={filtresOuverts}
-          aria-controls="filtres-transactions"
-          className={`flex min-w-0 flex-1 items-center justify-between gap-2 rounded-ios border px-3.5 py-2.5 text-sm font-semibold transition ${filtresActifs ? "border-marque bg-marque-pale text-marque-texte" : "border-bordure bg-carte"}`}
-        >
-          <span className="truncate">☷ Filtres avancés</span>
-          <span className="shrink-0 text-xs">{filtresOuverts ? "Masquer" : filtresActifs ? "Actifs" : "Afficher"}</span>
-        </button>
-        {(recherche || filtresActifs || compteId !== "tous") && (
+      {(recherche || filtresActifs || compteId !== "tous") && (
           <button onClick={effacerFiltres} className="rounded-ios bg-voile px-3 py-2.5 text-xs font-semibold text-sourdine">Réinitialiser</button>
-        )}
-      </div>
+      )}
 
       <div className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1" aria-label="Raccourcis de recherche">
         {[
@@ -226,8 +198,7 @@ export default function Transactions() {
         })}
       </div>
 
-      {filtresOuverts && (
-        <div id="filtres-transactions" className="fade-in space-y-3 rounded-v3-m border border-bordure bg-carte p-3.5 shadow-carte">
+        <div id="filtres-transactions" className="space-y-3 border-t border-bordure pt-3">
           <div>
             <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-sourdine">Période</p>
             <div className="grid grid-cols-3 gap-1.5">
@@ -254,7 +225,6 @@ export default function Transactions() {
           </label>
           <p className="text-[11px] text-sourdine">La recherche comprend aussi le lieu, le compte, le libellé de la banque et les requêtes comme « &gt;50 » ou « dépense ».</p>
         </div>
-      )}
 
       {/* Filtre par catégorie */}
       {catsPresentes.length > 1 && (
@@ -276,6 +246,7 @@ export default function Transactions() {
           ))}
         </div>
       )}
+      </div>}
 
       {bilan && bilan.nb > 0 && (
         <div className="tnum rounded-ios bg-carte px-4 py-2.5 text-sm shadow-carte">
@@ -285,97 +256,10 @@ export default function Transactions() {
         </div>
       )}
 
-      {/* Reste à vivre projeté */}
-      {!recherche && !filtresActifs && (
-        <div className={`relative overflow-hidden rounded-v3-m p-4 sm:p-5 text-white shadow-v3-medium ${projection.reste < 0 ? "bg-[linear-gradient(145deg,var(--corail),var(--corail-bouton))]" : "dashboard-hero"}`}>
-          <div className="reflet opacity-60" />
-          <div className="relative">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-white/75">Reste à vivre</h2>
-              <p className="mt-0.5 text-xs font-medium text-white/65">{salaireISO ? `Jusqu’au salaire · ${dateCourte(salaireISO)}` : "Projection sur 30 jours"}</p>
-            </div>
-            <span className="shrink-0 rounded-pill bg-white/15 px-2.5 py-1 text-xs font-semibold">{projection.jours} j</span>
-          </div>
-          <div className="chiffres mt-2 text-4xl font-bold">
-            {euros(projection.reste)}
-          </div>
-          <p className="tnum mt-2 text-xs text-white/75">
-            {euros(projection.dispo)} dispo
-            {projection.prevu > 0 && ` − ${euros(projection.prevu)} prévus`}
-            {projection.attendu > 0 && ` + ${euros(projection.attendu)} attendus`}
-            {" "}· ~{euros(projection.reste / projection.jours)} / jour
-          </p>
-          {!salaireISO && (
-            <p className="mt-2 text-xs text-white/75">Renseigne ton jour de salaire dans ⚙️ → Mon profil pour caler la projection sur ta paie.</p>
-          )}
-          {(prochaineSortie || pointBas.solde < projection.dispo) && (
-            <div className="mt-3 grid grid-cols-2 gap-2 border-t border-white/20 pt-3 text-xs">
-              <span><span className="block text-white/60">Prochaine sortie</span><strong className="block truncate">{prochaineSortie ? `${prochaineSortie.libelle} · ${euros(Math.abs(prochaineSortie.montant))}` : "Aucune prévue"}</strong></span>
-              <span><span className="block text-white/60">Point bas prévu</span><strong className="block">{euros(pointBas.solde)} · {dateCourte(pointBas.date)}</strong></span>
-            </div>
-          )}
-          </div>
-        </div>
-      )}
-
-      {!recherche && !filtresActifs && <CalendrierFinancier projection={projection} categories={categories} />}
-
-      {/* À venir */}
-      {!recherche && !filtresActifs && aVenirAffiche.length > 0 && (
-        <section>
-          <div className="mb-2 flex items-center justify-between"><h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">À venir</h2><span className="text-xs font-semibold text-marque">Prévision</span></div>
-          <ul className="space-y-2">
-            {aVenirAffiche.map((t, i) =>
-              t.virtuel ? (
-                <li
-                  key={t.id}
-                  onClick={() => setRecurrenteEdition(recurrentes.find((r) => r.id === t.recurrenteId) || null)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setRecurrenteEdition(recurrentes.find((r) => r.id === t.recurrenteId) || null);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Gérer l'opération à venir ${t.libelle}`}
-                  className="tappable pop-in flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-bordure bg-carte/50 px-3 py-2 opacity-75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marque"
-                  style={{ animationDelay: `${Math.min(i, 8) * 50}ms` }}
-                >
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-fond text-base">
-                    {(categories[t.categorie] || categories.autre).icone}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold">{t.libelle}</span>
-                    <span className="block text-xs text-sourdine">{dateCourte(t.date)} · 🔁 prévu</span>
-                  </span>
-                  <span className={`tnum shrink-0 text-sm font-bold ${t.montant > 0 ? "text-menthe" : "text-corail-texte"}`}>
-                    {t.montant > 0 ? "+" : ""}{euros(t.montant, { precis: true })}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); setRecurrenteEdition(recurrentes.find((r) => r.id === t.recurrenteId) || null); }}
-                    aria-label={`Gérer la récurrence ${t.libelle}`}
-                    className="tappable -mr-1 flex h-9 w-8 shrink-0 items-center justify-center rounded-full text-lg text-sourdine hover:bg-voile focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-marque"
-                  >
-                    ⋯
-                  </button>
-                </li>
-              ) : (
-                <TxRow key={t.id} tx={t} avecCompte={compteId === "tous"} retard={i} />
-              )
-            )}
-          </ul>
-        </section>
-      )}
-
       {parMois.length > 0 && !recherche && !filtresActifs && (
         <div className="flex items-baseline justify-between">
-          <h2 className="!mb-0 text-sm font-semibold uppercase tracking-wide text-sourdine">Passées</h2>
-          <button onClick={fermerAstuce} className="text-right text-[11px] font-medium text-sourdine">
-            {astuce ? "Touchez ⋯ pour modifier · glissez pour supprimer · OK" : "⋯ Modifier · glisser pour supprimer"}
-          </button>
+          <h2 className="!mb-0 text-sm font-semibold uppercase tracking-wide text-sourdine">Dernières opérations</h2>
+          {astuce && <button onClick={fermerAstuce} className="text-right text-[11px] font-medium text-sourdine">Modifier une opération</button>}
         </div>
       )}
 

@@ -74,6 +74,19 @@ export default function AppShell({ children }) {
     return () => window.removeEventListener("keydown", ouvrirRecherche);
   }, []);
 
+  // L'action principale de l'accueil ne dépend plus de la barre de
+  // navigation. Elle ouvre directement le formulaire approprié, y compris
+  // lorsque la barre est hors de l'écran ou adaptée au format bureau.
+  useEffect(() => {
+    const ouvrirAjout = (event) => {
+      setModeAjout(event.detail?.mode || "depense");
+      setActionsOuvertes(false);
+      setAjoutOuvert(true);
+    };
+    window.addEventListener("pecule:ajouter", ouvrirAjout);
+    return () => window.removeEventListener("pecule:ajouter", ouvrirAjout);
+  }, []);
+
   // La page entre du côté vers lequel on navigue, comme dans les apps natives.
   const ORDRE = ["/", "/patrimoine", "/comptes", "/pilotage", "/mois", "/plan", "/budgets", "/statistiques", "/calendrier", "/previsions", "/inbox", "/cloture", "/abonnements", "/regles", "/coach", "/conseils", "/controle", "/reglages"];
   const cheminPrecedent = useRef(chemin);

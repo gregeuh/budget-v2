@@ -3,8 +3,7 @@
 import { fetchSuivi } from "@/lib/journal";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useBudget } from "@/lib/store";
-import { FREQUENCES, aujourdhui, euros, COULEURS } from "@/lib/format";
-import LogoCommercant from "./LogoCommercant";
+import { FREQUENCES, aujourdhui, euros } from "@/lib/format";
 import Sheet from "./Sheet";
 import PointsSautillants from "./PointsSautillants";
 import { construireMemoire, devinerDepuisHistorique, lieuxConnus, proposerLibelles } from "@/lib/habitudes";
@@ -71,6 +70,7 @@ export default function AddSheet({ onFermer, modeInitial = "depense" }) {
   const [secousse, setSecousse] = useState(0);
   // Saisie en langage naturel
   const [phrase, setPhrase] = useState("");
+  const [saisieNaturelleOuverte, setSaisieNaturelleOuverte] = useState(false);
   const [analyseEnCours, setAnalyseEnCours] = useState(false);
   const [noteIA, setNoteIA] = useState("");
   const [erreurIA, setErreurIA] = useState("");
@@ -261,33 +261,6 @@ export default function AddSheet({ onFermer, modeInitial = "depense" }) {
     setAutoApplique(applique);
   };
 
-  const suggestions = useMemo(() => {
-    if (mode === "virement") return [];
-    const map = new Map();
-    for (const t of transactions) {
-      const lib = (t.libelle || "").trim();
-      if (!lib) continue;
-      const cat = categories[t.categorie] || categories.autre;
-      if (cat.type === "virement") continue;
-      if (mode === "revenu" ? t.montant <= 0 : t.montant >= 0) continue;
-      const cle = lib.toLowerCase();
-      const e = map.get(cle) || { libelle: lib, n: 0, date: "", categorie: t.categorie, compteId: t.compteId, montant: t.montant };
-      e.n++;
-      if (t.date > e.date) { e.date = t.date; e.categorie = t.categorie; e.compteId = t.compteId; e.montant = t.montant; }
-      map.set(cle, e);
-    }
-    return [...map.values()].filter((e) => e.n >= 2).sort((a, b) => b.n - a.n).slice(0, 6);
-  }, [transactions, mode, categories]);
-
-  const appliquerSuggestion = (sug) => {
-    setLibelle(sug.libelle);
-    setCategorie(sug.categorie);
-    appliquerHabitude(sug.libelle);
-    if (comptes.some((c) => c.id === sug.compteId)) setCompteId(sug.compteId);
-    if (!montant) setMontant(String(Math.abs(sug.montant)).replace(".", ","));
-    setEtape(2);
-  };
-
   // Doublon probable : même compte, même montant, même jour (± libellé proche)
   const doublon = useMemo(() => {
     if (mode === "virement" || valeur <= 0 || !compteId) return null;
@@ -357,7 +330,7 @@ export default function AddSheet({ onFermer, modeInitial = "depense" }) {
     montant.length <= 5 ? "text-[54px]" : montant.length <= 7 ? "text-[44px]" : "text-[36px]";
 
   return (
-    <Sheet titre="Nouvelle opération" onFermer={onFermer}>
+    <Sheet titre="Ajouter une opération" onFermer={onFermer}>
       <p role="status" aria-live="polite" className="sr-only">{erreurFormulaire}</p>
       {etape === 1 ? (
         <div key="e1" data-add-step className="pop-in">
@@ -427,30 +400,17 @@ export default function AddSheet({ onFermer, modeInitial = "depense" }) {
             )}
           </div>
 
-          {/* Raccourcis de commerçants : ligne légère à la manière de Wallet */}
-          {suggestions.length > 0 && (
-            <div className="mb-4">
-              <div className="mb-2 flex items-center justify-between px-1">
-                <p className="text-xs font-semibold uppercase tracking-wide text-sourdine">Récents</p>
-                <span className="text-xs font-medium text-marque">Tout afficher ›</span>
-              </div>
-              <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-                {suggestions.slice(0, 4).map((sug) => {
-                  const cat = categories[sug.categorie] || categories.autre;
-                  const teinte = COULEURS[cat.couleur]?.vif || "var(--marque)";
-                  return (
-                    <button
-                      key={sug.libelle}
-                      onClick={() => appliquerSuggestion(sug)}
-                      className="tappable flex w-[76px] shrink-0 flex-col items-center gap-1.5 rounded-2xl bg-ui-surface-floating px-2 py-2 shadow-v3-soft"
-                    >
-                      <LogoCommercant nom={sug.libelle} couleur={teinte} taille={36} />
-                      <span className="w-full truncate text-center text-[11px] font-semibold">{sug.libelle}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+          {mode !== "virement" && (
+            <label className="mb-3 block">
+              <span className="sr-only">Chez qui ?</span>
+              <input
+                ref={libelleRef}
+                value={libelle}
+                onChange={(e) => { setLibelle(e.target.value); appliquerHabitude(e.target.value); }}
+                placeholder="Chez qui ? (optionnel)"
+                className="w-full champ px-4 py-3 text-base outline-none"
+              />
+            </label>
           )}
 
           {comptes.length === 0 ? (
@@ -459,19 +419,19 @@ export default function AddSheet({ onFermer, modeInitial = "depense" }) {
             <button
               onClick={() => (valeur > 0 ? setEtape(2) : secouer())}
               type="button"
-              className={`sticky bottom-0 z-10 mt-5 w-full rounded-ios bg-marque-bouton py-3.5 font-semibold text-surMarque shadow-bouton active:scale-[0.99] transition-transform ${valeur <= 0 ? "opacity-40" : ""}`}
+              className={`sticky bottom-0 z-10 mt-4 w-full rounded-ios bg-marque-bouton py-3.5 font-semibold text-surMarque shadow-bouton active:scale-[0.99] transition-transform ${valeur <= 0 ? "opacity-40" : ""}`}
             >
               Continuer
             </button>
           )}
 
-          {/* Voie secondaire : décrire en langage naturel */}
-          <div className="mt-4 flex items-center gap-3">
-            <span className="h-px flex-1 bg-bordure" />
-            <span className="text-xs font-medium text-sourdine">ou décris-la ✨</span>
-            <span className="h-px flex-1 bg-bordure" />
+          {/* La saisie naturelle reste disponible, mais n'encombre pas l'action principale. */}
+          <div className="mt-3 text-center">
+            <button type="button" onClick={() => setSaisieNaturelleOuverte((ouverte) => !ouverte)} aria-expanded={saisieNaturelleOuverte} className="text-xs font-semibold text-marque-texte">
+              {saisieNaturelleOuverte ? "Fermer la saisie rapide" : "Ou décrire l’opération en une phrase"}
+            </button>
           </div>
-          <div className="mt-3 flex gap-2">
+          {saisieNaturelleOuverte && <div className="fade-in mt-3 flex gap-2">
             <input
               value={phrase}
               inputMode="text"
@@ -479,7 +439,7 @@ export default function AddSheet({ onFermer, modeInitial = "depense" }) {
               aria-label="Décrire une opération en langage naturel"
               onChange={(e) => setPhrase(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && interpreter()}
-              placeholder="« 15€ courses Carrefour hier »"
+              placeholder="Ex. 15 € Carrefour hier"
               className="min-w-0 flex-1 champ champ-pill px-4 py-2.5 text-sm outline-none"
             />
             <button
@@ -490,7 +450,7 @@ export default function AddSheet({ onFermer, modeInitial = "depense" }) {
             >
               {analyseEnCours ? <PointsSautillants taille={4} couleur="var(--marque-texte)" /> : "✨"}
             </button>
-          </div>
+          </div>}
         </div>
       ) : (
         <div key="e2" className="pop-in space-y-3">

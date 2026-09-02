@@ -59,9 +59,9 @@ function ConfidentialiteSheet({ onFermer }) {
 }
 
 const THEMES = [
-  { id: "auto", label: "Automatique", detail: "Suit le réglage de l'iPhone", icone: "🌗" },
-  { id: "clair", label: "Clair", detail: "Toujours lumineux", icone: "☀️" },
-  { id: "sombre", label: "Sombre", detail: "Toujours sombre", icone: "🌙" },
+  { id: "auto", label: "Automatique", detail: "Suit le réglage de l’iPhone", icone: "🌗" },
+  { id: "clair", label: "Clair", detail: "Papier, net et lumineux", icone: "☀️" },
+  { id: "sombre", label: "Sombre", detail: "Graphite profond, sans reflets", icone: "🌙" },
 ];
 
 /* ---- Ligne de réglage façon iOS/Revolut ---- */

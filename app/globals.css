@@ -252,6 +252,344 @@ body {
   }
 }
 
+/* Final theme contract: these come last deliberately so legacy component
+   decorations cannot leak a dark panel into the light theme (or vice versa). */
+html:not(.sombre) { color-scheme: light; }
+html:not(.sombre) body { background: #f7f7f5; background-image: radial-gradient(72% 38% at 100% -12%, color-mix(in srgb, var(--marque) 7%, transparent), transparent 73%); }
+html.sombre body { background: #101113; background-image: radial-gradient(70% 38% at 100% -12%, color-mix(in srgb, var(--marque) 11%, transparent), transparent 74%); }
+
+.pecule-home--focus { display: block; max-width: 560px; }
+.pecule-home--focus .pecule-home__header { margin-bottom: 36px; }
+.pecule-home--focus .pecule-balance { min-height: unset; padding: 0 2px; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.pecule-home--focus .pecule-balance .pecule-eyebrow, .pecule-home--focus .pecule-balance__label { color: var(--c-sourdine); }
+.pecule-home--focus .pecule-balance__amount { margin-top: 12px; color: var(--c-encre); font-size: clamp(3.8rem, 17vw, 5.3rem); letter-spacing: -.08em; line-height: .9; }
+.pecule-home--focus .pecule-balance__label { margin-top: 14px; font-size: .94rem; }
+.pecule-home--focus .pecule-actions--simple { grid-template-columns: 1fr 1fr; margin-top: 34px; }
+.pecule-home--focus .pecule-action { min-height: 72px; flex-direction: row; gap: 9px; border-radius: 18px; background: var(--c-carte); box-shadow: none; font-size: .84rem; }
+.pecule-home--focus .pecule-action__icon { width: 26px; height: 26px; border-radius: 9px; background: var(--marque-pale); color: var(--marque-texte); font-size: 19px; }
+.pecule-home--focus .pecule-action--primary { border-color: var(--corail); background: var(--corail); box-shadow: 0 10px 20px color-mix(in srgb, var(--corail) 22%, transparent); color: white; }
+.pecule-home--focus .pecule-action--primary .pecule-action__icon { background: rgba(255,255,255,.18); color: white; }
+.pecule-next-payment { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 3px 12px; margin-top: 28px; padding: 17px 18px; border: 1px solid var(--c-bordure); border-radius: 20px; background: var(--c-carte); box-shadow: var(--ombre-carte); }
+.pecule-next-payment__kicker { grid-column: 1 / -1; color: var(--c-sourdine); font-size: .72rem; font-weight: 700; }
+.pecule-next-payment__name { color: var(--c-encre); font-size: 1rem; font-weight: 700; }
+.pecule-next-payment__date { grid-column: 1; color: var(--c-sourdine); font-size: .8rem; }
+.pecule-next-payment strong { grid-column: 2; grid-row: 2 / span 2; align-self: center; color: var(--c-encre); font-variant-numeric: tabular-nums; }
+.pecule-home--focus .pecule-goal { min-height: 0; margin-top: 28px; padding: 19px; border-color: color-mix(in srgb, var(--marque) 17%, var(--c-bordure)); border-radius: 21px; background: color-mix(in srgb, var(--marque) 7%, var(--c-carte)); box-shadow: none; color: var(--c-encre); }
+.pecule-home--focus .pecule-goal .pecule-eyebrow, .pecule-home--focus .pecule-goal p, .pecule-home--focus .pecule-goal .pecule-goal__segments + div { color: var(--c-sourdine) !important; }
+.pecule-home--focus .pecule-goal:hover { color: var(--c-encre); }
+.pecule-home--focus .pecule-goal__segments i { background: color-mix(in srgb, var(--marque) 13%, var(--c-carte)); }
+.pecule-home--focus .pecule-goal__segments i.is-active { background: var(--menthe); box-shadow: none; }
+.pecule-home--focus .pecule-goal--empty { background: var(--c-carte); }
+.pecule-home--focus .pecule-goal--empty small { color: var(--marque-texte); }
+.pecule-home--focus .pecule-activity { margin-top: 34px; }
+.pecule-home--focus .pecule-activity__list { border-top: 1px solid var(--c-bordure); border-bottom: 1px solid var(--c-bordure); }
+.pecule-home--focus .pecule-activity__list .transaction-row { min-height: 70px; background: transparent; }
+html:not(.sombre) .tabbar__surface { border-color: var(--c-bordure); background: rgba(255,255,255,.96); box-shadow: 0 12px 28px rgba(16,17,20,.12); }
+html:not(.sombre) .tabbar__item { color: #777780 !important; }
+html:not(.sombre) .tabbar__item[aria-current="page"] { background: var(--marque-pale) !important; color: var(--marque-texte) !important; }
+html:not(.sombre) .tabbar__add { border-color: #fff; background: #18181b !important; box-shadow: 0 9px 20px rgba(16,17,20,.2); }
+html.sombre .tabbar__surface { border-color: #303035; background: rgba(23,24,27,.97); box-shadow: 0 12px 30px rgba(0,0,0,.45); }
+html.sombre .tabbar__item { color: #a5a5af !important; }
+html.sombre .tabbar__item[aria-current="page"] { background: #2a2a31 !important; color: #fff !important; }
+html.sombre .tabbar__add { border-color: #151518; background: var(--marque-bouton) !important; }
+html.sombre .pecule-home--focus .pecule-balance__amount, html.sombre .pecule-home--focus .pecule-next-payment__name, html.sombre .pecule-home--focus .pecule-next-payment strong { color: var(--c-encre); }
+html.sombre .pecule-home--focus .pecule-action:not(.pecule-action--primary), html.sombre .pecule-home--focus .pecule-next-payment { border-color: var(--c-bordure); background: var(--c-carte); }
+html.sombre .pecule-home--focus .pecule-goal { background: #19191d; border-color: #303035; }
+html.sombre .pecule-home--focus .pecule-action--primary { background: var(--corail); border-color: var(--corail); }
+@media (min-width: 900px) { .pecule-home--focus { display: block; max-width: 640px; } .pecule-home--focus .pecule-home__header { margin-bottom: 44px; } }
+
+/* À venir : une chronologie, pas un tableau de bord. */
+.avenir-page { max-width: 560px; }
+.avenir-semaine { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.avenir-semaine > div { position: relative; display: grid; min-height: 62px; place-items: center; align-content: center; gap: 2px; border-radius: 16px; color: var(--c-sourdine); }
+.avenir-semaine span { font-size: 10px; font-weight: 700; }
+.avenir-semaine b { display: grid; width: 31px; height: 31px; place-items: center; border: 1px solid var(--c-bordure); border-radius: 999px; color: var(--c-encre); font-size: .86rem; }
+.avenir-semaine .is-active b { border-color: var(--marque); background: var(--marque); color: var(--sur-marque); box-shadow: 0 7px 15px color-mix(in srgb, var(--marque) 23%, transparent); }
+.avenir-semaine i { position: absolute; bottom: 0; width: 4px; height: 4px; border-radius: 999px; background: var(--corail); }
+.avenir-prochain { padding: 19px; border: 1px solid var(--c-bordure); border-radius: 21px; background: var(--c-carte); box-shadow: var(--ombre-carte); }
+.avenir-prochain > span { display:block; color: var(--c-sourdine); font-size: .75rem; font-weight: 700; }
+.avenir-prochain > div { display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin-top:7px; }
+.avenir-prochain strong { color: var(--c-encre); font-size: 1.1rem; }
+.avenir-prochain b { font-size: 1.05rem; }
+.avenir-prochain small { display:block; margin-top:7px; color: var(--c-sourdine); font-size:.78rem; }
+.avenir-prochain--calme { background: color-mix(in srgb, var(--menthe) 8%, var(--c-carte)); }
+.avenir-prochain--calme strong { display:block; }
+.avenir-liste { overflow: hidden; border-top: 1px solid var(--c-bordure); border-bottom: 1px solid var(--c-bordure); }
+.avenir-liste li { display:flex; align-items:center; gap:12px; min-height:74px; border-bottom:1px solid var(--c-bordure); padding:10px 2px; }
+.avenir-liste li:last-child { border-bottom:0; }
+.avenir-liste__icone { display:grid; width:38px; height:38px; flex:0 0 auto; place-items:center; border-radius:13px; background:var(--c-voile); font-size:18px; }
+.avenir-liste strong, .avenir-liste b { display:block; color:var(--c-encre); font-size:.9rem; }
+.avenir-liste small { display:block; margin-top:3px; color:var(--c-sourdine); font-size:.72rem; }
+.avenir-apres { display:grid; grid-template-columns:1fr auto; gap:3px 12px; padding:19px; border-radius:21px; background:color-mix(in srgb, var(--marque) 8%, var(--c-carte)); }
+.avenir-apres span, .avenir-apres small { color:var(--c-sourdine); font-size:.78rem; }
+.avenir-apres strong { grid-row:span 2; grid-column:2; align-self:center; color:var(--c-encre); font-size:1.25rem; }
+html.sombre .avenir-prochain { background:#19191d; border-color:#303035; }
+html.sombre .avenir-prochain--calme { background:color-mix(in srgb, var(--menthe) 10%, #19191d); }
+html.sombre .avenir-apres { background:color-mix(in srgb, var(--marque) 13%, #19191d); }
+
+/* Direction "au calme" — le clair et le sombre sont deux interfaces
+   complètes, pas le même écran avec un fond inversé. Ces règles finales
+   neutralisent les anciens aplats nuit/lavande qui pouvaient survivre au
+   changement de thème dans certains écrans. */
+html:not(.sombre) {
+  color-scheme: light;
+}
+
+html:not(.sombre) body {
+  background: #f7f7f5;
+  background-image: radial-gradient(72% 38% at 100% -12%, color-mix(in srgb, var(--marque) 7%, transparent), transparent 73%);
+}
+
+html.sombre body {
+  background: #101113;
+  background-image: radial-gradient(70% 38% at 100% -12%, color-mix(in srgb, var(--marque) 11%, transparent), transparent 74%);
+}
+
+.pecule-home--focus {
+  max-width: 560px;
+  gap: 0;
+}
+
+.pecule-home--focus .pecule-home__header { margin-bottom: 36px; }
+.pecule-home--focus .pecule-balance {
+  min-height: unset;
+  padding: 0 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.pecule-home--focus .pecule-balance .pecule-eyebrow,
+.pecule-home--focus .pecule-balance__label { color: var(--c-sourdine); }
+.pecule-home--focus .pecule-balance__amount {
+  margin-top: 12px;
+  color: var(--c-encre);
+  font-size: clamp(3.8rem, 17vw, 5.3rem);
+  letter-spacing: -.08em;
+  line-height: .9;
+}
+.pecule-home--focus .pecule-balance__label { margin-top: 14px; font-size: .94rem; }
+.pecule-home--focus .pecule-actions--simple { grid-template-columns: 1fr 1fr; margin-top: 34px; }
+.pecule-home--focus .pecule-action {
+  min-height: 72px;
+  flex-direction: row;
+  gap: 9px;
+  border-radius: 18px;
+  background: var(--c-carte);
+  box-shadow: none;
+  font-size: .84rem;
+}
+.pecule-home--focus .pecule-action__icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 9px;
+  background: var(--marque-pale);
+  color: var(--marque-texte);
+  font-size: 19px;
+}
+.pecule-home--focus .pecule-action--primary {
+  border-color: var(--corail);
+  background: var(--corail);
+  box-shadow: 0 10px 20px color-mix(in srgb, var(--corail) 22%, transparent);
+  color: white;
+}
+.pecule-home--focus .pecule-action--primary .pecule-action__icon { background: rgba(255,255,255,.18); color: white; }
+
+.pecule-next-payment {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 3px 12px;
+  margin-top: 28px;
+  padding: 17px 18px;
+  border: 1px solid var(--c-bordure);
+  border-radius: 20px;
+  background: var(--c-carte);
+  box-shadow: var(--ombre-carte);
+}
+.pecule-next-payment__kicker { grid-column: 1 / -1; color: var(--c-sourdine); font-size: .72rem; font-weight: 700; }
+.pecule-next-payment__name { color: var(--c-encre); font-size: 1rem; font-weight: 700; }
+.pecule-next-payment__date { grid-column: 1; color: var(--c-sourdine); font-size: .8rem; }
+.pecule-next-payment strong { grid-column: 2; grid-row: 2 / span 2; align-self: center; color: var(--c-encre); font-variant-numeric: tabular-nums; }
+
+.pecule-home--focus .pecule-goal {
+  min-height: 0;
+  margin-top: 28px;
+  padding: 19px;
+  border-color: color-mix(in srgb, var(--marque) 17%, var(--c-bordure));
+  border-radius: 21px;
+  background: color-mix(in srgb, var(--marque) 7%, var(--c-carte));
+  box-shadow: none;
+  color: var(--c-encre);
+}
+.pecule-home--focus .pecule-goal .pecule-eyebrow,
+.pecule-home--focus .pecule-goal p,
+.pecule-home--focus .pecule-goal .pecule-goal__segments + div { color: var(--c-sourdine) !important; }
+.pecule-home--focus .pecule-goal:hover { color: var(--c-encre); }
+.pecule-home--focus .pecule-goal__segments i { background: color-mix(in srgb, var(--marque) 13%, var(--c-carte)); }
+.pecule-home--focus .pecule-goal__segments i.is-active { background: var(--menthe); box-shadow: none; }
+.pecule-home--focus .pecule-goal--empty { background: var(--c-carte); }
+.pecule-home--focus .pecule-goal--empty small { color: var(--marque-texte); }
+.pecule-home--focus .pecule-activity { margin-top: 34px; }
+.pecule-home--focus .pecule-activity__list { border-top: 1px solid var(--c-bordure); border-bottom: 1px solid var(--c-bordure); }
+.pecule-home--focus .pecule-activity__list .transaction-row { min-height: 70px; background: transparent; }
+
+/* Barre : blanc légèrement opaque dans le clair, graphite dans le sombre.
+   L'accent n'intervient que sur l'onglet actif — jamais comme voile global. */
+html:not(.sombre) .tabbar__surface {
+  border-color: var(--c-bordure);
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 12px 28px rgba(16,17,20,.12);
+}
+html:not(.sombre) .tabbar__item { color: #777780 !important; }
+html:not(.sombre) .tabbar__item[aria-current="page"] { background: var(--marque-pale) !important; color: var(--marque-texte) !important; }
+html:not(.sombre) .tabbar__add { border-color: #fff; background: #18181b !important; box-shadow: 0 9px 20px rgba(16,17,20,.2); }
+html.sombre .tabbar__surface { border-color: #303035; background: rgba(23,24,27,.97); box-shadow: 0 12px 30px rgba(0,0,0,.45); }
+html.sombre .tabbar__item { color: #a5a5af !important; }
+html.sombre .tabbar__item[aria-current="page"] { background: #2a2a31 !important; color: #fff !important; }
+html.sombre .tabbar__add { border-color: #151518; background: var(--marque-bouton) !important; }
+
+html.sombre .pecule-home--focus .pecule-balance__amount,
+html.sombre .pecule-home--focus .pecule-next-payment__name,
+html.sombre .pecule-home--focus .pecule-next-payment strong { color: var(--c-encre); }
+html.sombre .pecule-home--focus .pecule-action:not(.pecule-action--primary),
+html.sombre .pecule-home--focus .pecule-next-payment { border-color: var(--c-bordure); background: var(--c-carte); }
+html.sombre .pecule-home--focus .pecule-goal { background: #19191d; border-color: #303035; }
+html.sombre .pecule-home--focus .pecule-action--primary { background: var(--corail); border-color: var(--corail); }
+
+@media (min-width: 900px) {
+  .pecule-home--focus { display: block; max-width: 640px; }
+  .pecule-home--focus .pecule-home__header { margin-bottom: 44px; }
+}
+
+/* Accueil minimal — la page ne garde qu'une décision à la fois : connaître
+   son solde, ajouter un mouvement, puis voir l'essentiel. */
+.pecule-home--focus { max-width: 610px; }
+.pecule-home--focus .pecule-balance {
+  min-height: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 2px 2px 0;
+  box-shadow: none;
+  color: var(--c-encre);
+}
+.pecule-home--focus .pecule-balance__glow { display: none; }
+.pecule-home--focus .pecule-balance__label { margin-top: 23px; color: var(--c-sourdine); font-size: .92rem; }
+.pecule-home--focus .pecule-balance__amount { margin-top: 6px; color: var(--c-encre); font-size: clamp(4rem, 17vw, 5.55rem); letter-spacing: -.075em; }
+.pecule-home--focus .pecule-balance__foot { margin-top: 24px; padding: 13px 15px; border: 1px solid var(--c-bordure); border-radius: 16px; background: color-mix(in srgb, var(--marque) 5%, var(--c-carte)); color: var(--c-sourdine); }
+.pecule-home--focus .pecule-balance__foot strong { color: var(--c-encre); }
+.pecule-home--focus .pecule-actions { gap: 12px; }
+.pecule-home--focus .pecule-action { min-height: 104px; border-radius: 25px; background: var(--c-carte); box-shadow: 0 11px 24px color-mix(in srgb, var(--marque) 7%, transparent); font-size: .78rem; }
+.pecule-home--focus .pecule-action__icon { display:grid; width:36px; height:36px; place-items:center; border-radius:13px; background:var(--marque-pale); color:var(--marque-texte); font-size:24px; }
+.pecule-home--focus .pecule-action--primary { border-color:#1a1a1d; background: #17171a; box-shadow: 0 16px 27px rgba(0,0,0,.22); color:#fff; }
+.pecule-home--focus .pecule-action--primary .pecule-action__icon { background:linear-gradient(145deg, var(--marque), color-mix(in srgb, var(--marque) 56%, white)); color:#fff; }
+.pecule-home--focus .pecule-goal { min-height: 196px; border-radius: 27px; background: radial-gradient(64% 140% at 105% -20%, color-mix(in srgb, var(--marque) 92%, #7888ff), transparent 56%), linear-gradient(135deg, #111827, #1b2949); }
+.pecule-home--focus .pecule-activity__list { gap: 0; overflow:hidden; border-top:1px solid var(--c-bordure); border-bottom:1px solid var(--c-bordure); }
+.pecule-home--focus .pecule-activity__list > li { border-radius: 0; overflow:visible; }
+.pecule-home--focus .pecule-activity__list .transaction-row { min-height:76px; border:0; border-bottom:1px solid var(--c-bordure); border-radius:0; background:transparent; padding-inline:3px; box-shadow:none; }
+.pecule-home--focus .pecule-activity__list > li:last-child .transaction-row { border-bottom:0; }
+.pecule-home--focus .pecule-activity__list .transaction-row::before { display:none; }
+html.sombre .pecule-home--focus .pecule-balance__amount,
+html.sombre .pecule-home--focus .pecule-balance__foot strong { color:#fff; }
+html.sombre .pecule-home--focus .pecule-action { background:color-mix(in srgb, var(--c-carte) 92%, #fff); }
+
+@media (min-width: 900px) {
+  .pecule-home--focus { grid-template-columns:minmax(0, 1fr) 360px; gap:30px; max-width:1060px; }
+  .pecule-home--focus .pecule-balance { grid-column:1; grid-row:2; padding-top:28px; }
+  .pecule-home--focus .pecule-actions { grid-column:2; grid-row:2; align-content:start; }
+  .pecule-home--focus .pecule-action { min-height:132px; }
+  .pecule-home--focus .pecule-goal { grid-column:1; grid-row:3; }
+  .pecule-home--focus .pecule-activity { grid-column:2; grid-row:3; }
+}
+
+/* Thèmes Pécule — deux ambiances volontairement distinctes. Le clair est
+   papier/minéral, le sombre est graphite profond. Les couleurs choisies dans
+   les réglages restent uniquement des accents, jamais un voile partout. */
+:root {
+  --c-fond: #f4f4f6;
+  --c-carte: #ffffff;
+  --c-encre: #16161b;
+  --c-sourdine: #777780;
+  --c-bordure: #e4e4e9;
+  --c-voile: #f0f0f4;
+  --c-contraste: #ffffff;
+  --v3-surface-1: #ffffff;
+  --v3-surface-2: #f8f8fa;
+  --v3-surface-3: #eeeeF2;
+  --v3-surface-floating: rgba(255,255,255,.90);
+  --v3-surface-glass: rgba(255,255,255,.82);
+  --ombre-carte: 0 1px 2px rgba(17,17,24,.04), 0 10px 26px rgba(17,17,24,.06);
+  --ombre-flottant: 0 2px 5px rgba(17,17,24,.08), 0 18px 42px rgba(17,17,24,.13);
+  --v3-shadow-soft: 0 1px 2px rgba(17,17,24,.04), 0 9px 24px rgba(17,17,24,.055);
+  --v3-shadow-medium: 0 2px 5px rgba(17,17,24,.06), 0 15px 36px rgba(17,17,24,.10);
+  --v3-shadow-floating: 0 2px 6px rgba(17,17,24,.09), 0 20px 46px rgba(17,17,24,.15);
+}
+body {
+  background-image: radial-gradient(60% 42% at 95% -12%, color-mix(in srgb, var(--marque) 8%, transparent), transparent 74%), linear-gradient(180deg, #fafafb 0%, var(--c-fond) 58%);
+}
+.app-shell__ambient { background: radial-gradient(45% 25% at 100% 0%, color-mix(in srgb, var(--marque) 8%, transparent), transparent 78%); }
+.champ { background: #fff; border-color: var(--c-bordure); box-shadow: inset 0 1px 0 rgba(0,0,0,.02); }
+
+html.sombre {
+  --c-fond: #0b0b0d;
+  --c-carte: #151518;
+  --c-encre: #f7f7f8;
+  --c-sourdine: #a5a5af;
+  --c-bordure: #2a2a30;
+  --c-voile: #202025;
+  --c-contraste: #09090b;
+  --v3-surface-1: #151518;
+  --v3-surface-2: #1b1b20;
+  --v3-surface-3: #24242a;
+  --v3-surface-floating: rgba(21,21,24,.92);
+  --v3-surface-glass: rgba(18,18,21,.84);
+  --ombre-carte: 0 1px 1px rgba(0,0,0,.4), 0 14px 32px rgba(0,0,0,.32);
+  --ombre-flottant: 0 3px 7px rgba(0,0,0,.55), 0 22px 50px rgba(0,0,0,.50);
+  --v3-shadow-soft: 0 1px 2px rgba(0,0,0,.34), 0 9px 24px rgba(0,0,0,.28);
+  --v3-shadow-medium: 0 2px 5px rgba(0,0,0,.45), 0 15px 36px rgba(0,0,0,.38);
+  --v3-shadow-floating: 0 3px 7px rgba(0,0,0,.55), 0 20px 46px rgba(0,0,0,.50);
+}
+html.sombre body { background-image: radial-gradient(60% 34% at 92% -8%, color-mix(in srgb, var(--marque) 15%, transparent), transparent 70%), linear-gradient(180deg, #121216 0%, var(--c-fond) 54%); }
+html.sombre .app-shell__ambient { background: radial-gradient(55% 28% at 100% 0%, color-mix(in srgb, var(--marque) 13%, transparent), transparent 76%); }
+html.sombre .champ { background: #17171b; border-color: #303037; box-shadow: inset 0 1px 0 rgba(255,255,255,.03); }
+html.sombre .pecule-home--focus .pecule-action:not(.pecule-action--primary) { background: #18181c; border-color: #2b2b31; }
+html.sombre .pecule-home--focus .pecule-activity__list .transaction-row { background: transparent; }
+html.sombre .tabbar__surface { background: rgba(16,16,19,.92); border-color: rgba(255,255,255,.12); }
+
+/* En clair, aucune grande surface ne doit reprendre les codes du mode nuit.
+   L'accent porte le caractère ; le fond reste lumineux et lisible. */
+html:not(.sombre) .pecule-home--focus .pecule-balance .pecule-eyebrow { color: var(--c-sourdine); }
+html:not(.sombre) .pecule-home--focus .pecule-action--primary {
+  border-color: color-mix(in srgb, var(--marque) 18%, transparent);
+  background: linear-gradient(145deg, var(--marque), var(--marque-texte));
+  box-shadow: 0 14px 25px color-mix(in srgb, var(--marque) 26%, transparent);
+}
+html:not(.sombre) .pecule-home--focus .pecule-goal {
+  border-color: color-mix(in srgb, var(--marque) 19%, transparent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--marque) 15%, white), color-mix(in srgb, var(--marque) 5%, white));
+  box-shadow: 0 16px 30px color-mix(in srgb, var(--marque) 11%, transparent);
+  color: var(--c-encre);
+}
+html:not(.sombre) .pecule-home--focus .pecule-goal:hover { color: var(--c-encre); }
+html:not(.sombre) .pecule-home--focus .pecule-goal .pecule-eyebrow,
+html:not(.sombre) .pecule-home--focus .pecule-goal p,
+html:not(.sombre) .pecule-home--focus .pecule-goal .pecule-goal__segments + div { color: var(--c-sourdine) !important; }
+html:not(.sombre) .pecule-home--focus .pecule-goal h2,
+html:not(.sombre) .pecule-home--focus .pecule-goal .tnum,
+html:not(.sombre) .pecule-home--focus .pecule-goal--empty strong { color: var(--c-encre); }
+html:not(.sombre) .pecule-home--focus .pecule-goal--empty small { color: var(--marque-texte); }
+html:not(.sombre) .pecule-home--focus .pecule-goal__orb { background: color-mix(in srgb, var(--marque) 14%, white); box-shadow: none; }
+html:not(.sombre) .pecule-home--focus .pecule-goal__segments i { background: color-mix(in srgb, var(--marque) 14%, white); }
+html:not(.sombre) .tabbar__surface {
+  border-color: var(--c-bordure);
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 14px 34px rgba(17,17,24,.13), inset 0 1px 0 rgba(255,255,255,.9);
+}
+html:not(.sombre) .tabbar__item { color: var(--c-sourdine) !important; }
+html:not(.sombre) .tabbar__item[aria-current="page"] { background: var(--marque-pale) !important; color: var(--marque-texte) !important; }
+
 /* Fondations mobiles : aucune largeur rigide ne doit créer un débordement ou
    coincer une interface derrière la navigation fixe. */
 .app-shell { width: min(100%, 28rem); }
@@ -587,6 +925,184 @@ html.sombre .compte-focus-card:not(.compte-focus-card--overview) {
   pointer-events: none;
 }
 .account-row > * { position: relative; z-index: 1; }
+
+/* Nouvelle direction Pécule : une interface de gestion qui ressemble à un
+   produit bancaire premium, pas à une succession de widgets. La marque reste
+   entièrement portée par les variables de thème ; le noir sert seulement de
+   contraste neutre et intemporel. */
+.pecule-home {
+  width: 100%;
+  max-width: 680px;
+  margin-inline: auto;
+  padding-bottom: 14px;
+}
+.pecule-home__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.pecule-avatar {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--marque) 24%, white);
+  border-radius: 15px;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--marque) 82%, white), var(--marque-texte));
+  box-shadow: 0 9px 20px color-mix(in srgb, var(--marque) 25%, transparent);
+  color: white;
+  font-family: var(--v3-font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+.pecule-icon-button {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid var(--c-bordure);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--c-carte) 86%, transparent);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--marque) 7%, transparent);
+  color: var(--c-encre);
+  font-size: 21px;
+  line-height: 1;
+  transition: transform var(--v3-duration-fast) var(--v3-ease-standard), background var(--v3-duration-fast) ease;
+}
+.pecule-icon-button:active { transform: scale(.94); background: var(--marque-pale); }
+.pecule-eyebrow {
+  display: block;
+  color: var(--c-sourdine);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.pecule-balance {
+  position: relative;
+  overflow: hidden;
+  min-height: 246px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 30px;
+  background:
+    radial-gradient(75% 110% at 110% -15%, color-mix(in srgb, var(--marque) 90%, white) 0%, transparent 54%),
+    radial-gradient(86% 130% at -20% 110%, color-mix(in srgb, var(--marque) 55%, #050608), transparent 62%),
+    linear-gradient(138deg, #101114 0%, #15151b 56%, #0a0b0d 100%);
+  padding: 23px;
+  box-shadow: 0 24px 44px rgba(12, 13, 18, .22), inset 0 1px 0 rgba(255,255,255,.16);
+  color: #fff;
+}
+.pecule-balance__glow {
+  position: absolute;
+  right: -64px;
+  bottom: -86px;
+  width: 260px;
+  height: 260px;
+  border-radius: 999px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--marque) 78%, white), transparent 68%);
+  filter: blur(4px);
+  opacity: .46;
+}
+.pecule-balance .pecule-eyebrow { color: rgba(255,255,255,.62); }
+.pecule-balance__badge {
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 999px;
+  background: rgba(255,255,255,.12);
+  padding: 6px 10px;
+  color: rgba(255,255,255,.88);
+  font-size: 11px;
+  font-weight: 700;
+}
+.pecule-balance__label { margin-top: 32px; color: rgba(255,255,255,.67); font-size: .88rem; }
+.pecule-balance__amount { margin-top: 3px; color: white; font-size: clamp(3rem, 13vw, 4.45rem); line-height: .94; }
+.pecule-balance__foot {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 27px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255,255,255,.17);
+  color: rgba(255,255,255,.67);
+  font-size: .78rem;
+}
+.pecule-balance__foot strong { color: #fff; font-size: .93rem; }
+.pecule-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pecule-action {
+  display: flex;
+  min-height: 86px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid var(--c-bordure);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--c-carte) 90%, transparent);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--marque) 7%, transparent);
+  color: var(--c-encre);
+  font-size: .75rem;
+  font-weight: 750;
+  transition: transform var(--v3-duration-fast) var(--v3-ease-standard), box-shadow var(--v3-duration-fast) ease;
+}
+.pecule-action:active { transform: scale(.97); }
+.pecule-action__icon { font-size: 22px; line-height: 1; }
+.pecule-action--primary { border-color: transparent; background: linear-gradient(145deg, var(--marque), var(--marque-texte)); box-shadow: 0 13px 24px color-mix(in srgb, var(--marque) 36%, transparent); color: #fff; }
+.pecule-goal {
+  position: relative;
+  overflow: hidden;
+  min-height: 178px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 28px;
+  background:
+    radial-gradient(70% 120% at 108% 0%, color-mix(in srgb, var(--marque) 73%, #2d2f48), transparent 55%),
+    linear-gradient(135deg, #111a31 0%, #182540 100%);
+  padding: 21px;
+  box-shadow: 0 16px 30px rgba(18, 25, 48, .18);
+  color: #fff;
+}
+.pecule-goal:hover { color: #fff; }
+.pecule-goal__orb { position: absolute; right: 18px; top: 18px; display:grid; width:48px; height:48px; place-items:center; border-radius:17px; background:rgba(255,255,255,.12); font-size:25px; box-shadow: inset 0 1px 0 rgba(255,255,255,.18); }
+.pecule-goal .pecule-eyebrow { color: rgba(255,255,255,.58); }
+.pecule-goal__segments { display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; }
+.pecule-goal__segments i { display:block; height: 9px; border-radius: 999px; background: rgba(255,255,255,.15); }
+.pecule-goal__segments i.is-active { background: var(--menthe); box-shadow: 0 0 12px color-mix(in srgb, var(--menthe) 56%, transparent); }
+.pecule-goal--empty { display:flex; min-height:110px; align-items:center; gap:14px; background:linear-gradient(135deg, color-mix(in srgb, var(--marque) 88%, #131522), #1b2032); }
+.pecule-goal--empty strong, .pecule-goal--empty small { display:block; }
+.pecule-goal--empty small { margin-top:4px; color:rgba(255,255,255,.68); font-size:.8rem; }
+.pecule-link { color: var(--marque-texte); font-size: .84rem; font-weight: 800; }
+.pecule-activity__list { display:grid; gap:9px; }
+.pecule-activity__list .transaction-row { min-height:78px; border-radius:20px; background:color-mix(in srgb, var(--c-carte) 91%, transparent); box-shadow: 0 8px 18px color-mix(in srgb, var(--marque) 6%, transparent); }
+.pecule-activity__list .transaction-row::before { opacity: .55; }
+.pecule-empty { border: 1px dashed var(--c-bordure); border-radius: 20px; padding: 22px 16px; color: var(--c-sourdine); font-size:.9rem; text-align:center; }
+.pecule-accounts .carte-compte { border-radius:28px; }
+.pecule-accounts .compte-focus-card { min-height:194px; }
+.pecule-coach { display:flex; align-items:center; gap:14px; border:1px solid var(--c-bordure); border-radius:24px; background:linear-gradient(135deg, color-mix(in srgb, var(--marque) 9%, var(--c-carte)), var(--c-carte)); padding:17px; box-shadow:0 10px 24px color-mix(in srgb, var(--marque) 7%, transparent); }
+.pecule-coach__spark { display:grid; width:46px; height:46px; flex:0 0 auto; place-items:center; border-radius:16px; background:linear-gradient(145deg, var(--marque), var(--marque-texte)); box-shadow:var(--ombre-bouton); color:#fff; font-size:20px; }
+.pecule-coach strong, .pecule-coach small { display:block; }
+.pecule-coach strong { margin-top:4px; color:var(--c-encre); font-size:.95rem; }
+.pecule-coach small { margin-top:3px; color:var(--marque-texte); font-size:.76rem; font-weight:700; }
+
+@media (min-width: 900px) {
+  .pecule-home { display:grid; grid-template-columns:minmax(0, 1.15fr) minmax(330px, .85fr); align-items:start; gap:22px; max-width:1120px; }
+  .pecule-home__header { grid-column:1 / -1; }
+  .pecule-balance { min-height:284px; padding:28px; }
+  .pecule-actions { grid-column:2; grid-row:2; height:100%; align-content:center; }
+  .pecule-action { min-height:116px; }
+  .pecule-goal { grid-column:1; }
+  .pecule-activity { grid-column:2; grid-row:3 / span 2; }
+  .pecule-accounts { grid-column:1; }
+  .pecule-coach { grid-column:1; }
+}
+
+@media (max-width: 899px) {
+  .tabbar__surface { border-color: rgba(255,255,255,.12); background: rgba(17,17,20,.94); box-shadow: 0 16px 34px rgba(0,0,0,.27), inset 0 1px 0 rgba(255,255,255,.09); }
+  .tabbar__item { color: rgba(255,255,255,.58) !important; }
+  .tabbar__item[aria-current="page"] { background: rgba(255,255,255,.14) !important; color: #fff !important; }
+  .tabbar__add { border-color:#fff; box-shadow:0 10px 22px color-mix(in srgb, var(--marque) 44%, transparent); }
+}
 
 /* Bureau : Pécule devient un véritable poste de pilotage. La navigation reste
    toujours accessible à gauche, pendant que la page dispose enfin d'une vraie
@@ -1097,3 +1613,48 @@ button, a, [role="button"] {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Final theme contract: legacy decoration must never leak a dark panel into
+   light mode (or a white panel into dark mode). */
+html:not(.sombre) { color-scheme: light; }
+html:not(.sombre) body { background: #f7f7f5; background-image: radial-gradient(72% 38% at 100% -12%, color-mix(in srgb, var(--marque) 7%, transparent), transparent 73%); }
+html.sombre body { background: #101113; background-image: radial-gradient(70% 38% at 100% -12%, color-mix(in srgb, var(--marque) 11%, transparent), transparent 74%); }
+.pecule-home--focus { display: block; max-width: 560px; }
+.pecule-home--focus .pecule-home__header { margin-bottom: 36px; }
+.pecule-home--focus .pecule-balance { min-height: unset; padding: 0 2px; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.pecule-home--focus .pecule-balance .pecule-eyebrow, .pecule-home--focus .pecule-balance__label { color: var(--c-sourdine); }
+.pecule-home--focus .pecule-balance__amount { margin-top: 12px; color: var(--c-encre); font-size: clamp(3.8rem, 17vw, 5.3rem); letter-spacing: -.08em; line-height: .9; }
+.pecule-home--focus .pecule-balance__label { margin-top: 14px; font-size: .94rem; }
+.pecule-home--focus .pecule-actions--simple { grid-template-columns: 1fr 1fr; margin-top: 34px; }
+.pecule-home--focus .pecule-action { min-height: 72px; flex-direction: row; gap: 9px; border-radius: 18px; background: var(--c-carte); box-shadow: none; font-size: .84rem; }
+.pecule-home--focus .pecule-action__icon { width: 26px; height: 26px; border-radius: 9px; background: var(--marque-pale); color: var(--marque-texte); font-size: 19px; }
+.pecule-home--focus .pecule-action--primary { border-color: var(--corail); background: var(--corail); box-shadow: 0 10px 20px color-mix(in srgb, var(--corail) 22%, transparent); color: white; }
+.pecule-home--focus .pecule-action--primary .pecule-action__icon { background: rgba(255,255,255,.18); color: white; }
+.pecule-next-payment { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 3px 12px; margin-top: 28px; padding: 17px 18px; border: 1px solid var(--c-bordure); border-radius: 20px; background: var(--c-carte); box-shadow: var(--ombre-carte); }
+.pecule-next-payment__kicker { grid-column: 1 / -1; color: var(--c-sourdine); font-size: .72rem; font-weight: 700; }
+.pecule-next-payment__name { color: var(--c-encre); font-size: 1rem; font-weight: 700; }
+.pecule-next-payment__date { grid-column: 1; color: var(--c-sourdine); font-size: .8rem; }
+.pecule-next-payment strong { grid-column: 2; grid-row: 2 / span 2; align-self: center; color: var(--c-encre); font-variant-numeric: tabular-nums; }
+.pecule-home--focus .pecule-goal { min-height: 0; margin-top: 28px; padding: 19px; border-color: color-mix(in srgb, var(--marque) 17%, var(--c-bordure)); border-radius: 21px; background: color-mix(in srgb, var(--marque) 7%, var(--c-carte)); box-shadow: none; color: var(--c-encre); }
+.pecule-home--focus .pecule-home--focus .pecule-goal:hover { color: var(--c-encre); }
+.pecule-home--focus .pecule-goal .pecule-eyebrow, .pecule-home--focus .pecule-goal p, .pecule-home--focus .pecule-goal .pecule-goal__segments + div { color: var(--c-sourdine) !important; }
+.pecule-home--focus .pecule-goal__segments i { background: color-mix(in srgb, var(--marque) 13%, var(--c-carte)); }
+.pecule-home--focus .pecule-goal__segments i.is-active { background: var(--menthe); box-shadow: none; }
+.pecule-home--focus .pecule-goal--empty { background: var(--c-carte); }
+.pecule-home--focus .pecule-goal--empty small { color: var(--marque-texte); }
+.pecule-home--focus .pecule-activity { margin-top: 34px; }
+.pecule-home--focus .pecule-activity__list { border-top: 1px solid var(--c-bordure); border-bottom: 1px solid var(--c-bordure); }
+.pecule-home--focus .pecule-activity__list .transaction-row { min-height: 70px; background: transparent; }
+html:not(.sombre) .tabbar__surface { border-color: var(--c-bordure); background: rgba(255,255,255,.96); box-shadow: 0 12px 28px rgba(16,17,20,.12); }
+html:not(.sombre) .tabbar__item { color: #777780 !important; }
+html:not(.sombre) .tabbar__item[aria-current="page"] { background: var(--marque-pale) !important; color: var(--marque-texte) !important; }
+html:not(.sombre) .tabbar__add { border-color: #fff; background: #18181b !important; box-shadow: 0 9px 20px rgba(16,17,20,.2); }
+html.sombre .tabbar__surface { border-color: #303035; background: rgba(23,24,27,.97); box-shadow: 0 12px 30px rgba(0,0,0,.45); }
+html.sombre .tabbar__item { color: #a5a5af !important; }
+html.sombre .tabbar__item[aria-current="page"] { background: #2a2a31 !important; color: #fff !important; }
+html.sombre .tabbar__add { border-color: #151518; background: var(--marque-bouton) !important; }
+html.sombre .pecule-home--focus .pecule-balance__amount, html.sombre .pecule-home--focus .pecule-next-payment__name, html.sombre .pecule-home--focus .pecule-next-payment strong { color: var(--c-encre); }
+html.sombre .pecule-home--focus .pecule-action:not(.pecule-action--primary), html.sombre .pecule-home--focus .pecule-next-payment { border-color: var(--c-bordure); background: var(--c-carte); }
+html.sombre .pecule-home--focus .pecule-goal { background: #19191d; border-color: #303035; }
+html.sombre .pecule-home--focus .pecule-action--primary { background: var(--corail); border-color: var(--corail); }
+@media (min-width: 900px) { .pecule-home--focus { display: block; max-width: 640px; } .pecule-home--focus .pecule-home__header { margin-bottom: 44px; } }

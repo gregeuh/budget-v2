@@ -1,49 +1,63 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useMemo } from "react";
 import { useBudget } from "@/lib/store";
-import { aujourdhui, cleMois, dateCourte, euros, isoLocal, prochaineOccurrence } from "@/lib/format";
+import { aujourdhui, dateCourte, euros } from "@/lib/format";
 import { calculerProjection } from "@/lib/projection";
 
-const joursMois = (mois) => {
-  const [annee, numero] = mois.split("-").map(Number);
-  return new Date(annee, numero, 0).getDate();
-};
+const JOURS = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+
+function Semaine({ aujourd, echeances }) {
+  const jours = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(`${aujourd}T12:00:00`);
+    date.setDate(date.getDate() + index);
+    const iso = date.toISOString().slice(0, 10);
+    return { iso, nom: index === 0 ? "Auj." : JOURS[date.getDay()], numero: date.getDate(), actif: index === 0, aUneEcheance: echeances.some((item) => item.date === iso) };
+  });
+  return <div className="avenir-semaine" aria-label="Les sept prochains jours">{jours.map((jour) => <div key={jour.iso} className={jour.actif ? "is-active" : ""}><span>{jour.nom}</span><b>{jour.numero}</b>{jour.aUneEcheance && <i aria-label="Une échéance est prévue" />}</div>)}</div>;
+}
 
 export default function CalendrierPage() {
   const { transactions, recurrentes, categories, comptes, soldes, profil } = useBudget();
-  const [mois, setMois] = useState(cleMois(aujourdhui()));
-  const [jourSelectionne, setJourSelectionne] = useState(aujourdhui());
-  const evenements = useMemo(() => {
-    const liste = transactions.filter((t) => cleMois(t.date) === mois).map((t) => ({ ...t, virtuel: false }));
-    for (const r of recurrentes) {
-      if (r.actif === false) continue;
-      let date = r.prochaine;
-      for (let n = 0; date && n < 24; n += 1) {
-        if (cleMois(date) === mois) liste.push({ ...r, id: `${r.id}-${date}`, date, virtuel: true });
-        if (date > `${mois}-31`) break;
-        date = prochaineOccurrence(date, r.frequence, { mode: r.modeSalaire || "jour" });
-      }
-    }
-    return liste.sort((a, b) => a.date.localeCompare(b.date));
-  }, [transactions, recurrentes, mois]);
-  const prochain = evenements.filter((e) => e.date >= aujourdhui()).slice(0, 8);
-  const totalAVenir = prochain.reduce((total, e) => total + (e.montant < 0 ? Math.abs(e.montant) : 0), 0);
-  const projection = useMemo(() => calculerProjection({ comptes, soldes, transactions, recurrentes, profil }), [comptes, soldes, transactions, recurrentes, profil]);
-  const timeline = projection.aVenir.slice(0, 5);
-  const nombreJours = joursMois(mois);
-  const premierJour = new Date(`${mois}-01T12:00:00`).getDay() || 7;
-  const cellules = Array.from({ length: premierJour - 1 + nombreJours }, (_, index) => index < premierJour - 1 ? null : index - premierJour + 2);
-  const changerMois = (offset) => { const d = new Date(`${mois}-01T12:00:00`); d.setMonth(d.getMonth() + offset); const prochainMois = cleMois(isoLocal(d)); setMois(prochainMois); setJourSelectionne(`${prochainMois}-01`); };
-  const selection = evenements.filter((item) => item.date === jourSelectionne);
+  const projection = useMemo(
+    () => calculerProjection({ comptes, soldes, transactions, recurrentes, profil }),
+    [comptes, soldes, transactions, recurrentes, profil]
+  );
+  const aujourd = aujourdhui();
+  const echeances = projection.aVenir.filter((item) => item.date >= aujourd).slice(0, 8);
+  let solde = projection.dispo;
+  const lignes = echeances.map((item) => {
+    solde += item.montant;
+    return { ...item, soldeApres: solde };
+  });
+  const prochaine = lignes[0];
 
-  return <div className="space-y-5">
-    <header><p className="text-v3-caption font-semibold uppercase tracking-[0.14em] text-marque">Rituel mensuel</p><h1 className="mt-1 text-3xl font-bold tracking-tight">Calendrier vivant</h1><p className="mt-2 text-sm leading-5 text-sourdine">Visualise les mouvements de ton mois, puis ajuste ce qui compte.</p></header>
-    <section className="rounded-v3-l bg-ui-surface-floating p-4 shadow-v3-soft"><div className="flex items-center justify-between"><button onClick={() => changerMois(-1)} aria-label="Mois précédent" className="h-10 w-10 rounded-full bg-ui-surface-raised text-xl">‹</button><h2 className="font-semibold capitalize">{new Date(`${mois}-01T12:00:00`).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}</h2><button onClick={() => changerMois(1)} aria-label="Mois suivant" className="h-10 w-10 rounded-full bg-ui-surface-raised text-xl">›</button></div><div className="mt-4 grid grid-cols-7 gap-1 text-center text-[10px] font-semibold text-sourdine">{["L","M","M","J","V","S","D"].map((jour, i) => <span key={`${jour}-${i}`}>{jour}</span>)}</div><div className="mt-2 grid grid-cols-7 gap-1">{cellules.map((jour, index) => { const date = jour ? `${mois}-${String(jour).padStart(2, "0")}` : null; const items = date ? evenements.filter((e) => e.date === date) : []; const aujourd = date === aujourdhui(); const selectionne = date === jourSelectionne; return <button key={date || `blank-${index}`} disabled={!jour} onClick={() => date && setJourSelectionne(date)} className={`min-h-12 rounded-xl p-1 text-center transition ${selectionne ? "bg-marque text-white shadow-v3-soft" : aujourd ? "bg-marque-pale ring-1 ring-marque/25" : "bg-ui-surface-raised"}`}>{jour && <><span className={`text-xs ${selectionne ? "font-bold text-white" : aujourd ? "font-bold text-marque-texte" : "text-encre"}`}>{jour}</span><div className="mt-1 flex justify-center gap-0.5">{items.slice(0, 3).map((item) => <i key={item.id} title={item.libelle} className={`h-1.5 w-1.5 rounded-full ${item.virtuel ? "border border-marque bg-transparent" : item.montant < 0 ? "bg-corail" : "bg-menthe"}`} />)}</div></>}</button>; })}</div></section>
-    {jourSelectionne && <section className="overflow-hidden rounded-v3-l border border-ui-hairline bg-ui-surface-floating p-4 shadow-v3-soft"><p className="text-xs font-semibold uppercase tracking-wide text-marque">{dateCourte(jourSelectionne)}</p>{selection.length ? selection.map((item) => { const cat = categories[item.categorie] || categories.autre; return <div key={item.id} className="mt-3 flex items-center gap-3"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-marque-pale text-lg">{cat.icone}</span><span className="min-w-0 flex-1"><strong className="block truncate text-sm">{item.libelle}</strong><span className="text-xs text-sourdine">{item.virtuel ? "Prélèvement prévu" : "Opération enregistrée"}</span></span><strong className={`tnum ${item.montant < 0 ? "text-corail" : "text-menthe-texte"}`}>{item.montant < 0 ? "−" : "+"}{euros(Math.abs(item.montant))}</strong></div>; }) : <div className="mt-3 rounded-v3-s bg-marque-pale p-3 text-sm text-marque-texte">Aucune opération ce jour-là. Un bon moment pour préserver ton rythme.</div>}</section>}
-    <section className="rounded-v3-m bg-beurre-pale p-4"><p className="text-sm font-semibold text-beurre-texte">À venir dans les prochains jours</p><p className="mt-1 text-sm text-beurre-texte">{prochain.length} échéance{prochain.length > 1 ? "s" : ""} · jusqu’à <strong>{euros(totalAVenir)}</strong> de sorties prévues</p></section>
-    <section className="rounded-v3-l bg-ui-surface-floating p-4 shadow-v3-soft"><div className="flex items-baseline justify-between"><div><h2 className="font-semibold">Timeline jusqu’à la paie</h2><p className="mt-1 text-xs text-sourdine">L’impact des prochaines opérations sur ton disponible.</p></div><Link href="/previsions" className="text-sm font-semibold text-marque">Simuler</Link></div><div className="mt-4 space-y-3 border-l-2 border-marque-pale pl-4">{timeline.length ? timeline.map((operation) => <div key={operation.id} className="relative flex items-center justify-between gap-3"><i className={`absolute -left-[21px] h-2.5 w-2.5 rounded-full ${operation.montant < 0 ? "bg-corail" : "bg-menthe"}`} /><span className="min-w-0"><strong className="block truncate text-sm">{operation.libelle || "Échéance"}</strong><span className="text-xs text-sourdine">{dateCourte(operation.date)}</span></span><strong className={`tnum text-sm ${operation.montant < 0 ? "text-corail" : "text-menthe"}`}>{operation.montant < 0 ? "−" : "+"}{euros(Math.abs(operation.montant))}</strong></div>) : <p className="text-sm text-sourdine">Aucune opération prévue avant la paie.</p>}</div></section>
-    <section><div className="mb-2 flex items-baseline justify-between"><h2 className="font-semibold">Échéances</h2><Link href="/transactions" className="text-sm font-semibold text-marque">Voir les opérations</Link></div><div className="space-y-2">{prochain.length ? prochain.map((item) => { const cat = categories[item.categorie] || categories.autre; return <div key={item.id} className="flex items-center gap-3 rounded-v3-m bg-ui-surface-floating p-3 shadow-v3-soft"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-ui-surface-raised">{cat.icone}</span><span className="min-w-0 flex-1"><strong className="block truncate text-sm">{item.libelle}</strong><span className="text-xs text-sourdine">{dateCourte(item.date)}{item.virtuel ? " · prévu" : " · enregistré"}</span></span><span className={`tnum text-sm font-bold ${item.montant < 0 ? "text-corail" : "text-menthe"}`}>{item.montant < 0 ? "−" : "+"}{euros(Math.abs(item.montant))}</span></div>; }) : <p className="rounded-v3-m bg-ui-surface-floating p-4 text-sm text-sourdine shadow-v3-soft">Aucune échéance pour ce mois. Ajoute des récurrences pour visualiser tes charges fixes.</p>}</div></section>
-  </div>;
+  return (
+    <div className="avenir-page space-y-7">
+      <header>
+        <p className="pecule-eyebrow">Ton calendrier</p>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight">À venir</h1>
+        <p className="mt-2 text-sm text-sourdine">{projection.reste >= 0 ? "Tu es tranquille jusqu’à la paie." : "Regardons les prochains paiements."}</p>
+      </header>
+
+      <Semaine aujourd={aujourd} echeances={echeances} />
+
+      {prochaine ? <section className="avenir-prochain">
+        <span>Prochaine sortie</span>
+        <div><strong>{prochaine.libelle || "Paiement à venir"}</strong><b className="text-corail">−{euros(Math.abs(prochaine.montant))}</b></div>
+        <small>{dateCourte(prochaine.date)} · après : {euros(prochaine.soldeApres)}</small>
+      </section> : <section className="avenir-prochain avenir-prochain--calme"><strong>Aucun paiement à venir</strong><small>Ton agenda financier est calme pour le moment.</small></section>}
+
+      <section>
+        <div className="mb-3 flex items-baseline justify-between"><h2 className="text-sm font-semibold uppercase tracking-wide text-sourdine">Les prochains paiements</h2><Link href="/previsions" className="text-sm font-semibold text-marque-texte">Simuler</Link></div>
+        {lignes.length ? <ol className="avenir-liste">{lignes.map((operation) => {
+          const categorie = categories[operation.categorie] || categories.autre;
+          return <li key={operation.id}><span className="avenir-liste__icone">{categorie.icone}</span><span className="min-w-0 flex-1"><strong>{operation.libelle || "Échéance"}</strong><small>{dateCourte(operation.date)}{operation.virtuel ? " · prévu" : ""}</small></span><span className="text-right"><b className={operation.montant < 0 ? "text-corail" : "text-menthe"}>{operation.montant < 0 ? "−" : "+"}{euros(Math.abs(operation.montant))}</b><small>Reste {euros(operation.soldeApres)}</small></span></li>;
+        })}</ol> : <p className="rounded-v3-m border border-dashed border-bordure p-5 text-center text-sm text-sourdine">Ajoute des échéances récurrentes pour les retrouver ici.</p>}
+      </section>
+
+      <section className="avenir-apres"><span>Après ces paiements</span><strong>{euros(lignes.length ? lignes.at(-1).soldeApres : projection.dispo)}</strong><small>{projection.salaireISO ? `jusqu’au ${dateCourte(projection.salaireISO)}` : "sur les prochaines semaines"}</small></section>
+    </div>
+  );
 }

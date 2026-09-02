@@ -5,10 +5,10 @@ import { usePathname } from "next/navigation";
 
 const ONGLETS = [
   { href: "/", label: "Accueil", icone: "accueil", couleur: "var(--marque)", pale: "var(--marque-pale)" },
-  { href: "/patrimoine", label: "Espaces", icone: "comptes", couleur: "#5974D7", pale: "rgba(89,116,215,.15)" },
+  { href: "/calendrier", label: "À venir", icone: "calendrier", couleur: "var(--marque)", pale: "var(--marque-pale)" },
   { href: "AJOUT" },
-  { href: "/pilotage", label: "Piloter", icone: "budgets", couleur: "#D88245", pale: "rgba(216,130,69,.16)" },
-  { href: "/coach", label: "Conseils", icone: "conseils", couleur: "#A461C5", pale: "rgba(164,97,197,.15)" },
+  { href: "/budgets", label: "Budget", icone: "budgets", couleur: "var(--marque)", pale: "var(--marque-pale)" },
+  { href: "/reglages", label: "Moi", icone: "moi", couleur: "var(--marque)", pale: "var(--marque-pale)" },
 ];
 
 function IconeOnglet({ nom }) {
@@ -16,8 +16,12 @@ function IconeOnglet({ nom }) {
   const dessins = {
     accueil: <><path {...commun} d="m3 10.5 9-7 9 7" /><path {...commun} d="M5.5 9.5V20h13V9.5M9.5 20v-5.5h5V20" /></>,
     comptes: <><rect {...commun} x="3" y="5" width="18" height="14" rx="3" /><path {...commun} d="M3 10h18M16.5 15h1" /></>,
+    activite: <><path {...commun} d="M5 6h14M5 12h14M5 18h9" /><circle {...commun} cx="3" cy="6" r=".6" /><circle {...commun} cx="3" cy="12" r=".6" /><circle {...commun} cx="3" cy="18" r=".6" /></>,
+    calendrier: <><rect {...commun} x="4" y="5" width="16" height="15" rx="3" /><path {...commun} d="M8 3v4M16 3v4M4 10h16" /></>,
     budgets: <><circle {...commun} cx="12" cy="12" r="8.5" /><circle {...commun} cx="12" cy="12" r="4" /><path {...commun} d="M12 3.5v2M20.5 12h-2" /></>,
     conseils: <><path {...commun} d="m12 3 1.45 4.05L17.5 8.5l-4.05 1.45L12 14l-1.45-4.05L6.5 8.5l4.05-1.45L12 3Z" /><path {...commun} d="m18.5 14 .75 2.05L21.5 17l-2.25.95L18.5 20l-.75-2.05L15.5 17l2.25-.95.75-2.05Z" /></>,
+    outils: <><circle {...commun} cx="5" cy="12" r="1" /><circle {...commun} cx="12" cy="12" r="1" /><circle {...commun} cx="19" cy="12" r="1" /></>,
+    moi: <><circle {...commun} cx="12" cy="8" r="3.5" /><path {...commun} d="M4.5 20c.8-3.3 3.3-5 7.5-5s6.7 1.7 7.5 5" /></>,
   };
   return <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5">{dessins[nom]}</svg>;
 }
@@ -50,10 +54,9 @@ export default function TabBar({ onAjouter, ajoutOuvert = false }) {
             </button>
           ) : (
             (() => {
-              const pagesPilotage = ["/pilotage", "/mois", "/plan", "/budgets", "/statistiques", "/previsions", "/calendrier", "/inbox", "/cloture", "/abonnements", "/regles"];
-              const pagesPatrimoine = ["/patrimoine", "/comptes"];
-              const pagesCoach = ["/coach", "/conseils"];
-              const actif = chemin === o.href || (o.href === "/pilotage" && pagesPilotage.includes(chemin)) || (o.href === "/patrimoine" && pagesPatrimoine.includes(chemin)) || (o.href === "/coach" && pagesCoach.includes(chemin));
+              const pagesBudget = ["/budgets", "/mois", "/plan", "/statistiques", "/previsions"];
+              const pagesMoi = ["/pilotage", "/patrimoine", "/comptes", "/coach", "/conseils", "/inbox", "/cloture", "/abonnements", "/regles", "/reglages", "/controle"];
+              const actif = chemin === o.href || (o.href === "/budgets" && pagesBudget.includes(chemin)) || (o.href === "/reglages" && pagesMoi.includes(chemin));
               return <Link
               key={o.href}
               href={o.href}
